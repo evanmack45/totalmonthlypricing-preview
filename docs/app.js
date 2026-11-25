@@ -10,7 +10,14 @@
   const $ = (s) => document.querySelector(s);
   const picker = $('#picker');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const usd = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  // Money is integer cents. A monthly plan bills 12 times a year; a yearly plan bills once.
+  // We never divide a yearly price by 12 for the monthly total: 99.99/12 is 8.3325, and
+  // rounding that would make "monthly x 12" a different number than the person is billed.
+  const cents = (n) => Math.round(Number(n) * 100);
+  const usd = (c) => {
+    const n = Math.round(c), sign = n < 0 ? '-' : '', a = Math.abs(n);
+    return `${sign}$${Math.floor(a / 100).toLocaleString('en-US')}.${String(a % 100).padStart(2, '0')}`;
+  };
   const per = (p) => (p === 'month' ? '/mo' : '/yr');
   const host = (u) => new URL(u).hostname.replace(/^www\./, '');
   const short = (d) => { const [y, m, day] = d.split('-'); return `${m}/${day}/${y.slice(2)}`; };
@@ -28,8 +35,15 @@
   };
   const clampAge = (n) => Math.min(79, Math.max(13, Math.round(n)));
   const priceOf = (id) => sel.get(id) ?? byId.get(id).price;
-  const monthlyOf = (id) => (byId.get(id).per === 'month' ? priceOf(id) : priceOf(id) / 12);
-  const totalMonthly = () => [...sel.keys()].reduce((s, id) => s + monthlyOf(id), 0);
+  const isMonth = (id) => byId.get(id).per === 'month';
+  const priceC = (id) => cents(priceOf(id));
+  const monthC = (id) => (isMonth(id) ? priceC(id) : 0);
+  const yearC = (id) => (isMonth(id) ? priceC(id) * 12 : priceC(id));
+  const sums = () => {
+    let m = 0, y = 0;
+    for (const id of sel.keys()) { m += monthC(id); y += yearC(id); }
+    return { m, y, a: y - m * 12, life: y * (END - age) };
+  };
 
   // ---------- URL hash ----------
   const toHash = () => {
@@ -58,15 +72,14 @@
   const lines = $('#r-lines');
   const lineEl = (id, fresh) => {
     const it = byId.get(id);
-    const p = priceOf(id);
-    const yearly = it.per === 'month' ? p * 12 : p;
+    const p = priceC(id), y = yearC(id);
     const li = document.createElement('li');
     li.className = 'ln' + (fresh && !reduced ? ' new' : '');
     li.dataset.id = id;
     li.innerHTML = `<div class="ln-top"><span class="ln-name"></span><span class="ln-price">${usd(p)}${per(it.per)}</span></div>
-<div class="ln-life"><span>to age ${END}</span><span>${usd(yearly * (END - age))}</span></div>
-${sel.get(id) != null ? `<div class="ln-then">Your price. List price ${usd(it.price)}${per(it.per)}</div>` : ''}
-${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" rel="noopener">${usd(it.then.price)}${per(it.then.per)}</a></div>` : ''}
+<div class="ln-life"><span>to age ${END}</span><span>${usd(y * (END - age))}</span></div>
+${sel.get(id) != null ? `<div class="ln-then">Your price. List price ${usd(cents(it.price))}${per(it.per)}</div>` : ''}
+${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" rel="noopener">${usd(cents(it.then.price))}${per(it.then.per)}</a></div>` : ''}
 <div class="ln-src">src <a href="${it.source}" rel="noopener">${host(it.source)}</a> ${short(it.checked)}</div>`;
     li.querySelector('.ln-name').textContent = `${it.service} ${it.plan}`;
     return li;
@@ -76,17 +89,19 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
     for (const id of sel.keys()) frag.append(lineEl(id, id === freshId));
     lines.replaceChildren(frag);
     $('#r-empty').hidden = sel.size > 0;
-    const m = totalMonthly();
+    const { m, y, a, life } = sums();
+    const lifeTxt = usd(life);
     $('#t-month').textContent = usd(m);
-    $('#t-year').textContent = usd(m * 12);
-    $('#t-life').textContent = usd(m * 12 * (END - age));
-    const life = usd(m * 12 * (END - age));
-    $('#t-day').textContent = usd((m * 12) / 365.25);
+    $('#t-year').textContent = usd(y);
+    $('#t-life').textContent = lifeTxt;
+    $('#t-annual').textContent = usd(a);
+    $('#t-annual-row').hidden = a === 0;
+    $('#t-day').textContent = usd(Math.round(y / 365.25));
     $('#r-age').textContent = age;
     $('#r-years').textContent = END - age;
-    $('#peek-month').textContent = usd(m);
-    $('#peek-life').textContent = life;
-    $('#save').textContent = sel.size ? `Save your ${life} receipt` : 'Save receipt image';
+    $('#peek-month').textContent = a ? `${usd(m)} a month + ${usd(a)} a year` : `${usd(m)} a month`;
+    $('#peek-life').textContent = lifeTxt;
+    $('#save').textContent = sel.size ? `Save your ${lifeTxt} receipt` : 'Save receipt image';
     if (freshId) showTotals();
     if (freshId && !reduced) { const g = $('.r-due-amt'); g.classList.remove('bump'); void g.offsetWidth; g.classList.add('bump'); }
   };
@@ -167,7 +182,7 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
   // ---------- ticker (folded in from Foil's T3 note) ----------
   const t0 = performance.now();
   const tick = () => {
-    const perSec = (totalMonthly() * 12) / 365.25 / 86400;
+    const perSec = (sums().y / 100) / 365.25 / 86400;
     $('#r-tick').textContent = '$' + (perSec * (performance.now() - t0) / 1000).toFixed(6);
   };
   setInterval(tick, reduced ? 1000 : 100);
@@ -216,39 +231,39 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
       if (cur) out.push(cur);
       return out;
     };
-    const HT = { c: 25, lr: 24, lr2: 19, dash: 12, hero: 96, bar: 56 };
+    const HT = { c: 25, lr: 24, lr2: 19, dash: 10, hero: 96, bar: 56 };
     const row = (type, o = {}) => ({ type, h: o.gap ?? HT[type], ...o });
     const C = (s) => wrap(s, cols).map((c) => row('c', { s: c }));
     const DASH = () => row('dash');
-    const m = totalMonthly();
-    const life = usd(m * 12 * (END - age));
-    const day = usd(m * 12 / 365.25);
+    const { m, y, a, life } = sums();
+    const lifeTxt = usd(life);
+    const day = usd(Math.round(y / 365.25));
 
     // one shown line = 2 rows (name + price, then lifetime + source host), plus optional detail rows
     const lineRows = (id, withThen) => {
-      const it = byId.get(id); const p = priceOf(id); const y = it.per === 'month' ? p * 12 : p;
+      const it = byId.get(id); const p = priceC(id); const yv = yearC(id);
       const pr = usd(p) + per(it.per);
       const out = [];
       wrap(`${it.service} ${it.plan}`, cols - pr.length - 1).forEach((n, i) => out.push(row('lr', { l: n, r: i === 0 ? pr : '' })));
-      const amt = usd(y * (END - age)); const h = host(it.source);
+      const amt = usd(yv * (END - age)); const h = host(it.source);
       const left = `  to ${END} src ${h}`;
       if (left.length + 1 + amt.length <= cols2) out.push(row('lr2', { l: left, r: amt }));
       else { out.push(row('lr2', { l: `  to ${END}`, r: amt })); wrap(`src ${h}`, cols2 - 2).forEach((s) => out.push(row('lr2', { l: '  ' + s }))); }
-      if (sel.get(id) != null) out.push(row('lr2', { l: `  your price, list ${usd(it.price)}` }));
-      if (withThen && it.then) out.push(row('lr2', { l: `  in ${it.then.year}: ${usd(it.then.price)}${per(it.then.per)}` }));
+      if (sel.get(id) != null) out.push(row('lr2', { l: `  your price, list ${usd(cents(it.price))}` }));
+      if (withThen && it.then) out.push(row('lr2', { l: `  in ${it.then.year}: ${usd(cents(it.then.price))}${per(it.then.per)}` }));
       out.push(row('gap', { gap: 3 }));
       return out;
     };
     const sum = (rs) => rs.reduce((s, r) => s + r.h, 0);
 
-    const head = [...C('TOTAL MONTHLY PRICING'), ...C('Receipt for one life'), ...C(`Age ${age} to ${END}, prices ${data.asOf}`), DASH(), row('hero', { kicker: 'TO AGE ' + END, amount: life, sub: `${day} a day, every day` }), DASH()];
+    const head = [...C('TOTAL MONTHLY PRICING'), ...C('Receipt for one life'), ...C(`Age ${age} to ${END}, prices ${data.asOf}`), DASH(), row('hero', { kicker: 'TO AGE ' + END, amount: lifeTxt, sub: `${day} a day, every day` }), DASH()];
     const foot = publicFooter('').replace(/#$/, '').replace(/\/$/, '');
     const slash = foot.indexOf('/');
     const urlRows = (slash > 0 && slash < cols && foot.length > cols) ? [...C(foot.slice(0, slash + 1)), ...C(foot.slice(slash + 1))] : wrap(foot, cols).map((s) => row('c', { s }));
-    const tailA = [DASH(), row('lr', { l: 'TOTAL MONTHLY', r: usd(m) }), row('lr', { l: 'TOTAL YEARLY', r: usd(m * 12) })];
+    const tailA = [DASH(), row('lr', { l: 'TOTAL MONTHLY', r: usd(m) }), ...(a ? [row('lr', { l: 'YEARLY PLANS', r: usd(a) })] : []), row('lr', { l: 'TOTAL YEARLY', r: usd(y) })];
     const tailB = [DASH(), ...C('List prices, flat, pre-tax. Sources:')];
-    const TOP = 28, BOT = 20;
-    const ids = [...sel.keys()].sort((a, b) => monthlyOf(b) - monthlyOf(a));
+    const TOP = 20, BOT = 12;
+    const ids = [...sel.keys()].sort((a, b) => yearC(b) - yearC(a) || monthC(b) - monthC(a));
     const fixed = TOP + sum(head) + sum(tailA) + sum(tailB) + sum(urlRows) + BOT;
     const pickLines = (withThen) => {
       const shown = []; let used = 0;
@@ -265,7 +280,15 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
     const hidden = ids.filter((id) => !shown.some((s) => s.id === id));
     const body = shown.flatMap((s) => s.rs);
     if (!sel.size) body.push(...C('(nothing ticked)'));
-    if (hidden.length) body.push(row('c', { s: `+${hidden.length} more, ${usd(hidden.reduce((s, id) => s + monthlyOf(id), 0))}/mo` }));
+    const moreOf = (list) => {
+      const mm = list.reduce((s, id) => s + monthC(id), 0);
+      const aa = list.reduce((s, id) => s + yearC(id) - monthC(id) * 12, 0);
+      const bits = [];
+      if (mm) bits.push(`${usd(mm)}/mo`);
+      if (aa) bits.push(`${usd(aa)}/yr`);
+      return `+${list.length} more` + (bits.length ? `, ${bits.join(' + ')}` : '');
+    };
+    if (hidden.length) body.push(row('c', { s: moreOf(hidden) }));
 
     const rows = [...head, ...body, ...tailA];
     const free = H - TOP - BOT - sum(rows) - sum(tailB) - sum(urlRows);
@@ -313,7 +336,11 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
       }
       yy += r.h;
     }
+    const moreM = hidden.reduce((s, id) => s + monthC(id), 0);
+    const moreA = hidden.reduce((s, id) => s + yearC(id) - monthC(id) * 12, 0);
     cv.dataset.lines = shown.length; cv.dataset.hidden = hidden.length; cv.dataset.overflow = yy > H - BOT + 1 ? '1' : '';
+    cv.dataset.month = m; cv.dataset.year = y; cv.dataset.life = life; cv.dataset.annual = a;
+    cv.dataset.moreMonth = moreM; cv.dataset.moreYear = moreA;
     return cv;
   };
   $('#save').addEventListener('click', async () => {

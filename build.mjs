@@ -27,7 +27,9 @@ for (const it of data.items) {
 for (const id of EXAMPLE) if (!ids.has(id)) throw new Error(`example ${id} missing`);
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const usd = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+const cents = (n) => Math.round(Number(n) * 100);
+const usdC = (c) => { const n = Math.round(c), sign = n < 0 ? '-' : '', a = Math.abs(n); return `${sign}$${Math.floor(a / 100).toLocaleString('en-US')}.${String(a % 100).padStart(2, '0')}`; };
+const usd = (n) => usdC(cents(n));
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const fmtDate = (d) => { const [y, m, day] = d.split('-').map(Number); return `${MONTHS[m - 1]} ${day}, ${y}`; };
 const host = (u) => new URL(u).hostname.replace(/^www\./, '');
@@ -56,12 +58,15 @@ const tableHTML = groups.map((g) => g.items.map((it) => `<tr><td>${esc(it.servic
 
 // Static receipt for the example basket, so the page has its hero without JS.
 const AGE = 30, END = 80;
-const monthly = (it) => (it.per === 'month' ? it.price : it.price / 12);
+const monthC = (it, price = it.price) => (it.per === 'month' ? cents(price) : 0);
+const yearC = (it, price = it.price) => (it.per === 'month' ? cents(price) * 12 : cents(price));
 const ex = EXAMPLE.map((id) => data.items.find((i) => i.id === id));
-const exMonthly = ex.reduce((s, it) => s + monthly(it), 0);
+const exMonth = ex.reduce((s, it) => s + monthC(it), 0);
+const exYear = ex.reduce((s, it) => s + yearC(it), 0);
+const exLife = exYear * (END - AGE);
 const lineHTML = (it, price = it.price) => `<li class="ln" data-id="${it.id}">
 <div class="ln-top"><span class="ln-name">${esc(it.service)} ${esc(it.plan)}</span><span class="ln-price">${usd(price)}${perLabel(it.per)}</span></div>
-<div class="ln-life"><span>to age ${END}</span><span>${usd((it.per === 'month' ? price * 12 : price) * (END - AGE))}</span></div>
+<div class="ln-life"><span>to age ${END}</span><span>${usdC(yearC(it, price) * (END - AGE))}</span></div>
 ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${esc(it.then.url)}" rel="noopener">${usd(it.then.price)}${perLabel(it.then.per)}</a></div>` : ''}
 <div class="ln-src">src <a href="${esc(it.source)}" rel="noopener">${esc(host(it.source))}</a> ${short(it.checked)}</div>
 </li>`;
@@ -83,15 +88,16 @@ const receiptHTML = `
  </header>
  <div class="r-due">
   <p class="r-due-k">To age ${END}</p>
-  <p class="r-due-amt" id="t-life">${usd(exMonthly * 12 * (END - AGE))}</p>
-  <p class="r-due-day">That is <span id="t-day">${usd(exMonthly * 12 / 365.25)}</span> a day, every day.</p>
+  <p class="r-due-amt" id="t-life">${usdC(exLife)}</p>
+  <p class="r-due-day">That is <span id="t-day">${usdC(Math.round(exYear / 365.25))}</span> a day, every day.</p>
  </div>
  <p class="r-tick" aria-live="off"><span>Since you got here</span><span id="r-tick">$0.000000</span></p>
  <ol class="r-lines" id="r-lines">${ex.map((it) => lineHTML(it)).join('')}</ol>
  <p class="r-empty" id="r-empty" hidden>Nothing ticked yet. Pick what you pay for.</p>
  <dl class="r-tot">
-  <div><dt>Total monthly</dt><dd id="t-month">${usd(exMonthly)}</dd></div>
-  <div><dt>Total yearly</dt><dd id="t-year">${usd(exMonthly * 12)}</dd></div>
+  <div><dt>Total monthly</dt><dd id="t-month">${usdC(exMonth)}</dd></div>
+  <div id="t-annual-row" hidden><dt>Yearly plans</dt><dd id="t-annual">${usdC(0)}</dd></div>
+  <div><dt>Total yearly</dt><dd id="t-year">${usdC(exYear)}</dd></div>
  </dl>
  <p class="r-fine">Today's list prices, held flat. Real prices tend to rise. Taxes not included.</p>
  ${barcode()}
@@ -172,7 +178,7 @@ const html = `<!doctype html>
  <p>This page has no accounts, no cookies, no tracking and no ads. Your picks live in the page and, if you copy the link, in the link itself.</p>
 </section>
 </main>
-<a class="peek" id="peek" href="#receipt" hidden><span><b id="peek-month"></b> a month</span><span><b id="peek-life"></b> to age ${END}</span><span class="peek-go">See receipt</span></a>
+<a class="peek" id="peek" href="#receipt" hidden><span><b id="peek-month"></b></span><span><b id="peek-life"></b> to age ${END}</span><span class="peek-go">See receipt</span></a>
 <footer class="foot"><p><a href="${AFTERNIC}" rel="noopener">This domain is for sale.</a></p></footer>
 <script type="application/json" id="data">${JSON.stringify({ asOf, end: END, example: EXAMPLE, items: data.items.map(({ id, service, plan, price, per, source, checked, then }) => ({ id, service, plan, price, per, source, checked, then })) }).replace(/</g, '\\u003c')}</script>
 <script src="app.js" defer></script>

@@ -77,6 +77,7 @@ a { color: inherit; }
 .r-tot { margin: 0; padding: 10px 0; border-top: 2px dashed var(--thermal2); border-bottom: 2px dashed var(--thermal2); }
 .r-tot div { display: flex; justify-content: space-between; gap: 12px; }
 .r-tot dd { margin: 0; }
+.r-tot [hidden] { display: none; }
 .r-tot .grand { flex-wrap: wrap; align-items: baseline; padding-top: 8px; }
 .r-tot .grand dd { font-size: 26px; line-height: 1.2; margin-left: auto; }
 .r-tot .grand dd { color: #b2300b; }
