@@ -47,6 +47,11 @@ h1 { font-weight: 700; font-stretch: 75%; font-size: clamp(38px, 10vw, 92px); li
 }
 .js .receipt { animation: print 1.4s steps(28, end) both; }
 @keyframes print { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+.r-stain {
+  position: absolute; left: -86px; bottom: -100px; width: 220px; height: 220px;
+  pointer-events: none; z-index: 0; opacity: 0.4; user-select: none;
+}
+.receipt > *:not(.r-stain) { position: relative; z-index: 1; }
 .receipt p { margin: 0; }
 .r-head { text-align: center; padding-bottom: 12px; border-bottom: 2px dashed var(--thermal2); }
 .r-due { text-align: center; padding: 14px 0 12px; border-bottom: 2px dashed var(--thermal2); }

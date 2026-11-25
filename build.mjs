@@ -74,6 +74,7 @@ const barcode = () => {
 const receiptHTML = `
 <div class="slot" aria-hidden="true"></div>
 <article class="receipt" id="receipt" aria-labelledby="r-title">
+ <img class="r-stain" src="img/coffee-ring-400.webp" width="400" height="400" alt="" decoding="async" aria-hidden="true">
  <header class="r-head">
   <p class="r-store" id="r-title">Total Monthly Pricing</p>
   <p>Receipt for one life</p>

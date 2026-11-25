@@ -225,6 +225,19 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
       const ph = 14;
       g.drawImage(perf, 0, Math.floor(perf.height * 0.35), perf.width, Math.floor(perf.height * 0.3), 0, 0, W, ph);
     } catch { /* decorative; receipt still prints without it */ }
+    try {
+      const ring = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = 'img/coffee-ring.webp'; });
+      // Source ring is ~720px in an 800 canvas; draw at the 600px spec size.
+      const size = 800 * (600 / 720);
+      const heroBottom = PAD + LH * 4 + 22 + 128 + 22;
+      let rx = -size * 0.52;
+      let ry = H - size * 0.78;
+      if (ry < heroBottom - 24) ry = heroBottom - 24;
+      g.save();
+      g.globalAlpha = 0.4;
+      g.drawImage(ring, rx, ry, size, size);
+      g.restore();
+    } catch { /* decorative; receipt still prints without it */ }
     // torn bottom edge
     g.fillStyle = '#ece6da'; g.beginPath(); g.moveTo(0, H); for (let x = 0; x <= W; x += 12) g.lineTo(x, H - (x / 12 % 2 ? 10 : 0)); g.lineTo(W, H); g.fill();
     g.fillStyle = '#26252c'; g.textBaseline = 'top';
