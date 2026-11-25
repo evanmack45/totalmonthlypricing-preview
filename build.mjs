@@ -7,7 +7,6 @@ const here = dirname(fileURLToPath(import.meta.url));
 const out = join(here, 'docs');
 const data = JSON.parse(readFileSync(join(here, 'data/prices.json'), 'utf8'));
 const SITE = 'https://evanmack45.github.io/totalmonthlypricing-preview/';
-const AFTERNIC = 'https://www.afternic.com/domain/totalmonthlypricing.com';
 export const EXAMPLE = ['netflix-std', 'spotify', 'icloud-200'];
 
 // Boundary checks: bad data fails the build instead of printing a wrong receipt.
@@ -179,7 +178,7 @@ const html = `<!doctype html>
 </section>
 </main>
 <a class="peek" id="peek" href="#receipt" hidden><span><b id="peek-month"></b></span><span><b id="peek-life"></b> to age ${END}</span><span class="peek-go">See receipt</span></a>
-<footer class="foot"><p><a href="${AFTERNIC}" rel="noopener">This domain is for sale.</a></p></footer>
+<footer class="foot"><p>Your picks stay on this page unless you share them.</p></footer>
 <script type="application/json" id="data">${JSON.stringify({ asOf, end: END, example: EXAMPLE, items: data.items.map(({ id, service, plan, price, per, source, checked, then }) => ({ id, service, plan, price, per, source, checked, then })) }).replace(/</g, '\\u003c')}</script>
 <script src="app.js" defer></script>
 </body>
