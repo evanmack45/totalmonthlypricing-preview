@@ -104,9 +104,13 @@ const html = `<!doctype html>
 <meta name="description" content="Tick the subscriptions you pay. A receipt prints your monthly total and what you will pay each company by age 80. Every price links its source.">
 <meta property="og:title" content="Your subscriptions, printed for life">
 <meta property="og:description" content="Tick what you pay. Get the receipt. Every price links its source.">
-<meta property="og:image" content="${SITE}og.png">
+<meta property="og:image" content="${SITE}og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A single white receipt curling in a loop on a mint-green backdrop with a coral stamp circle.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="preload" as="image" href="img/hero.webp" imagesrcset="img/hero-800.webp 800w, img/hero.webp 1280w, img/hero-1920.webp 1920w" imagesizes="100vw">
 <link rel="preload" href="fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
@@ -115,6 +119,9 @@ const html = `<!doctype html>
 </head>
 <body>
 <header class="bar"><a class="mark" href="./">Total Monthly Pricing</a><nav aria-label="Page"><a href="#prices">Prices and sources</a></nav></header>
+<div class="mast">
+ <img class="mast-art" src="img/hero.webp" srcset="img/hero-800.webp 800w, img/hero.webp 1280w, img/hero-1920.webp 1920w" sizes="100vw" width="1280" height="714" alt="A long pale-pink receipt paper roll unwinding along a diner counter toward a checkerboard floor, warm wood and stools behind." fetchpriority="high" decoding="async">
+</div>
 <main>
 <section class="hero" aria-labelledby="h1">
  <div class="intro">
@@ -140,6 +147,7 @@ const html = `<!doctype html>
   ${pickHTML}
  </form>
 </section>
+<img class="perf-band" src="img/perforation.webp" srcset="img/perforation-800.webp 800w, img/perforation.webp 1280w" sizes="100vw" width="1280" height="182" alt="A strip of mint-green sprocket-hole paper edge with a dotted tear line on cream stock." loading="lazy" decoding="async">
 
 <section class="prices" id="prices" aria-labelledby="prices-h">
  <h2 id="prices-h">Prices and sources</h2>
@@ -170,7 +178,10 @@ rmSync(out, { recursive: true, force: true });
 mkdirSync(join(out, 'fonts'), { recursive: true });
 mkdirSync(join(out, 'data'), { recursive: true });
 writeFileSync(join(out, 'index.html'), html);
-for (const f of ['style.css', 'app.js', 'og.png']) { try { copyFileSync(join(here, 'src', f), join(out, f)); } catch (e) { if (f !== 'og.png') throw e; } }
+for (const f of ['style.css', 'app.js']) copyFileSync(join(here, 'src', f), join(out, f));
+mkdirSync(join(out, 'img'), { recursive: true });
+for (const f of readdirSync(join(here, 'src/img'))) copyFileSync(join(here, 'src/img', f), join(out, 'img', f));
+copyFileSync(join(here, 'src/img/og.jpg'), join(out, 'og.jpg'));
 for (const f of readdirSync(join(here, 'src/fonts'))) copyFileSync(join(here, 'src/fonts', f), join(out, 'fonts', f));
 copyFileSync(join(here, 'data/prices.json'), join(out, 'data/prices.json'));
 writeFileSync(join(out, 'robots.txt'), 'User-agent: *\nDisallow: /\n');

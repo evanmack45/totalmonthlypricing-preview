@@ -8,9 +8,13 @@
 <meta name="description" content="Tick the subscriptions you pay. A receipt prints your monthly total and what you will pay each company by age 80. Every price links its source.">
 <meta property="og:title" content="Your subscriptions, printed for life">
 <meta property="og:description" content="Tick what you pay. Get the receipt. Every price links its source.">
-<meta property="og:image" content="https://evanmack45.github.io/totalmonthlypricing-preview/og.png">
+<meta property="og:image" content="https://evanmack45.github.io/totalmonthlypricing-preview/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A single white receipt curling in a loop on a mint-green backdrop with a coral stamp circle.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="preload" as="image" href="img/hero.webp" imagesrcset="img/hero-800.webp 800w, img/hero.webp 1280w, img/hero-1920.webp 1920w" imagesizes="100vw">
 <link rel="preload" href="fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
@@ -19,6 +23,9 @@
 </head>
 <body>
 <header class="bar"><a class="mark" href="./">Total Monthly Pricing</a><nav aria-label="Page"><a href="#prices">Prices and sources</a></nav></header>
+<div class="mast">
+ <img class="mast-art" src="img/hero.webp" srcset="img/hero-800.webp 800w, img/hero.webp 1280w, img/hero-1920.webp 1920w" sizes="100vw" width="1280" height="714" alt="A long pale-pink receipt paper roll unwinding along a diner counter toward a checkerboard floor, warm wood and stools behind." fetchpriority="high" decoding="async">
+</div>
 <main>
 <section class="hero" aria-labelledby="h1">
  <div class="intro">
@@ -393,6 +400,7 @@
 </ul></fieldset>
  </form>
 </section>
+<img class="perf-band" src="img/perforation.webp" srcset="img/perforation-800.webp 800w, img/perforation.webp 1280w" sizes="100vw" width="1280" height="182" alt="A strip of mint-green sprocket-hole paper edge with a dotted tear line on cream stock." loading="lazy" decoding="async">
 
 <section class="prices" id="prices" aria-labelledby="prices-h">
  <h2 id="prices-h">Prices and sources</h2>

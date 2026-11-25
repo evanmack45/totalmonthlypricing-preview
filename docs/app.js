@@ -188,6 +188,11 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
     const cv = document.createElement('canvas'); const k = 2; cv.width = W * k; cv.height = H * k;
     const g = cv.getContext('2d'); g.scale(k, k);
     g.fillStyle = '#fffdf6'; g.fillRect(0, 0, W, H);
+    try {
+      const perf = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = 'img/perforation.webp'; });
+      const ph = 14;
+      g.drawImage(perf, 0, Math.floor(perf.height * 0.35), perf.width, Math.floor(perf.height * 0.3), 0, 0, W, ph);
+    } catch { /* decorative; receipt still prints without it */ }
     // torn bottom edge
     g.fillStyle = '#ece6da'; g.beginPath(); g.moveTo(0, H); for (let x = 0; x <= W; x += 12) g.lineTo(x, H - (x / 12 % 2 ? 10 : 0)); g.lineTo(W, H); g.fill();
     g.fillStyle = '#26252c'; g.textBaseline = 'top';
