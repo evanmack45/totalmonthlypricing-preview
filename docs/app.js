@@ -190,12 +190,17 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
     catch { say('Copy this link: ' + url); }
   });
 
+  // Share image: a 4:5 card, 1080x1350. Hero number, the 5 costliest lines that fit, "+N more" with its
+  // monthly sum, totals, and the canonical URL. Every shown line keeps its source host; the footer points at
+  // the page where all 58 sources are listed.
+  const SHARE_W = 540, SHARE_H = 675, SHARE_MAX_LINES = 5;
   const drawReceipt = async () => {
-    await Promise.all([document.fonts.load('22px Departure'), document.fonts.load('52px Departure')]);
-    const W = 576, PAD = 36, LH = 30, F = '22px Departure, monospace';
-    const rows = [];
-    const ctx0 = document.createElement('canvas').getContext('2d'); ctx0.font = F;
-    const cw = ctx0.measureText('M').width, cols = Math.floor((W - PAD * 2) / cw);
+    await Promise.all([document.fonts.load('20px Departure'), document.fonts.load('16px Departure'), document.fonts.load('52px Departure')]);
+    const W = SHARE_W, H = SHARE_H, PAD = 36, K = 2;
+    const F = '20px Departure, monospace', F2 = '16px Departure, monospace';
+    const meas = document.createElement('canvas').getContext('2d');
+    const colsFor = (font) => { meas.font = font; return Math.floor((W - PAD * 2) / meas.measureText('M').width); };
+    const cols = colsFor(F), cols2 = colsFor(F2);
     const wrap = (s, n) => {
       const out = []; let cur = '';
       const flushTok = (tok) => {
@@ -211,71 +216,104 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
       if (cur) out.push(cur);
       return out;
     };
-    const C = (s) => wrap(s, cols).forEach((p) => rows.push({ c: p })); const LR = (l, r) => rows.push({ l, r }); const L = (l) => rows.push({ l }); const D = () => rows.push({ dash: 1 }); const S = (h) => rows.push({ gap: h });
+    const HT = { c: 25, lr: 24, lr2: 19, dash: 12, hero: 96, bar: 56 };
+    const row = (type, o = {}) => ({ type, h: o.gap ?? HT[type], ...o });
+    const C = (s) => wrap(s, cols).map((c) => row('c', { s: c }));
+    const DASH = () => row('dash');
     const m = totalMonthly();
     const life = usd(m * 12 * (END - age));
     const day = usd(m * 12 / 365.25);
-    C('TOTAL MONTHLY PRICING'); C('Receipt for one life'); C('Prices as of ' + data.asOf); C(`Age ${age} to ${END} (${END - age} years)`); D();
-    rows.push({ hero: 1, kicker: 'TO AGE ' + END, amount: life, sub: `${day} a day, every day` }); D();
-    for (const id of sel.keys()) {
+
+    // one shown line = 2 rows (name + price, then lifetime + source host), plus optional detail rows
+    const lineRows = (id, withThen) => {
       const it = byId.get(id); const p = priceOf(id); const y = it.per === 'month' ? p * 12 : p;
-      const pr = usd(p) + per(it.per); const nm = wrap(`${it.service} ${it.plan}`, cols - pr.length - 1);
-      nm.forEach((n, i) => (i === 0 ? LR(n, pr) : L(n)));
-      LR('  to age ' + END, usd(y * (END - age)));
-      if (sel.get(id) != null) L('  your price, list ' + usd(it.price));
-      if (it.then) L(`  in ${it.then.year}: ${usd(it.then.price)}${per(it.then.per)}`);
-      L(`  src ${host(it.source)} ${short(it.checked)}`); S(6);
-    }
-    if (!sel.size) C('(nothing ticked)');
-    D(); LR('TOTAL MONTHLY', usd(m)); LR('TOTAL YEARLY', usd(m * 12));
-    D(); C("Today's list prices, held flat."); C('Taxes not included.'); S(10); rows.push({ bar: 1 }); S(8); C('THANK YOU FOR SUBSCRIBING');
+      const pr = usd(p) + per(it.per);
+      const out = [];
+      wrap(`${it.service} ${it.plan}`, cols - pr.length - 1).forEach((n, i) => out.push(row('lr', { l: n, r: i === 0 ? pr : '' })));
+      const amt = usd(y * (END - age)); const h = host(it.source);
+      const left = `  to ${END} src ${h}`;
+      if (left.length + 1 + amt.length <= cols2) out.push(row('lr2', { l: left, r: amt }));
+      else { out.push(row('lr2', { l: `  to ${END}`, r: amt })); wrap(`src ${h}`, cols2 - 2).forEach((s) => out.push(row('lr2', { l: '  ' + s }))); }
+      if (sel.get(id) != null) out.push(row('lr2', { l: `  your price, list ${usd(it.price)}` }));
+      if (withThen && it.then) out.push(row('lr2', { l: `  in ${it.then.year}: ${usd(it.then.price)}${per(it.then.per)}` }));
+      out.push(row('gap', { gap: 3 }));
+      return out;
+    };
+    const sum = (rs) => rs.reduce((s, r) => s + r.h, 0);
+
+    const head = [...C('TOTAL MONTHLY PRICING'), ...C('Receipt for one life'), ...C(`Age ${age} to ${END}, prices ${data.asOf}`), DASH(), row('hero', { kicker: 'TO AGE ' + END, amount: life, sub: `${day} a day, every day` }), DASH()];
     const foot = publicFooter('').replace(/#$/, '').replace(/\/$/, '');
     const slash = foot.indexOf('/');
-    if (slash > 0 && slash < cols && foot.length > cols) { C(foot.slice(0, slash + 1)); C(foot.slice(slash + 1)); }
-    else wrap(foot, cols).forEach((ln) => rows.push({ c: ln }));
-    const hOf = (r) => (r.gap ?? (r.hero ? 128 : r.bar ? 64 : r.big ? 44 : r.dash ? 22 : LH));
-    const H = PAD * 2 + rows.reduce((s, r) => s + hOf(r), 0) + 24;
-    const cv = document.createElement('canvas'); const k = 2; cv.width = W * k; cv.height = H * k;
-    const g = cv.getContext('2d'); g.scale(k, k);
+    const urlRows = (slash > 0 && slash < cols && foot.length > cols) ? [...C(foot.slice(0, slash + 1)), ...C(foot.slice(slash + 1))] : wrap(foot, cols).map((s) => row('c', { s }));
+    const tailA = [DASH(), row('lr', { l: 'TOTAL MONTHLY', r: usd(m) }), row('lr', { l: 'TOTAL YEARLY', r: usd(m * 12) })];
+    const tailB = [DASH(), ...C('List prices, flat, pre-tax. Sources:')];
+    const TOP = 28, BOT = 20;
+    const ids = [...sel.keys()].sort((a, b) => monthlyOf(b) - monthlyOf(a));
+    const fixed = TOP + sum(head) + sum(tailA) + sum(tailB) + sum(urlRows) + BOT;
+    const pickLines = (withThen) => {
+      const shown = []; let used = 0;
+      for (const id of ids.slice(0, SHARE_MAX_LINES)) {
+        const rs = lineRows(id, withThen);
+        const moreRow = ids.length > shown.length + 1 ? HT.c : 0;
+        if (fixed + used + sum(rs) + moreRow > H) break;
+        shown.push({ id, rs }); used += sum(rs);
+      }
+      return shown;
+    };
+    let shown = pickLines(true);
+    if (shown.length < Math.min(SHARE_MAX_LINES, ids.length)) { const alt = pickLines(false); if (alt.length > shown.length) shown = alt; }
+    const hidden = ids.filter((id) => !shown.some((s) => s.id === id));
+    const body = shown.flatMap((s) => s.rs);
+    if (!sel.size) body.push(...C('(nothing ticked)'));
+    if (hidden.length) body.push(row('c', { s: `+${hidden.length} more, ${usd(hidden.reduce((s, id) => s + monthlyOf(id), 0))}/mo` }));
+
+    const rows = [...head, ...body, ...tailA];
+    const free = H - TOP - BOT - sum(rows) - sum(tailB) - sum(urlRows);
+    const decor = [row('bar'), row('c', { s: 'THANK YOU FOR SUBSCRIBING' })];
+    if (free >= sum(decor) + 24) { const s = Math.floor((free - sum(decor)) / 2); rows.push(row('gap', { gap: s }), ...decor, row('gap', { gap: free - sum(decor) - s })); }
+    else rows.push(row('gap', { gap: Math.max(0, free) }));
+    rows.push(...tailB, ...urlRows);
+
+    const cv = document.createElement('canvas'); cv.width = W * K; cv.height = H * K;
+    const g = cv.getContext('2d'); g.scale(K, K);
     g.fillStyle = '#fffdf6'; g.fillRect(0, 0, W, H);
     try {
       const perf = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = 'img/perforation.webp'; });
-      const ph = 14;
-      g.drawImage(perf, 0, Math.floor(perf.height * 0.35), perf.width, Math.floor(perf.height * 0.3), 0, 0, W, ph);
+      g.drawImage(perf, 0, Math.floor(perf.height * 0.35), perf.width, Math.floor(perf.height * 0.3), 0, 0, W, 14);
     } catch { /* decorative; receipt still prints without it */ }
     try {
       const ring = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = 'img/coffee-ring.webp'; });
-      // Source ring is ~720px in an 800 canvas; draw at the 600px spec size.
-      const size = 800 * (600 / 720);
-      const heroBottom = PAD + LH * 4 + 22 + 128 + 22;
+      // Source ring is ~720px in an 800 canvas; draw at the 600px spec size, scaled to this card.
+      const size = 800 * (600 / 720) * (W / 576);
+      const heroBottom = TOP + sum(head);
       let rx = -size * 0.52;
       let ry = H - size * 0.78;
       if (ry < heroBottom - 24) ry = heroBottom - 24;
-      g.save();
-      g.globalAlpha = 0.4;
-      g.drawImage(ring, rx, ry, size, size);
-      g.restore();
+      g.save(); g.globalAlpha = 0.4; g.drawImage(ring, rx, ry, size, size); g.restore();
     } catch { /* decorative; receipt still prints without it */ }
-    // torn bottom edge
     g.fillStyle = '#ece6da'; g.beginPath(); g.moveTo(0, H); for (let x = 0; x <= W; x += 12) g.lineTo(x, H - (x / 12 % 2 ? 10 : 0)); g.lineTo(W, H); g.fill();
     g.fillStyle = '#26252c'; g.textBaseline = 'top';
-    let yy = PAD;
+    let yy = TOP;
     for (const r of rows) {
-      const h = hOf(r);
-      if (r.dash) { g.fillText('-'.repeat(cols), PAD, yy); }
-      else if (r.bar) { let x = PAD + 40; let s = 7; while (x < W - PAD - 40) { s = (s * 9301 + 49297) % 233280; const w = 2 + (s % 4) * 2; g.fillRect(x, yy, w, 56); x += w + 2 + (s % 3) * 2; } }
-      else if (r.hero) {
+      g.fillStyle = '#26252c';
+      if (r.type === 'dash') { g.font = F; g.textAlign = 'left'; g.fillText('-'.repeat(cols), PAD, yy - 5); }
+      else if (r.type === 'bar') { let x = PAD + 40; let s = 7; while (x < W - PAD - 40) { s = (s * 9301 + 49297) % 233280; const w = 2 + (s % 4) * 2; g.fillRect(x, yy, w, 48); x += w + 2 + (s % 3) * 2; } }
+      else if (r.type === 'hero') {
         g.textAlign = 'center';
-        g.fillStyle = '#57555f'; g.font = F; g.fillText(r.kicker, W / 2, yy + 4);
-        g.fillStyle = '#b2300b'; g.font = '52px Departure, monospace'; g.fillText(r.amount, W / 2, yy + 36);
-        g.fillStyle = '#26252c'; g.font = F; g.fillText(r.sub, W / 2, yy + 100);
+        g.fillStyle = '#57555f'; g.font = F; g.fillText(r.kicker, W / 2, yy + 2);
+        g.fillStyle = '#b2300b'; g.font = '52px Departure, monospace'; g.fillText(r.amount, W / 2, yy + 22);
+        g.fillStyle = '#26252c'; g.font = F; g.fillText(r.sub, W / 2, yy + 74);
         g.textAlign = 'left';
       }
-      else if (r.c) { g.fillStyle = '#26252c'; g.font = F; g.textAlign = 'center'; g.fillText(r.c, W / 2, yy); g.textAlign = 'left'; }
-      else if (r.big) { g.font = '33px Departure, monospace'; g.fillText(r.l, PAD, yy); g.textAlign = 'right'; g.fillText(r.r, W - PAD, yy); g.textAlign = 'left'; g.font = F; }
-      else if (r.l !== undefined) { g.font = F; g.fillText(r.l, PAD, yy); if (r.r) { g.textAlign = 'right'; g.fillText(r.r, W - PAD, yy); g.textAlign = 'left'; } }
-      yy += h;
+      else if (r.type === 'c') { g.fillStyle = '#26252c'; g.font = F; g.textAlign = 'center'; g.fillText(r.s, W / 2, yy); g.textAlign = 'left'; }
+      else if (r.type === 'lr' || r.type === 'lr2') {
+        g.fillStyle = r.type === 'lr2' ? '#57555f' : '#26252c';
+        g.font = r.type === 'lr2' ? F2 : F; g.textAlign = 'left'; g.fillText(r.l, PAD, yy);
+        if (r.r) { g.textAlign = 'right'; g.fillText(r.r, W - PAD, yy); g.textAlign = 'left'; }
+      }
+      yy += r.h;
     }
+    cv.dataset.lines = shown.length; cv.dataset.hidden = hidden.length; cv.dataset.overflow = yy > H - BOT + 1 ? '1' : '';
     return cv;
   };
   $('#save').addEventListener('click', async () => {
