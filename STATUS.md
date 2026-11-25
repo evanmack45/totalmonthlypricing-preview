@@ -15,9 +15,25 @@ Why: a lifetime total on a pristine thermal print is a screenshot; a lifetime to
 
 Checked in place at 390 and 1280: uneven, broken density, a corner arc rather than a target or a neatly printed circle. Kept. No likenesses, no baked-in letters.
 
-Gate (390+1280, qa/r2-ring): PASS, no P0/P1. Lighthouse mobile performance 99 / accessibility 100 / best-practices 100, CLS 0, LCP 2.1 s, SEO 66 (intended noindex). Impeccable 0 at 390×844, 1280×800, and the static file. Local e2e ALL PASS (62), including no-localhost footer and copied-link checks on the dev server.
+Gate (390+1280, qa/r2-ring): PASS, no P0/P1. Lighthouse mobile performance 99 / accessibility 100 / best-practices 100, CLS 0, LCP 2.1 s, SEO 66 (intended noindex). Impeccable 0 at 390×844, 1280×800, and the static file. Local e2e ALL PASS (62), including no-localhost footer and copied-link checks on the dev server. Live e2e against the preview also ALL PASS (62), same no-localhost asserts.
 
-Folds (opened): qa/art-folds/fold-390.png, fold-1280.png. Share card: qa/art-folds/receipt-sample.png, regenerated from the live preview after push.
+Folds (opened): qa/art-folds/fold-390.png, fold-1280.png. Share card, regenerated from the live preview: qa/art-folds/receipt-sample.png (also qa/receipt-sample.png). Opened: footer is evanmack45.github.io/totalmonthlypricing-preview, no localhost; the ring is a lower-left arc and does not sit on the rust total.
+
+## Price Creep fold: skipped, 2026-11-25 8:49 AM CT
+
+Foil turned down Price Creep as its own toy (FIX / NO-GO, second-toys-r1 gate) and said to fold it into T1: dated, cited hike lines and an "UP X% SINCE YOU JOINED" stamp, starting with three sourced subscriptions. Agent Permission Slip was killed; ignored, not built.
+
+I did not add a new "since you joined" line or stamp.
+
+Why: the cited history in prices.json is too thin, and a half-built hike line would weaken the receipt.
+
+- Only 8 of 58 items (14%) have a sourced `then` price (year, price, per, URL, what). Those are launch prices, not a full hike timeline. The other 50 have no cited historical price.
+- The example basket is Netflix Standard, Spotify, and iCloud+ 200 GB. Only Spotify has a `then` (2011, $9.99/mo, Billboard reprint of the US launch release). Netflix Standard and iCloud+ have none, so a "per ticked service" line would be missing on the default receipt — the one people first screenshot.
+- T2 (Streamflation) is already folded in: where `then` exists, the receipt and the share PNG already print "In <year>: $X/mo" with a source link. Adding a percent on those eight, and nothing on the rest, would look broken. Calling it "since you joined" would also be false: the page has no join-year picker, and the stored year is the service's launch year, not the visitor's.
+- Foil's own constraint still holds: one wrong old price kills trust. I will not invent Netflix (or anyone else's) history, and I will not copy SubScreener or PriceTimeline (no license). Building a real cited timeline even for three tiers is a research job, not a typography pass on this receipt.
+- The wow on T1 is the lifetime total. A sparse percent stamp would clutter that without covering most ticks.
+
+The honest fold is already there, on the eight sourced rows only. A real "since you joined" receipt can wait until more tiers have dated, cited prices of our own.
 
 ## Wow pass, 2026-11-25 8:28 AM CT
 
