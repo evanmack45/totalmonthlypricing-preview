@@ -189,7 +189,7 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
 
 
   // Switch to https://totalmonthlypricing.com/ at go-live.
-  const CANONICAL = 'https://evanmack45.github.io/totalmonthlypricing-preview/';
+  const CANONICAL = 'https://totalmonthlypricing.com/';
   const isLocalPage = () => location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
   const publicPage = () => (isLocalPage() ? CANONICAL : `${location.origin}${location.pathname}`).replace(/index\.html$/, '').replace(/\/?$/, '/');
   const publicLink = (hash) => `${publicPage()}${hash && hash !== '#' ? (hash.startsWith('#') ? hash : '#' + hash) : ''}`;

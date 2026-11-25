@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const out = join(here, 'docs');
 const data = JSON.parse(readFileSync(join(here, 'data/prices.json'), 'utf8'));
-const SITE = 'https://evanmack45.github.io/totalmonthlypricing-preview/';
+const SITE = 'https://totalmonthlypricing.com/';
 export const EXAMPLE = ['netflix-std', 'spotify', 'icloud-200'];
 
 // Boundary checks: bad data fails the build instead of printing a wrong receipt.
@@ -108,7 +108,8 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="${SITE}">
+<meta property="og:url" content="${SITE}">
 <title>Total Monthly Pricing: what your subscriptions cost for life</title>
 <meta name="description" content="Tick the subscriptions you pay. A receipt prints your monthly total and what you will pay each company by age 80. Every price links its source.">
 <meta property="og:title" content="Your subscriptions, printed for life">
@@ -194,6 +195,8 @@ for (const f of readdirSync(join(here, 'src/img'))) copyFileSync(join(here, 'src
 copyFileSync(join(here, 'src/img/og.jpg'), join(out, 'og.jpg'));
 for (const f of readdirSync(join(here, 'src/fonts'))) copyFileSync(join(here, 'src/fonts', f), join(out, 'fonts', f));
 copyFileSync(join(here, 'data/prices.json'), join(out, 'data/prices.json'));
-writeFileSync(join(out, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
+writeFileSync(join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}sitemap.xml\n`);
+writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${SITE}</loc></url></urlset>\n`);
+writeFileSync(join(out, 'CNAME'), 'totalmonthlypricing.com\n');
 writeFileSync(join(out, '.nojekyll'), '');
 console.log(`built ${out}: ${data.items.length} prices, ${groups.length} groups, as of ${asOf}`);
