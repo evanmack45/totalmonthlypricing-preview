@@ -7,3 +7,6 @@ Tick the subscriptions you pay. A thermal-style receipt prints your monthly tota
 - `src/`: CSS, JS, fonts (Instrument Sans and Departure Mono, both SIL OFL 1.1; licenses in `src/fonts/`).
 
 Nothing is stored. Picks live in the page and in the URL hash when you copy a link. No cookies, analytics, accounts or third-party requests.
+
+## Price re-check
+`node scripts/recheck-prices.mjs` fetches every source page in data/prices.json (headless Chrome fallback for JS-built pages if Playwright is installed) and writes one dated OK/CHANGED/UNREADABLE block per CT day to ../LOG.md. It never edits prices.json.
