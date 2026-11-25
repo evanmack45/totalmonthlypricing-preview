@@ -145,8 +145,9 @@ const html = `<!doctype html>
    <label class="age"><span>Your age</span><input id="age" type="number" inputmode="numeric" min="13" max="79" value="${AGE}"></label>
    <label class="find"><span>Find</span><input id="find" type="search" autocomplete="off" placeholder="Netflix, iCloud, Xbox..."></label>
   </div>
-  <p class="hint" id="hint">Three common ones are ticked to start. Untick them, tick yours. Change a price if you pay something else. Nothing leaves your browser.</p>
+  <p class="hint" id="hint">Three common ones are ticked to start. Untick them, tick yours. One plan per service: picking another plan swaps it. Change a price if you pay something else. Nothing leaves your browser.</p>
   <noscript><p class="hint">The receipt needs JavaScript to add up your own picks. The full price list below works without it.</p></noscript>
+  <p class="swap-note" id="swap-note" role="status"></p>
   <p class="nomatch" id="nomatch" hidden>No subscription matches that. Try a company name.</p>
   ${pickHTML}
  </form>

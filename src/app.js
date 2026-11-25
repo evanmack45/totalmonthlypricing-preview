@@ -3,6 +3,10 @@
   const data = JSON.parse(document.getElementById('data').textContent);
   const byId = new Map(data.items.map((it) => [it.id, it]));
   const END = data.end;
+  // One plan per service: tiers of the same service exclude each other (Netflix Standard vs Premium, and so on).
+  const tiers = new Map();
+  for (const it of data.items) { if (!tiers.has(it.service)) tiers.set(it.service, []); tiers.get(it.service).push(it.id); }
+  const sibsOf = (id) => tiers.get(byId.get(id).service).filter((x) => x !== id);
   const $ = (s) => document.querySelector(s);
   const picker = $('#picker');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -39,6 +43,7 @@
     for (const tok of (h.get('p') || '').split(',')) {
       const m = /^([a-z0-9-]{1,40})(?:~(\d{1,4}(?:\.\d{1,2})?))?$/.exec(tok.trim());
       if (!m || !byId.has(m[1]) || sel.has(m[1])) continue;
+      if (sibsOf(m[1]).some((s) => sel.has(s))) continue; // second tier of a service: keep the first one listed
       const v = m[2] ? Number(m[2]) : null;
       sel.set(m[1], v && v > 0 && v !== byId.get(m[1]).price ? v : null);
     }
@@ -108,13 +113,26 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
     }
     $('#age').value = age;
   };
+  const swapNote = $('#swap-note');
+  const noteSwap = (from, to) => {
+    clearTimeout(noteSwap.t);
+    if (!from || !to) { swapNote.textContent = ''; return; }
+    const a = byId.get(from), b = byId.get(to);
+    swapNote.textContent = `${b.service}: switched from ${a.plan} to ${b.plan}. One plan per service.`;
+    noteSwap.t = setTimeout(() => (swapNote.textContent = ''), 5000);
+  };
   picker.addEventListener('change', (e) => {
     const t = e.target;
     if (t.type === 'checkbox') {
       const li = t.closest('.pick');
-      if (t.checked) sel.set(t.value, null); else sel.delete(t.value);
-      li.classList.toggle('on', t.checked);
+      let swapped = null;
+      if (t.checked) {
+        for (const s of sibsOf(t.value)) if (sel.has(s)) { swapped = s; sel.delete(s); }
+        sel.set(t.value, null);
+      } else sel.delete(t.value);
       li.querySelector('.pk-edit input').value = '';
+      syncPicker();
+      noteSwap(swapped, t.checked ? t.value : null);
       render(t.checked ? t.value : null);
       writeHash();
     }
