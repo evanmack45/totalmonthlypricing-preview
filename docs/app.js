@@ -75,13 +75,15 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
     $('#t-month').textContent = usd(m);
     $('#t-year').textContent = usd(m * 12);
     $('#t-life').textContent = usd(m * 12 * (END - age));
+    const life = usd(m * 12 * (END - age));
     $('#t-day').textContent = usd((m * 12) / 365.25);
     $('#r-age').textContent = age;
     $('#r-years').textContent = END - age;
     $('#peek-month').textContent = usd(m);
-    $('#peek-life').textContent = usd(m * 12 * (END - age));
+    $('#peek-life').textContent = life;
+    $('#save').textContent = sel.size ? `Save your ${life} receipt` : 'Save receipt image';
     if (freshId) showTotals();
-    if (freshId && !reduced) { const g = $('.r-tot .grand'); g.classList.remove('bump'); void g.offsetWidth; g.classList.add('bump'); }
+    if (freshId && !reduced) { const g = $('.r-due-amt'); g.classList.remove('bump'); void g.offsetWidth; g.classList.add('bump'); }
   };
 
   // Desktop: the receipt column scrolls on its own. Keep the new line and the totals in view.
@@ -152,24 +154,51 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
   };
   setInterval(tick, reduced ? 1000 : 100);
 
+
+  // Switch to https://totalmonthlypricing.com/ at go-live.
+  const CANONICAL = 'https://evanmack45.github.io/totalmonthlypricing-preview/';
+  const isLocalPage = () => location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  const publicPage = () => (isLocalPage() ? CANONICAL : `${location.origin}${location.pathname}`).replace(/index\.html$/, '').replace(/\/?$/, '/');
+  const publicLink = (hash) => `${publicPage()}${hash && hash !== '#' ? (hash.startsWith('#') ? hash : '#' + hash) : ''}`;
+  const publicFooter = (hash) => publicLink(hash).replace(/^https?:\/\//, '');
+
   // ---------- share ----------
   const msg = $('#share-msg');
   const say = (s) => { msg.textContent = s; clearTimeout(say.t); say.t = setTimeout(() => (msg.textContent = ''), 4000); };
   $('#share').addEventListener('click', async () => {
     history.replaceState(null, '', toHash());
-    try { await navigator.clipboard.writeText(location.href); say('Link copied. It holds your picks, nothing else.'); }
-    catch { say('Copy this link: ' + location.href); }
+    const url = publicLink(toHash());
+    try { await navigator.clipboard.writeText(url); say('Link copied. It holds your picks, nothing else.'); }
+    catch { say('Copy this link: ' + url); }
   });
 
   const drawReceipt = async () => {
-    await document.fonts.load('22px Departure');
+    await Promise.all([document.fonts.load('22px Departure'), document.fonts.load('52px Departure')]);
     const W = 576, PAD = 36, LH = 30, F = '22px Departure, monospace';
     const rows = [];
     const ctx0 = document.createElement('canvas').getContext('2d'); ctx0.font = F;
     const cw = ctx0.measureText('M').width, cols = Math.floor((W - PAD * 2) / cw);
-    const wrap = (s, n) => { const out = []; let cur = ''; for (const w of s.split(' ')) { if ((cur + ' ' + w).trim().length > n) { out.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); } if (cur) out.push(cur); return out; };
-    const C = (s) => rows.push({ c: s }); const LR = (l, r) => rows.push({ l, r }); const L = (l) => rows.push({ l }); const D = () => rows.push({ dash: 1 }); const S = (h) => rows.push({ gap: h });
+    const wrap = (s, n) => {
+      const out = []; let cur = '';
+      const flushTok = (tok) => {
+        if (tok.length > n) {
+          if (cur) { out.push(cur); cur = ''; }
+          for (let i = 0; i < tok.length; i += n) out.push(tok.slice(i, i + n));
+          return;
+        }
+        const t = cur ? `${cur} ${tok}` : tok;
+        if (t.length > n && cur) { out.push(cur); cur = tok; } else cur = t;
+      };
+      for (const w of String(s).split(' ')) flushTok(w);
+      if (cur) out.push(cur);
+      return out;
+    };
+    const C = (s) => wrap(s, cols).forEach((p) => rows.push({ c: p })); const LR = (l, r) => rows.push({ l, r }); const L = (l) => rows.push({ l }); const D = () => rows.push({ dash: 1 }); const S = (h) => rows.push({ gap: h });
+    const m = totalMonthly();
+    const life = usd(m * 12 * (END - age));
+    const day = usd(m * 12 / 365.25);
     C('TOTAL MONTHLY PRICING'); C('Receipt for one life'); C('Prices as of ' + data.asOf); C(`Age ${age} to ${END} (${END - age} years)`); D();
+    rows.push({ hero: 1, kicker: 'TO AGE ' + END, amount: life, sub: `${day} a day, every day` }); D();
     for (const id of sel.keys()) {
       const it = byId.get(id); const p = priceOf(id); const y = it.per === 'month' ? p * 12 : p;
       const pr = usd(p) + per(it.per); const nm = wrap(`${it.service} ${it.plan}`, cols - pr.length - 1);
@@ -180,10 +209,13 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
       L(`  src ${host(it.source)} ${short(it.checked)}`); S(6);
     }
     if (!sel.size) C('(nothing ticked)');
-    D(); const m = totalMonthly();
-    LR('TOTAL MONTHLY', usd(m)); LR('TOTAL YEARLY', usd(m * 12)); rows.push({ l: 'TO AGE ' + END, r: usd(m * 12 * (END - age)), big: 1 });
-    D(); C(`${usd(m * 12 / 365.25)} a day, every day`); C("Today's list prices, held flat."); C('Taxes not included.'); S(10); rows.push({ bar: 1 }); S(8); C('THANK YOU FOR SUBSCRIBING'); C(location.host + location.pathname.replace(/index\.html$/, ''));
-    const hOf = (r) => (r.gap ?? (r.bar ? 64 : r.big ? 44 : r.dash ? 22 : LH));
+    D(); LR('TOTAL MONTHLY', usd(m)); LR('TOTAL YEARLY', usd(m * 12));
+    D(); C("Today's list prices, held flat."); C('Taxes not included.'); S(10); rows.push({ bar: 1 }); S(8); C('THANK YOU FOR SUBSCRIBING');
+    const foot = publicFooter('').replace(/#$/, '').replace(/\/$/, '');
+    const slash = foot.indexOf('/');
+    if (slash > 0 && slash < cols && foot.length > cols) { C(foot.slice(0, slash + 1)); C(foot.slice(slash + 1)); }
+    else wrap(foot, cols).forEach((ln) => rows.push({ c: ln }));
+    const hOf = (r) => (r.gap ?? (r.hero ? 128 : r.bar ? 64 : r.big ? 44 : r.dash ? 22 : LH));
     const H = PAD * 2 + rows.reduce((s, r) => s + hOf(r), 0) + 24;
     const cv = document.createElement('canvas'); const k = 2; cv.width = W * k; cv.height = H * k;
     const g = cv.getContext('2d'); g.scale(k, k);
@@ -201,7 +233,14 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
       const h = hOf(r);
       if (r.dash) { g.fillText('-'.repeat(cols), PAD, yy); }
       else if (r.bar) { let x = PAD + 40; let s = 7; while (x < W - PAD - 40) { s = (s * 9301 + 49297) % 233280; const w = 2 + (s % 4) * 2; g.fillRect(x, yy, w, 56); x += w + 2 + (s % 3) * 2; } }
-      else if (r.c) { g.font = F; g.textAlign = 'center'; g.fillText(r.c, W / 2, yy); g.textAlign = 'left'; }
+      else if (r.hero) {
+        g.textAlign = 'center';
+        g.fillStyle = '#57555f'; g.font = F; g.fillText(r.kicker, W / 2, yy + 4);
+        g.fillStyle = '#b2300b'; g.font = '52px Departure, monospace'; g.fillText(r.amount, W / 2, yy + 36);
+        g.fillStyle = '#26252c'; g.font = F; g.fillText(r.sub, W / 2, yy + 100);
+        g.textAlign = 'left';
+      }
+      else if (r.c) { g.fillStyle = '#26252c'; g.font = F; g.textAlign = 'center'; g.fillText(r.c, W / 2, yy); g.textAlign = 'left'; }
       else if (r.big) { g.font = '33px Departure, monospace'; g.fillText(r.l, PAD, yy); g.textAlign = 'right'; g.fillText(r.r, W - PAD, yy); g.textAlign = 'left'; g.font = F; }
       else if (r.l !== undefined) { g.font = F; g.fillText(r.l, PAD, yy); if (r.r) { g.textAlign = 'right'; g.fillText(r.r, W - PAD, yy); g.textAlign = 'left'; } }
       yy += h;
@@ -211,7 +250,7 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
   $('#save').addEventListener('click', async () => {
     const cv = await drawReceipt();
     const blob = await new Promise((r) => cv.toBlob(r, 'image/png'));
-    const file = new File([blob], 'subscription-receipt.png', { type: 'image/png' });
+    const file = new File([blob], `receipt-to-age-${END}.png`, { type: 'image/png' });
     if (matchMedia('(pointer: coarse)').matches && navigator.canShare?.({ files: [file] })) {
       try { await navigator.share({ files: [file] }); return; } catch { /* fall through to download */ }
     }
@@ -221,6 +260,8 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     say('Receipt image saved.');
   });
+
+  window.__receipt = drawReceipt;
 
   // ---------- phone peek bar ----------
   const peek = $('#peek');

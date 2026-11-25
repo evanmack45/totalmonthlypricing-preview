@@ -80,15 +80,18 @@ const receiptHTML = `
   <p>Prices as of <span id="r-asof">${asOf}</span></p>
   <p class="r-age">Age <span id="r-age">${AGE}</span> to ${END} (<span id="r-years">${END - AGE}</span> years)</p>
  </header>
+ <div class="r-due">
+  <p class="r-due-k">To age ${END}</p>
+  <p class="r-due-amt" id="t-life">${usd(exMonthly * 12 * (END - AGE))}</p>
+  <p class="r-due-day">That is <span id="t-day">${usd(exMonthly * 12 / 365.25)}</span> a day, every day.</p>
+ </div>
  <p class="r-tick" aria-live="off"><span>Since you got here</span><span id="r-tick">$0.000000</span></p>
  <ol class="r-lines" id="r-lines">${ex.map((it) => lineHTML(it)).join('')}</ol>
  <p class="r-empty" id="r-empty" hidden>Nothing ticked yet. Pick what you pay for.</p>
  <dl class="r-tot">
   <div><dt>Total monthly</dt><dd id="t-month">${usd(exMonthly)}</dd></div>
   <div><dt>Total yearly</dt><dd id="t-year">${usd(exMonthly * 12)}</dd></div>
-  <div class="grand"><dt>Total to age ${END}</dt><dd id="t-life">${usd(exMonthly * 12 * (END - AGE))}</dd></div>
  </dl>
- <p class="r-rate">That is <span id="t-day">${usd(exMonthly * 12 / 365.25)}</span> a day, every day.</p>
  <p class="r-fine">Today's list prices, held flat. Real prices tend to rise. Taxes not included.</p>
  ${barcode()}
  <p class="r-thanks">Thank you for subscribing</p>

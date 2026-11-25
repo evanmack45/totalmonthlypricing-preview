@@ -49,6 +49,11 @@ h1 { font-weight: 700; font-stretch: 75%; font-size: clamp(38px, 10vw, 92px); li
 @keyframes print { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
 .receipt p { margin: 0; }
 .r-head { text-align: center; padding-bottom: 12px; border-bottom: 2px dashed var(--thermal2); }
+.r-due { text-align: center; padding: 14px 0 12px; border-bottom: 2px dashed var(--thermal2); }
+.r-due-k { margin: 0; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--thermal2); }
+.r-due-amt { margin: 4px 0 6px !important; font-size: 34px; line-height: 1.1; color: #b2300b; }
+.r-due-day { margin: 0; font-size: 16px; color: var(--thermal); }
+.r-due-amt.bump { animation: bump .5s steps(5, end); }
 .r-store { font-size: 19px; letter-spacing: 0.03em; margin-bottom: 4px !important; }
 .r-tick { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 2px dashed var(--thermal2); color: var(--thermal2); }
 .r-tick span:last-child { color: var(--thermal); }
