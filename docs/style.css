@@ -122,8 +122,8 @@ input[type=number], input[type=search], .pk-edit input { font: 500 17px/1.2 var(
 .group { border: 0; padding: 0; margin: 14px 0 0; min-width: 0; }
 .group legend { font-weight: 700; font-size: 15px; padding: 0; margin-bottom: 4px; color: var(--ink2); }
 .group ul { list-style: none; margin: 0; padding: 0; }
-.pick { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 10px; border-top: 1px solid var(--line); padding: 2px 0; }
-.pick > label:first-child { display: flex; align-items: center; flex-wrap: wrap; column-gap: 6px; min-height: 44px; cursor: pointer; padding: 4px 0; }
+.pick { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 10px; border-top: 1px solid var(--line); padding: 0; }
+.pick > label:first-child { display: flex; align-items: center; flex-wrap: wrap; column-gap: 6px; min-height: 44px; cursor: pointer; padding: 0; line-height: 1.15; }
 .pick input[type=checkbox] { width: 24px; height: 24px; margin: 0 6px 0 0; accent-color: var(--ink); flex: none; }
 .pk-name { font-weight: 600; }
 .pk-plan { color: var(--ink2); }
@@ -145,8 +145,11 @@ input[type=number], input[type=search], .pk-edit input { font: 500 17px/1.2 var(
 .tablewrap { overflow-x: auto; margin: 18px auto; }
 table { border-collapse: collapse; width: 100%; font-size: 15px; min-width: 760px; }
 th { text-align: left; font-weight: 700; padding: 10px 10px 8px 0; border-bottom: 1px solid var(--ink); }
+.tablewrap th { padding: 6px 10px 4px 0; white-space: nowrap; }
 td { padding: 9px 10px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.4; }
+.tablewrap td { padding: 2px 10px 2px 0; line-height: 1.2; white-space: nowrap; }
 td a { display: inline-block; padding: 2px 0; }
+.tablewrap td a { padding: 4px 0; min-height: 24px; }
 .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .about { padding: 24px 20px 40px; }
 
@@ -182,7 +185,6 @@ td:nth-child(5) { white-space: nowrap; }
 /* === generated art === */
 .mast { position: relative; background: #2a2118; min-height: 200px; line-height: 0; overflow: hidden; }
 .mast-art { display: block; width: 100%; height: 200px; object-fit: cover; object-position: 30% 50%; }
-.perf-band { display: block; width: 100%; height: 36px; object-fit: cover; object-position: center; background: var(--cream); }
 .about-split { display: grid; gap: 20px; align-items: start; }
 .coil { width: min(240px, 50vw); height: auto; display: block; border-radius: 4px; }
 @media (min-width: 720px) {

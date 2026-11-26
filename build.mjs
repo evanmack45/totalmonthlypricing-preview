@@ -161,18 +161,18 @@ ${ldTag}
    <label class="age"><span>Your age</span><input id="age" type="number" inputmode="numeric" min="13" max="79" value="${AGE}"></label>
    <label class="find"><span>Find</span><input id="find" type="search" autocomplete="off" placeholder="Netflix, iCloud, Xbox..."></label>
   </div>
-  <p class="hint" id="hint">Three common ones are ticked to start. Untick them, tick yours. One plan per service: picking another plan swaps it. Change a price if you pay something else. Nothing leaves your browser.</p>
+  <p class="hint" id="hint">A starter set is ticked. Untick it, tick yours. Your picks stay in your browser.</p>
   <noscript><p class="hint">The receipt needs JavaScript to add up your own picks. The full price list below works without it.</p></noscript>
   <p class="swap-note" id="swap-note" role="status"></p>
   <p class="nomatch" id="nomatch" hidden>No subscription matches that. Try a company name.</p>
   ${pickHTML}
  </form>
 </section>
-<img class="perf-band" src="img/perforation.webp" srcset="img/perforation-800.webp 800w, img/perforation.webp 1280w" sizes="100vw" width="1280" height="182" alt="A strip of mint-green sprocket-hole paper edge with a dotted tear line on cream stock." loading="lazy" decoding="async">
+
 
 <section class="prices" id="prices" aria-labelledby="prices-h">
  <h2 id="prices-h">Prices and sources</h2>
- <p>${data.items.length} US list prices from ${data.items.length && new Set(data.items.map((i) => i.service)).size} services. Each one comes from the company's own pricing or help page, checked ${asOf}. ${esc(data.method)}</p>
+ <p>${data.items.length} US list prices from ${data.items.length && new Set(data.items.map((i) => i.service)).size} services. Each comes from the company's own pricing or help page, checked ${asOf}. New US subscribers, before tax, with intro and student prices left out.</p>
  <div class="tablewrap" tabindex="0" role="region" aria-labelledby="prices-h">
  <table>
   <thead><tr><th scope="col">Service</th><th scope="col">Plan</th><th scope="col" class="num">Price</th><th scope="col">Source</th><th scope="col">Checked</th><th scope="col">Notes</th></tr></thead>
@@ -184,12 +184,12 @@ ${ldTag}
 
 <section class="about" aria-labelledby="about-h">
  <h2 id="about-h">How the math works</h2>
- <p>Monthly plans count 12 times a year. Yearly plans count once. The total to age 80 multiplies one year by the years you have left, at today's price. That is a floor, since most of these prices have gone up over time. The older prices on the receipt show how much.</p>
+ <p>Monthly plans count 12 times a year, yearly plans once. The total to age 80 multiplies one year by the years you have left, at today's price.</p>
  <p>This page has no accounts, no cookies, no tracking and no ads. Your picks live in the page and, if you copy the link, in the link itself.</p>
 </section>
 </main>
 <a class="peek" id="peek" href="#receipt" hidden><span><b id="peek-month"></b></span><span><b id="peek-life"></b> to age ${END}</span><span class="peek-go">See receipt</span></a>
-<footer class="foot"><p>Your picks stay on this page unless you share them.</p><p class="foot-launch"><a href="streaming-price-history/">Since launch</a></p></footer>
+<footer class="foot"><p class="foot-launch"><a href="streaming-price-history/">Since launch</a></p></footer>
 <script type="application/json" id="data">${JSON.stringify({ asOf, end: END, example: EXAMPLE, items: data.items.map(({ id, service, plan, price, per, source, checked, then }) => ({ id, service, plan, price, per, source, checked, then })) }).replace(/</g, '\\u003c')}</script>
 <script src="app.js" defer></script>
 </body>
