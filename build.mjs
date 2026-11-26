@@ -311,7 +311,7 @@ const LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/';
 const CSV_COLS = [
   ['id', 'Short ID. Same as the id in prices.json.'],
   ['service', 'Company or service name.'],
-  ['plan', 'Plan name as the company prints it.'],
+  ['plan', 'Plan name we use. Some names are shortened.'],
   ['group', 'Our category, such as TV or Games.'],
   ['price_usd', 'List price in US dollars, before tax. For new US subscribers.'],
   ['billing_period', 'month or year. A yearly price is never divided by 12.'],
@@ -336,9 +336,9 @@ const DATA_LD = {
   description: `List prices in US dollars for ${data.items.length} subscription plans in ${nGroups} categories. Each row has the price, whether it bills monthly or yearly, the company page it came from, and the date we checked it. ${nLaunch} rows also have a sourced launch price.`,
   url: DATA, sameAs: SITE, license: LICENSE_URL, isAccessibleForFree: true, inLanguage: 'en',
   creator: { '@type': 'Organization', name: 'Total Monthly Pricing', url: SITE },
-  keywords: ['subscription prices', 'streaming prices', 'list prices', 'price history', 'USD'],
+  keywords: ['subscription prices', 'streaming prices', 'list prices', 'USD'],
   dateModified: lastChecked, temporalCoverage: lastChecked, spatialCoverage: 'United States',
-  measurementTechnique: 'Each price is read from the company\'s own pricing page. A script re-fetches every source page and flags changes; a person updates the data file.',
+  measurementTechnique: 'Each current list price is read from the company\'s own page. A script re-fetches every source page and flags changes; a person updates the data file.',
   variableMeasured: CSV_COLS.map(([name, description]) => ({ '@type': 'PropertyValue', name, description })),
   distribution: [{ '@type': 'DataDownload', encodingFormat: 'text/csv', contentUrl: CSV_URL, name: 'prices.csv' }, { '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: `${DATA}prices.json`, name: 'prices.json' }],
 };
@@ -384,12 +384,13 @@ ${CSV_COLS.map(([n, d]) => `      <tr><th scope="row"><code>${n}</code></th><td>
     </tbody>
   </table>
   <h2>Where the prices come from</h2>
-  <p class="hist-note">Each price was read from the company's own pricing page. We list new US subscriber prices before tax, and leave out intro offers and student prices.</p>
+  <p class="hist-note">Each current list price was read from the company's own page. We list new US subscriber prices before tax, and leave out intro offers and student prices.</p>
   <p class="hist-note">A script re-fetches every source page and flags changes. A person then updates the data file. We last checked on ${esc(fmtDate(lastChecked))}.</p>
   <p class="hist-note">Prices change. Treat each row as true on its check date.</p>
   <h2>License</h2>
   <p class="hist-note"><a href="${LICENSE_URL}" rel="license noopener">CC BY 4.0</a>. Please credit Total Monthly Pricing (totalmonthlypricing.com/data/).</p>
-  <p class="hist-note">The same data as JSON is in <a href="prices.json">prices.json</a>. The receipt that uses it is on the <a href="../">home page</a>.</p>
+  <p class="hist-note">Some launch prices are for the first plan, not today's plans. Disney+ and Xbox Game Pass launched with one plan. The note for each is in prices.json, not in the CSV.</p>
+         <p class="hist-note">The same data as JSON is in <a href="prices.json">prices.json</a>. The receipt that uses it is on the <a href="../">home page</a>.</p>
 </main>
 </body>
 </html>`;
