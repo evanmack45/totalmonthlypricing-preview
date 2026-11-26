@@ -180,3 +180,24 @@ td:nth-child(5) { white-space: nowrap; }
   .mast, .mast-art { min-height: 380px; height: 380px; }
 }
 
+
+/* Streaming price history page (Compass SEO, 11/25) */
+.hist { max-width: 960px; margin: 0 auto; padding: 12px 20px 48px; }
+.hist h1 { max-width: 18ch; font-size: clamp(36px, 7vw, 64px); }
+.hist .dek { margin: 0 0 14px; font-size: 19px; max-width: 40em; }
+.hist-asof, .hist-note { max-width: 46em; font-size: 15px; color: var(--ink2); }
+.hist-wrap { overflow-x: auto; margin: 18px -4px; }
+.hist-table { width: 100%; border-collapse: collapse; background: var(--paper); color: var(--thermal); font-size: 15px; }
+.hist-table th, .hist-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.hist-table thead th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
+.hist-table .num { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+.hist-table a { font-weight: 700; }
+@media (max-width: 720px) {
+  .hist-wrap { overflow: visible; margin: 18px 0; }
+  .hist-table thead { display: none; }
+  .hist-table, .hist-table tbody, .hist-table tr, .hist-table th, .hist-table td { display: block; width: auto; }
+  .hist-table tr { background: var(--paper); margin: 0 0 12px; padding: 10px 14px; border-radius: 8px; }
+  .hist-table th, .hist-table td { border: 0; padding: 3px 0; }
+  .hist-table th[scope="row"] { font-size: 18px; padding-bottom: 6px; }
+  .hist-table td::before { content: attr(data-label) ": "; font-weight: 700; font-size: 13px; }
+}

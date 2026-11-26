@@ -8,6 +8,9 @@ const out = join(here, 'docs');
 const data = JSON.parse(readFileSync(join(here, 'data/prices.json'), 'utf8'));
 const SITE = 'https://totalmonthlypricing.com/';
 export const EXAMPLE = ['netflix-std', 'spotify', 'icloud-200'];
+const PH = `${SITE}streaming-price-history/`;
+const APP_LD = { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Total Monthly Pricing', url: SITE, description: 'Tick the subscriptions you pay. A receipt prints your monthly total and what you will pay each company by age 80. Every price links its source.', applicationCategory: 'FinanceApplication', operatingSystem: 'Any', browserRequirements: 'Requires JavaScript', isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } };
+const ldTag = `<script type="application/ld+json">${JSON.stringify(APP_LD).replace(/</g, '\\u003c')}</script>`;
 
 // Boundary checks: bad data fails the build instead of printing a wrong receipt.
 const ids = new Set();
@@ -121,6 +124,7 @@ const html = `<!doctype html>
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" as="image" href="img/hero.webp" imagesrcset="img/hero-800.webp 800w, img/hero.webp 1280w, img/hero-1920.webp 1920w" imagesizes="100vw">
+${ldTag}
 <link rel="preload" href="fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
@@ -128,7 +132,7 @@ const html = `<!doctype html>
 <script>document.documentElement.className='js'</script>
 </head>
 <body>
-<header class="bar"><a class="mark" href="./">Total Monthly Pricing</a><nav aria-label="Page"><a href="#prices">Prices and sources</a></nav></header>
+<header class="bar"><a class="mark" href="./">Total Monthly Pricing</a><nav aria-label="Page"><a href="#prices">Prices and sources</a> <a href="streaming-price-history/">Since launch</a></nav></header>
 <div class="mast">
  <img class="mast-art" src="img/hero.webp" srcset="img/hero-800.webp 800w, img/hero.webp 1280w, img/hero-1920.webp 1920w" sizes="100vw" width="1280" height="714" alt="A long pale-pink receipt paper roll unwinding along a diner counter toward a checkerboard floor, warm wood and stools behind." fetchpriority="high" decoding="async">
 </div>
@@ -185,10 +189,83 @@ const html = `<!doctype html>
 </body>
 </html>`;
 
+
+const hist = data.items.filter((i) => i.then);
+if (!hist.length) throw new Error('no sourced launch prices; cannot build /streaming-price-history/');
+for (const it of hist) {
+  const t = it.then;
+  if (!(t && t.year && t.price > 0 && t.per && t.url && t.what)) throw new Error(`${it.id}: incomplete then`);
+}
+const phAnswer = 'Eight plans in this list have a sourced launch price. Most cost more today than at launch. Apple TV+ went from $4.99 a month in 2019 to $14.99. Spotify Premium went from $9.99 in 2011 to $12.99. Xbox Game Pass Essential is still $9.99, the same as the one plan at launch in 2017. Every figure links its source.';
+if (phAnswer.trim().split(/\s+/).length > 60) throw new Error('history answer over 60 words');
+const usdThen = (it) => usd(it.then.price) + perLabel(it.then.per);
+const usdNow = (it) => usd(it.price) + perLabel(it.per);
+const need = {
+  'apple-tv': { then: 4.99, now: 14.99, year: 2019 },
+  spotify: { then: 9.99, now: 12.99, year: 2011 },
+  'gamepass-ess': { then: 9.99, now: 9.99, year: 2017 },
+};
+for (const [id, n] of Object.entries(need)) {
+  const it = hist.find((x) => x.id === id);
+  if (!it || it.then.price !== n.then || it.price !== n.now || it.then.year !== n.year) throw new Error(`history answer does not match prices.json for ${id}`);
+}
+const phRows = hist.map((it) => `<tr>
+  <th scope="row">${esc(it.service)}</th>
+  <td data-label="Today's plan">${esc(it.plan)}</td>
+  <td class="num" data-label="Today"><a href="${esc(it.source)}" rel="noopener">${usdNow(it)}</a></td>
+  <td data-label="Launch year">${it.then.year}</td>
+  <td class="num" data-label="Launch price"><a href="${esc(it.then.url)}" rel="noopener">${usdThen(it)}</a></td>
+  <td data-label="About the launch figure">${esc(it.then.what)}${it.note ? ` ${esc(it.note)}` : ''}</td>
+</tr>`).join('\n');
+const PH_LD = { '@context': 'https://schema.org', '@type': 'WebPage', name: 'How much have streaming service prices gone up since launch?', url: PH, description: phAnswer, isPartOf: { '@type': 'WebSite', name: 'Total Monthly Pricing', url: SITE } };
+const phHTML = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="${PH}">
+<meta property="og:url" content="${PH}">
+<title>How much have streaming prices gone up since launch? | Total Monthly Pricing</title>
+<meta name="description" content="Launch prices and today's list prices for the plans in this list that have a sourced launch figure. Every number links its source.">
+<meta property="og:title" content="How much have streaming prices gone up since launch?">
+<meta property="og:description" content="Sourced launch prices next to today's list prices. Every figure links its source.">
+<meta property="og:image" content="${SITE}og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:type" content="website">
+<script type="application/ld+json">${JSON.stringify(PH_LD).replace(/</g, '\\u003c')}</script>
+<link rel="preload" href="../fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body class="hist-page">
+<header class="bar"><a class="mark" href="../">Total Monthly Pricing</a><nav aria-label="Page"><a href="../">Back to the receipt</a></nav></header>
+<main class="hist">
+  <h1>How much have streaming prices gone up since launch?</h1>
+  <p class="dek" id="ph-answer">${phAnswer}</p>
+  <p class="hist-asof">Today's prices were checked ${esc(asOf)}, for new US subscribers, before tax. Intro offers and student prices are left out. A launch figure is shown only when this list has a sourced one. Some launches were a single plan, so that figure is not a like-for-like match with every plan sold today.</p>
+  <div class="hist-wrap">
+  <table class="hist-table">
+    <thead>
+      <tr><th>Service</th><th>Today's plan</th><th>Today</th><th>Launch year</th><th>Launch price</th><th>About the launch figure</th></tr>
+    </thead>
+    <tbody>
+${phRows}
+    </tbody>
+  </table>
+  </div>
+  <p class="hist-note">Disney+ launched as one plan. The $6.99 figure is that launch price, not a 2019 ads or Premium tier. Xbox Game Pass also launched as one plan; Essential is the same dollar amount today. The full current list, with a source on every row, is on the <a href="../#prices">home page</a>.</p>
+</main>
+<footer class="foot"><p>Your picks stay on this page unless you share them.</p></footer>
+</body>
+</html>`;
+
 rmSync(out, { recursive: true, force: true });
 mkdirSync(join(out, 'fonts'), { recursive: true });
 mkdirSync(join(out, 'data'), { recursive: true });
 writeFileSync(join(out, 'index.html'), html);
+mkdirSync(join(out, 'streaming-price-history'), { recursive: true });
+writeFileSync(join(out, 'streaming-price-history/index.html'), phHTML);
 for (const f of ['style.css', 'app.js']) copyFileSync(join(here, 'src', f), join(out, f));
 mkdirSync(join(out, 'img'), { recursive: true });
 for (const f of readdirSync(join(here, 'src/img'))) copyFileSync(join(here, 'src/img', f), join(out, 'img', f));
@@ -196,7 +273,7 @@ copyFileSync(join(here, 'src/img/og.jpg'), join(out, 'og.jpg'));
 for (const f of readdirSync(join(here, 'src/fonts'))) copyFileSync(join(here, 'src/fonts', f), join(out, 'fonts', f));
 copyFileSync(join(here, 'data/prices.json'), join(out, 'data/prices.json'));
 writeFileSync(join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}sitemap.xml\n`);
-writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${SITE}</loc></url></urlset>\n`);
+writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${SITE}</loc></url><url><loc>${PH}</loc></url></urlset>\n`);
 writeFileSync(join(out, 'CNAME'), 'totalmonthlypricing.com\n');
 writeFileSync(join(out, '.nojekyll'), '');
 console.log(`built ${out}: ${data.items.length} prices, ${groups.length} groups, as of ${asOf}`);
