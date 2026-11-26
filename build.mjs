@@ -299,6 +299,101 @@ ${phRows}
 </body>
 </html>`;
 
+
+// ---------- /data/ : prices.csv + README page (Gizmo 11/26) ----------
+// DATA_INDEXED is the one switch. false: the page carries <meta name="robots" content="noindex"> and is
+// NOT in sitemap.xml. true: no noindex tag, and the page is in sitemap.xml. Nothing else changes.
+// License is CC BY 4.0, approved by Evan (see /workspace/gizmo/t1-dataset.md).
+const DATA_INDEXED = true; // Evan, via Dash, Thu 11/26/2026 1:25 PM CT: "yes, CC BY 4.0 for the T1 price data". Set false to go back to noindex + no sitemap entry.
+const DATA = `${SITE}data/`;
+const CSV_URL = `${DATA}prices.csv`;
+const LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/';
+const CSV_COLS = [
+  ['id', 'Short ID. Same as the id in prices.json.'],
+  ['service', 'Company or service name.'],
+  ['plan', 'Plan name as the company prints it.'],
+  ['group', 'Our category, such as TV or Games.'],
+  ['price_usd', 'List price in US dollars, before tax. For new US subscribers.'],
+  ['billing_period', 'month or year. A yearly price is never divided by 12.'],
+  ['source_url', 'The company page the price was read from.'],
+  ['checked', 'Date we last checked that page (YYYY-MM-DD).'],
+  ['note', 'Short caveat, if the page had one. Often empty.'],
+  ['launch_year', 'Year of the launch price. Empty if we have none.'],
+  ['launch_price_usd', 'Launch price in US dollars. Empty if we have none.'],
+  ['launch_billing_period', 'month or year, for the launch price.'],
+  ['launch_source_url', 'Page that states the launch price.'],
+];
+const csvCell = (v) => { const t = v === undefined || v === null ? '' : String(v); return /[",\n\r]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t; };
+const csvRow = (it) => [it.id, it.service, it.plan, it.group, it.price.toFixed(2), it.per, it.source, it.checked, it.note || '',
+  it.then ? it.then.year : '', it.then ? it.then.price.toFixed(2) : '', it.then ? it.then.per : '', it.then ? it.then.url : ''].map(csvCell).join(',');
+const csvText = [CSV_COLS.map((c) => c[0]).join(','), ...data.items.map(csvRow)].join('\n') + '\n';
+const lastChecked = dates.at(-1);
+const nGroups = new Set(data.items.map((i) => i.group)).size;
+const nLaunch = data.items.filter((i) => i.then).length;
+const DATA_LD = {
+  '@context': 'https://schema.org', '@type': 'Dataset',
+  name: `US list prices for ${data.items.length} subscription plans`,
+  description: `List prices in US dollars for ${data.items.length} subscription plans in ${nGroups} categories. Each row has the price, whether it bills monthly or yearly, the company page it came from, and the date we checked it. ${nLaunch} rows also have a sourced launch price.`,
+  url: DATA, sameAs: SITE, license: LICENSE_URL, isAccessibleForFree: true, inLanguage: 'en',
+  creator: { '@type': 'Organization', name: 'Total Monthly Pricing', url: SITE },
+  keywords: ['subscription prices', 'streaming prices', 'list prices', 'price history', 'USD'],
+  dateModified: lastChecked, temporalCoverage: lastChecked, spatialCoverage: 'United States',
+  measurementTechnique: 'Each price is read from the company\'s own pricing page. A script re-fetches every source page and flags changes; a person updates the data file.',
+  variableMeasured: CSV_COLS.map(([name, description]) => ({ '@type': 'PropertyValue', name, description })),
+  distribution: [{ '@type': 'DataDownload', encodingFormat: 'text/csv', contentUrl: CSV_URL, name: 'prices.csv' }, { '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: `${DATA}prices.json`, name: 'prices.json' }],
+};
+const previewRows = data.items.slice(0, 6).map((it) => `<li><span>${esc(it.service)} ${esc(it.plan)}</span><span>${usd(it.price)}${perLabel(it.per)}</span></li>`).join('\n   ');
+const dataHTML = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+${DATA_INDEXED ? '' : '<meta name="robots" content="noindex">\n'}<link rel="canonical" href="${DATA}">
+<meta property="og:url" content="${DATA}">
+<title>Subscription price data (CSV) | Total Monthly Pricing</title>
+<meta name="description" content="US list prices for ${data.items.length} subscription plans as a CSV. Each row has its source page and check date. CC BY 4.0.">
+<meta property="og:title" content="Subscription price data (CSV)">
+<meta property="og:description" content="US list prices for ${data.items.length} subscription plans. Each row has its source page and check date.">
+<meta property="og:image" content="${SITE}og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:type" content="website">
+<script type="application/ld+json">${JSON.stringify(DATA_LD).replace(/</g, '\\u003c')}</script>
+<link rel="preload" href="../fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='3' y='1' width='10' height='14' fill='%23fffdf6'/%3E%3Cpath d='M5 5h6M5 8h6M5 11h4' stroke='%23222' /%3E%3C/svg%3E">
+</head>
+<body class="data-page">
+<header class="bar"><a class="mark" href="../">Total Monthly Pricing</a><nav aria-label="Page"><a href="../">Back to the receipt</a></nav></header>
+<main class="hist">
+  <h1>The price list, as a CSV</h1>
+  <p class="dek" id="dp-lead">US list prices for ${data.items.length} plans, with the source page and check date for each.</p>
+  <section class="dl-card" aria-label="Download">
+   <p class="dl-name">prices.csv</p>
+   <p class="dl-meta">${data.items.length} rows, ${CSV_COLS.length} columns, UTF-8</p>
+   <ul class="dl-prev">
+   ${previewRows}
+   </ul>
+   <p class="dl-go"><a class="btn dl-btn" href="prices.csv" download>Download prices.csv</a></p>
+  </section>
+  <h2>Columns</h2>
+  <table class="col-table">
+    <tbody>
+${CSV_COLS.map(([n, d]) => `      <tr><th scope="row"><code>${n}</code></th><td>${esc(d)}</td></tr>`).join('\n')}
+    </tbody>
+  </table>
+  <h2>Where the prices come from</h2>
+  <p class="hist-note">Each price was read from the company's own pricing page. We list new US subscriber prices before tax, and leave out intro offers and student prices.</p>
+  <p class="hist-note">A script re-fetches every source page and flags changes. A person then updates the data file. We last checked on ${esc(fmtDate(lastChecked))}.</p>
+  <p class="hist-note">Prices change. Treat each row as true on its check date.</p>
+  <h2>License</h2>
+  <p class="hist-note"><a href="${LICENSE_URL}" rel="license noopener">CC BY 4.0</a>. Please credit Total Monthly Pricing (totalmonthlypricing.com/data/).</p>
+  <p class="hist-note">The same data as JSON is in <a href="prices.json">prices.json</a>. The receipt that uses it is on the <a href="../">home page</a>.</p>
+</main>
+</body>
+</html>`;
+
 rmSync(out, { recursive: true, force: true });
 mkdirSync(join(out, 'fonts'), { recursive: true });
 mkdirSync(join(out, 'data'), { recursive: true });
@@ -311,8 +406,10 @@ for (const f of readdirSync(join(here, 'src/img'))) copyFileSync(join(here, 'src
 copyFileSync(join(here, 'src/img/og.jpg'), join(out, 'og.jpg'));
 for (const f of readdirSync(join(here, 'src/fonts'))) copyFileSync(join(here, 'src/fonts', f), join(out, 'fonts', f));
 copyFileSync(join(here, 'data/prices.json'), join(out, 'data/prices.json'));
+writeFileSync(join(out, 'data/index.html'), dataHTML);
+writeFileSync(join(out, 'data/prices.csv'), csvText);
 writeFileSync(join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}sitemap.xml\n`);
-writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${SITE}</loc></url><url><loc>${PH}</loc></url></urlset>\n`);
+writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[SITE, PH, ...(DATA_INDEXED ? [DATA] : [])].map((u) => `<url><loc>${u}</loc></url>`).join('')}</urlset>\n`);
 writeFileSync(join(out, 'CNAME'), 'totalmonthlypricing.com\n');
 writeFileSync(join(out, '.nojekyll'), '');
 console.log(`built ${out}: ${data.items.length} prices, ${groups.length} groups, as of ${asOf}`);

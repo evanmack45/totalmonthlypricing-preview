@@ -219,3 +219,19 @@ td:nth-child(5) { white-space: nowrap; }
   .hist-table th[scope="row"] { font-size: 18px; padding-bottom: 6px; }
   .hist-table td::before { content: attr(data-label) ": "; font-weight: 700; font-size: 13px; }
 }
+
+/* /data/ page (Gizmo 11/26): the download card is the hero */
+.data-page .hist h2 { font-size: 24px; line-height: 1.15; margin: 28px 0 8px; }
+.dl-card { background: var(--paper); color: var(--thermal); font-family: var(--mono); border-radius: 8px; padding: 22px 18px 20px; margin: 8px 0 8px; max-width: 520px; }
+.dl-name { margin: 0; font-size: 28px; line-height: 1.1; color: #b2300b; }
+.dl-meta { margin: 6px 0 14px; font-size: 15px; color: var(--thermal2); }
+.dl-prev { list-style: none; margin: 0; padding: 0; font-size: 15px; }
+.dl-prev li { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px dashed var(--thermal2); }
+.dl-prev li span:last-child { white-space: nowrap; }
+.dl-go { margin: 14px 0 0; }
+.dl-card .btn.dl-btn { display: block; text-align: center; background: var(--ink); color: var(--paper); box-shadow: none; font-family: var(--sans); padding: 16px 18px; }
+.col-table { width: 100%; min-width: 0; max-width: 70ch; background: var(--paper); color: var(--thermal); font-size: 15px; border-collapse: collapse; }
+.col-table th, .col-table td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+.col-table th { font-weight: 400; width: 12em; }
+.col-table code { font-family: var(--mono); font-size: 14px; overflow-wrap: anywhere; }
+@media (max-width: 520px) { .col-table th { width: 8.5em; padding-right: 6px; } }
