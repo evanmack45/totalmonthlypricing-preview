@@ -144,8 +144,14 @@ ${ldTag}
  </div>
  <div class="printer">${receiptHTML}
   <div class="r-actions">
-   <button type="button" id="save">Save receipt image</button>
-   <button type="button" id="share">Copy link</button>
+   <button type="button" id="sharebtn" class="share-main" aria-expanded="false" aria-controls="share-panel">Share receipt</button>
+   <p id="share-note" class="share-note" hidden>Tick a subscription to share your receipt.</p>
+   <div id="share-panel" class="share-panel" role="group" aria-label="Share your receipt" hidden>
+    <a id="x-post" class="btn" href="https://x.com/intent/post" target="_blank" rel="noopener noreferrer">Post to X</a>
+    <button type="button" id="save">Download image</button>
+    <button type="button" id="share">Copy link</button>
+    <p class="share-tip">Instagram: download the image, then add it to a story or post.</p>
+   </div>
    <span id="share-msg" role="status"></span>
   </div>
  </div>

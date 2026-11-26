@@ -103,7 +103,7 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
     $('#r-years').textContent = END - age;
     $('#peek-month').textContent = a ? `${usd(m)} a month + ${usd(a)} a year` : `${usd(m)} a month`;
     $('#peek-life').textContent = lifeTxt;
-    $('#save').textContent = sel.size ? `Save your ${lifeTxt} receipt` : 'Save receipt image';
+    afterRender();
     if (freshId) showTotals();
     if (freshId && !reduced) { const g = $('.r-due-amt'); g.classList.remove('bump'); void g.offsetWidth; g.classList.add('bump'); }
   };
@@ -198,14 +198,84 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
   const publicFooter = (hash) => publicLink(hash).replace(/^https?:\/\//, '');
 
   // ---------- share ----------
+  // One Share button. On a phone it opens the system share sheet with the receipt PNG, the link and a line of text.
+  // Everywhere else it opens a small panel: Post to X, Download image, Copy link. All client-side, nothing is sent
+  // until the person taps a target. The X link is a plain link to x.com; no X script is loaded.
   const msg = $('#share-msg');
   const say = (s) => { msg.textContent = s; clearTimeout(say.t); say.t = setTimeout(() => (msg.textContent = ''), 4000); };
-  $('#share').addEventListener('click', async () => {
+  const shareBtn = $('#sharebtn'), panel = $('#share-panel'), xLink = $('#x-post'), copyBtn = $('#share'), saveBtn = $('#save');
+  const SHARE_REF = '?ref=share';
+  const shareUrl = () => `${publicPage()}${SHARE_REF}`;
+  const shareText = () => {
+    const { m, y, a, life } = sums();
+    const cost = m ? `${usd(m)} a month${a ? ` plus ${usd(a)} a year` : ''}` : `${usd(y)} a year`;
+    return `My subscriptions cost ${cost}. That is ${usd(life)} by age ${END}. What does yours add up to?`;
+  };
+  const syncShare = () => {
+    const any = sel.size > 0;
+    shareBtn.disabled = !any;
+    $('#share-note').hidden = any;
+    if (!any) setPanel(false);
+    xLink.href = `https://x.com/intent/post?text=${encodeURIComponent(shareText())}&url=${encodeURIComponent(shareUrl())}`;
+  };
+  const setPanel = (open) => { panel.hidden = !open; shareBtn.setAttribute('aria-expanded', String(open)); };
+
+  // The PNG is drawn ahead of the tap. Phones only let navigator.share run right after a tap, and drawing the card
+  // first can use up that window. So after the first touch or key press we keep one finished file for the current picks.
+  let shareFile = null, shareKey = '', armed = false;
+  const buildShare = async () => {
+    const key = toHash();
+    const cv = await drawReceipt();
+    const blob = await new Promise((r) => cv.toBlob(r, 'image/png'));
+    if (!blob) throw new Error('image not made');
+    const file = new File([blob], `receipt-to-age-${END}.png`, { type: 'image/png' });
+    if (key === toHash()) { shareFile = file; shareKey = key; }
+    return file;
+  };
+  const freshFile = () => (shareFile && shareKey === toHash() ? shareFile : null);
+  const prep = () => { clearTimeout(prep.t); if (armed && sel.size) prep.t = setTimeout(() => buildShare().catch(() => {}), 400); };
+  const arm = () => { if (!armed) { armed = true; prep(); } };
+  for (const ev of ['pointerdown', 'keydown', 'touchstart']) addEventListener(ev, arm, { once: true, passive: true });
+  // render() runs before this block is set up, so the first paint calls syncShare() from start-up below.
+  const afterRender = () => { syncShare(); prep(); };
+
+  shareBtn.addEventListener('click', async () => {
+    if (!sel.size) return;
+    history.replaceState(null, '', toHash());
+    if (matchMedia('(pointer: coarse)').matches && typeof navigator.share === 'function') {
+      try {
+        const file = freshFile() || await buildShare();
+        const base = { url: shareUrl(), text: shareText() };
+        if (navigator.canShare?.({ files: [file] })) await navigator.share({ files: [file], ...base });
+        else await navigator.share(base);
+        return;
+      } catch (e) {
+        if (e && e.name === 'AbortError') return; // the person closed the sheet
+        // any other error: show the panel so they still have a way to share
+      }
+    }
+    setPanel(panel.hidden);
+  });
+  saveBtn.addEventListener('click', async () => {
+    let file;
+    try { file = freshFile() || await buildShare(); } catch { say('Could not make the image. Try again.'); return; }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(file); a.download = file.name;
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    say('Image saved. Add it to your Instagram story or post.');
+  });
+  copyBtn.addEventListener('click', async () => {
     history.replaceState(null, '', toHash());
     const url = publicLink(toHash());
-    try { await navigator.clipboard.writeText(url); say('Link copied. It holds your picks, nothing else.'); }
-    catch { say('Copy this link: ' + url); }
+    try {
+      await navigator.clipboard.writeText(url);
+      copyBtn.textContent = 'Copied'; copyBtn.dataset.state = 'copied';
+      clearTimeout(copyBtn.t); copyBtn.t = setTimeout(() => { copyBtn.textContent = 'Copy link'; delete copyBtn.dataset.state; }, 2500);
+      say('Link copied. It holds your picks, nothing else.');
+    } catch { say('Copy this link: ' + url); }
   });
+  xLink.addEventListener('click', () => { history.replaceState(null, '', toHash()); });
 
   // Share image: a 4:5 card, 1080x1350. Hero number, the 5 costliest lines that fit, "+N more" with its
   // monthly sum, totals, and the canonical URL. Every shown line keeps its source host; the footer points at
@@ -345,20 +415,6 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
     cv.dataset.moreMonth = moreM; cv.dataset.moreYear = moreA;
     return cv;
   };
-  $('#save').addEventListener('click', async () => {
-    const cv = await drawReceipt();
-    const blob = await new Promise((r) => cv.toBlob(r, 'image/png'));
-    const file = new File([blob], `receipt-to-age-${END}.png`, { type: 'image/png' });
-    if (matchMedia('(pointer: coarse)').matches && navigator.canShare?.({ files: [file] })) {
-      try { await navigator.share({ files: [file] }); return; } catch { /* fall through to download */ }
-    }
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = file.name;
-    document.body.append(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-    say('Receipt image saved.');
-  });
-
   window.__receipt = drawReceipt;
 
   // ---------- phone peek bar ----------
