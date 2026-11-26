@@ -45,8 +45,10 @@ h1 { font-weight: 700; font-stretch: 75%; font-size: clamp(38px, 10vw, 92px); li
   -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 9px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 14px 9px repeat-x;
           mask: linear-gradient(#000 0 0) top / 100% calc(100% - 9px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 14px 9px repeat-x;
 }
-.js .receipt { animation: print 1.4s steps(28, end) both; }
-@keyframes print { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+/* The receipt is already in the HTML (example basket). Do not clip it on
+   first paint: clip-path: inset(0 0 100% 0) with fill-mode `both` hid the
+   paper but kept its height, so the first screen was a black printer slot
+   over a large orange gap. New lines still use the .ln.new feed animation. */
 .r-stain {
   position: absolute; left: -86px; bottom: -100px; width: 220px; height: 220px;
   pointer-events: none; z-index: 0; opacity: 0.4; user-select: none;
@@ -74,6 +76,7 @@ a { color: inherit; }
 .ln.new { animation: feed .45s steps(6, end) both; }
 @keyframes feed { from { clip-path: inset(0 0 100% 0); background: #f3eddc; } to { clip-path: inset(0); background: transparent; } }
 .r-empty { padding: 14px 0; text-align: center; }
+.r-example { margin: 8px 0 0; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--thermal2); }
 .r-tot { margin: 0; padding: 10px 0; border-top: 2px dashed var(--thermal2); border-bottom: 2px dashed var(--thermal2); }
 .r-tot div { display: flex; justify-content: space-between; gap: 12px; }
 .r-tot dd { margin: 0; }

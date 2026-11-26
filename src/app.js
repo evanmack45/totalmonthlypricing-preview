@@ -89,6 +89,8 @@ ${it.then ? `<div class="ln-then">In ${it.then.year}: <a href="${it.then.url}" r
     for (const id of sel.keys()) frag.append(lineEl(id, id === freshId));
     lines.replaceChildren(frag);
     $('#r-empty').hidden = sel.size > 0;
+    const isExample = age === 30 && data.example.length === sel.size && data.example.every((id) => sel.has(id) && sel.get(id) == null);
+    const ex = $('#r-example'); if (ex) ex.hidden = !isExample;
     const { m, y, a, life } = sums();
     const lifeTxt = usd(life);
     $('#t-month').textContent = usd(m);

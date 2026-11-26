@@ -84,6 +84,7 @@ const receiptHTML = `
   <p>Receipt for one life</p>
   <p>Prices as of <span id="r-asof">${asOf}</span></p>
   <p class="r-age">Age <span id="r-age">${AGE}</span> to ${END} (<span id="r-years">${END - AGE}</span> years)</p>
+  <p class="r-example" id="r-example">Example basket. Tick what you pay for.</p>
  </header>
  <div class="r-due">
   <p class="r-due-k">To age ${END}</p>
