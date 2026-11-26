@@ -193,12 +193,12 @@ td:nth-child(5) { white-space: nowrap; }
 }
 
 
-/* Streaming price history page (Compass SEO, 11/25) */
-.hist { max-width: 960px; margin: 0 auto; padding: 12px 20px 48px; }
-.hist h1 { max-width: 18ch; font-size: clamp(36px, 7vw, 64px); }
-.hist .dek { margin: 0 0 14px; font-size: 19px; max-width: 40em; }
-.hist-asof, .hist-note { max-width: 46em; font-size: 15px; color: var(--ink); }
-.hist-wrap { overflow-x: auto; margin: 18px -4px; }
+/* Streaming price history page (Compass SEO, 11/25; Shears cut 11/26) */
+.hist { max-width: 960px; margin: 0 auto; padding: 8px 20px 48px; }
+.hist h1 { max-width: 16ch; font-size: clamp(36px, 7vw, 64px); margin: 0 0 8px; }
+.hist .dek { margin: 0 0 12px; font-size: 19px; max-width: 70ch; }
+.hist-asof, .hist-note { max-width: 70ch; font-size: 15px; color: var(--ink); }
+.hist-wrap { overflow-x: auto; margin: 8px -4px 24px; }
 .hist-table { width: 100%; min-width: 0; border-collapse: collapse; background: var(--paper); color: var(--thermal); font-size: 15px; }
 .hist-table th, .hist-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .hist-table thead th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -209,7 +209,7 @@ td:nth-child(5) { white-space: nowrap; }
   .hist-wrap { overflow: visible; margin: 18px 0; }
   .hist-table thead { display: none; }
   .hist-table, .hist-table tbody, .hist-table tr, .hist-table th, .hist-table td { display: block; width: auto; min-width: 0; max-width: 100%; }
-  .hist-table tr { background: var(--paper); margin: 0 0 12px; padding: 10px 14px; border-radius: 8px; }
+  .hist-table tr { background: var(--paper); margin: 0 0 14px; padding: 16px 16px 18px; border-radius: 8px; }
   .hist-table th, .hist-table td { border: 0; padding: 3px 0; }
   .hist-table th[scope="row"] { font-size: 18px; padding-bottom: 6px; }
   .hist-table td::before { content: attr(data-label) ": "; font-weight: 700; font-size: 13px; }

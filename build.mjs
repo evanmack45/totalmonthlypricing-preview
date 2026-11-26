@@ -202,7 +202,7 @@ for (const it of hist) {
   const t = it.then;
   if (!(t && t.year && t.price > 0 && t.per && t.url && t.what)) throw new Error(`${it.id}: incomplete then`);
 }
-const phAnswer = 'Eight plans in this list have a sourced launch price. Most cost more today than at launch. Apple TV+ went from $4.99 a month in 2019 to $14.99. Spotify Premium went from $9.99 in 2011 to $12.99. Xbox Game Pass Essential is still $9.99, the same as the one plan at launch in 2017. Every figure links its source.';
+const phAnswer = 'Launch prices next to today\'s list prices. Every figure in the table links its source.';
 if (phAnswer.trim().split(/\s+/).length > 60) throw new Error('history answer over 60 words');
 const usdThen = (it) => usd(it.then.price) + perLabel(it.then.per);
 const usdNow = (it) => usd(it.price) + perLabel(it.per);
@@ -213,17 +213,27 @@ const need = {
 };
 for (const [id, n] of Object.entries(need)) {
   const it = hist.find((x) => x.id === id);
-  if (!it || it.then.price !== n.then || it.price !== n.now || it.then.year !== n.year) throw new Error(`history answer does not match prices.json for ${id}`);
+  if (!it || it.then.price !== n.then || it.price !== n.now || it.then.year !== n.year) throw new Error(`history table data does not match expected sourced figures for ${id}`);
 }
+const aboutOf = (it) => ({
+  'disney-ads': 'The Walt Disney Company, Sep 23, 2026.',
+  'disney-premium': 'The Walt Disney Company, Sep 23, 2026.',
+  'apple-tv': 'Apple Newsroom, 2019.',
+  'spotify': 'Launch press release, Billboard.',
+  'apple-music': 'Apple Newsroom, 2015.',
+  'yt-premium': 'YouTube Official Blog, 2018.',
+  'gamepass-ess': 'Launch price of Xbox Game Pass (one plan), Xbox Wire',
+  'prime-year': 'Amazon press release, 2005.',
+}[it.id] || (it.then.what + (it.note ? (it.then.what.endsWith('.') ? ' ' : '. ') + it.note : '')));
 const phRows = hist.map((it) => `<tr>
   <th scope="row">${esc(it.service)}</th>
   <td data-label="Today's plan">${esc(it.plan)}</td>
   <td class="num" data-label="Today"><a href="${esc(it.source)}" rel="noopener">${usdNow(it)}</a></td>
   <td data-label="Launch year">${it.then.year}</td>
   <td class="num" data-label="Launch price"><a href="${esc(it.then.url)}" rel="noopener">${usdThen(it)}</a></td>
-  <td data-label="About the launch figure">${esc(it.then.what)}${it.note ? ` ${esc(it.note)}` : ''}</td>
+  <td data-label="About the launch figure">${esc(aboutOf(it))}</td>
 </tr>`).join('\n');
-const PH_LD = { '@context': 'https://schema.org', '@type': 'WebPage', name: 'How much have streaming service prices gone up since launch?', url: PH, description: phAnswer, isPartOf: { '@type': 'WebSite', name: 'Total Monthly Pricing', url: SITE } };
+const PH_LD = { '@context': 'https://schema.org', '@type': 'WebPage', name: 'How much have streaming prices risen?', url: PH, description: phAnswer, isPartOf: { '@type': 'WebSite', name: 'Total Monthly Pricing', url: SITE } };
 const phHTML = `<!doctype html>
 <html lang="en">
 <head>
@@ -231,9 +241,9 @@ const phHTML = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="canonical" href="${PH}">
 <meta property="og:url" content="${PH}">
-<title>How much have streaming prices gone up since launch? | Total Monthly Pricing</title>
+<title>How much have streaming prices risen? | Total Monthly Pricing</title>
 <meta name="description" content="Launch prices and today's list prices for the plans in this list that have a sourced launch figure. Every number links its source.">
-<meta property="og:title" content="How much have streaming prices gone up since launch?">
+<meta property="og:title" content="How much have streaming prices risen?">
 <meta property="og:description" content="Sourced launch prices next to today's list prices. Every figure links its source.">
 <meta property="og:image" content="${SITE}og.jpg">
 <meta property="og:image:width" content="1200">
@@ -248,22 +258,23 @@ const phHTML = `<!doctype html>
 <body class="hist-page">
 <header class="bar"><a class="mark" href="../">Total Monthly Pricing</a><nav aria-label="Page"><a href="../">Back to the receipt</a></nav></header>
 <main class="hist">
-  <h1>How much have streaming prices gone up since launch?</h1>
+  <h1>How much have streaming prices risen?</h1>
   <p class="dek" id="ph-answer">${phAnswer}</p>
-  <p class="hist-asof">Today's prices were checked ${esc(asOf)}, for new US subscribers, before tax. Intro offers and student prices are left out. A launch figure is shown only when this list has a sourced one. Some launches were a single plan, so that figure is not a like-for-like match with every plan sold today.</p>
   <div class="hist-wrap">
   <table class="hist-table">
     <thead>
-      <tr><th>Service</th><th>Today's plan</th><th>Today</th><th>Launch year</th><th>Launch price</th><th>About the launch figure</th></tr>
+      <tr><th>Service</th><th>Today's plan</th><th>Today</th><th>Launch year</th><th>Launch price</th><th>Source</th></tr>
     </thead>
     <tbody>
 ${phRows}
     </tbody>
   </table>
   </div>
-  <p class="hist-note">Disney+ launched as one plan. The $6.99 figure is that launch price, not a 2019 ads or Premium tier. Xbox Game Pass also launched as one plan; Essential is the same dollar amount today. The full current list, with a source on every row, is on the <a href="../#prices">home page</a>.</p>
+  <p class="hist-asof">Today's prices were checked ${esc(asOf)}, for new US subscribers, before tax. Intro offers and student prices are left out.</p>
+  <p class="hist-asof">A launch figure is shown only when this list has a sourced one. Some launches were one plan, so that figure is not a like-for-like match with every plan sold today.</p>
+  <p class="hist-note">Disney+ launched as one plan. The <a href="${esc(hist.find((i) => i.id === 'disney-ads').then.url)}" rel="noopener">$6.99</a> figure is that launch price, not a 2019 ads or Premium tier.</p>
+  <p class="hist-note">Xbox Game Pass also launched as one plan. Essential is the same dollar amount today. The full current list, with a source on every row, is on the <a href="../#prices">home page</a>.</p>
 </main>
-<footer class="foot"><p>Your picks stay on this page unless you share them.</p></footer>
 </body>
 </html>`;
 
