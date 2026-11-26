@@ -215,24 +215,45 @@ for (const [id, n] of Object.entries(need)) {
   const it = hist.find((x) => x.id === id);
   if (!it || it.then.price !== n.then || it.price !== n.now || it.then.year !== n.year) throw new Error(`history table data does not match expected sourced figures for ${id}`);
 }
-const aboutOf = (it) => ({
-  'disney-ads': 'The Walt Disney Company, Sep 23, 2026.',
-  'disney-premium': 'The Walt Disney Company, Sep 23, 2026.',
-  'apple-tv': 'Apple Newsroom, 2019.',
-  'spotify': 'Launch press release, Billboard.',
-  'apple-music': 'Apple Newsroom, 2015.',
-  'yt-premium': 'YouTube Official Blog, 2018.',
-  'gamepass-ess': 'Launch price of Xbox Game Pass (one plan), Xbox Wire',
-  'prime-year': 'Amazon press release, 2005.',
-}[it.id] || (it.then.what + (it.note ? (it.then.what.endsWith('.') ? ' ' : '. ') + it.note : '')));
-const phRows = hist.map((it) => `<tr>
+// Launch-source publication dates, fetched 2026-11-26 (America/Chicago) from each then.url.
+// Never guessed: each date is datePublished / a visible dateline on the cited page.
+// disney:     2019-11-12  JSON-LD datePublished 2019-11-12T14:00:02+00:00; visible "November 12, 2019"; title "Disney+ Launches Today".
+// apple-tv:   2019-09-10  JSON-LD datePublished 2019-09-10Z; visible "PRESS RELEASE September 10, 2019".
+// spotify:    2011-07-14  JSON-LD / article:published_time 2011-07-14T10:05:00Z (Billboard reprint).
+// apple-music:2015-06-08  JSON-LD datePublished 2015-06-08Z.
+// yt-premium: 2018-05-17  JSON-LD datePublished 2018-05-17T04:18:00+00:00.
+// gamepass:   2017-02-28  JSON-LD / article:published_time 2017-02-28T14:00:24+00:00.
+// prime:      2005-02-02  JSON-LD / article:published_time 2005-02-02T21:04:00Z.
+// Disney+ today's "as of Sep 23, 2026" is from help.disneyplus.com ("prices are for new subscriptions as of September 23, 2026"), not the 2019 announcement. The Nov 25, 2026 line under the table is our recheck date.
+const launchSourceOf = {
+  'disney-ads': 'Walt Disney Company, Nov 12, 2019.',
+  'disney-premium': 'Walt Disney Company, Nov 12, 2019.',
+  'apple-tv': 'Apple Newsroom, Sep 10, 2019.',
+  'spotify': 'Billboard, Jul 14, 2011.',
+  'apple-music': 'Apple Newsroom, Jun 8, 2015.',
+  'yt-premium': 'YouTube Blog, May 17, 2018.',
+  'gamepass-ess': 'Xbox Wire, Feb 28, 2017.',
+  'prime-year': 'Amazon, Feb 2, 2005.',
+};
+const todayAsOf = {
+  'disney-ads': 'Sep 23, 2026',
+  'disney-premium': 'Sep 23, 2026',
+};
+const phRows = hist.map((it) => {
+  const asOfToday = todayAsOf[it.id];
+  const todayCell = asOfToday
+    ? `<a href="${esc(it.source)}" rel="noopener">${usdNow(it)}</a> <span class="price-asof">${esc(asOfToday)}</span>`
+    : `<a href="${esc(it.source)}" rel="noopener">${usdNow(it)}</a>`;
+  const launchSrc = launchSourceOf[it.id] || it.then.what;
+  return `<tr>
   <th scope="row">${esc(it.service)}</th>
   <td data-label="Today's plan">${esc(it.plan)}</td>
-  <td class="num" data-label="Today"><a href="${esc(it.source)}" rel="noopener">${usdNow(it)}</a></td>
+  <td class="num" data-label="Today's price">${todayCell}</td>
   <td data-label="Launch year">${it.then.year}</td>
   <td class="num" data-label="Launch price"><a href="${esc(it.then.url)}" rel="noopener">${usdThen(it)}</a></td>
-  <td data-label="About the launch figure">${esc(aboutOf(it))}</td>
-</tr>`).join('\n');
+  <td data-label="Source">${esc(launchSrc)}</td>
+</tr>`;
+}).join('\n');
 const PH_LD = { '@context': 'https://schema.org', '@type': 'WebPage', name: 'How much have streaming prices risen?', url: PH, description: phAnswer, isPartOf: { '@type': 'WebSite', name: 'Total Monthly Pricing', url: SITE } };
 const phHTML = `<!doctype html>
 <html lang="en">
@@ -263,7 +284,7 @@ const phHTML = `<!doctype html>
   <div class="hist-wrap">
   <table class="hist-table">
     <thead>
-      <tr><th>Service</th><th>Today's plan</th><th>Today</th><th>Launch year</th><th>Launch price</th><th>Source</th></tr>
+      <tr><th>Service</th><th>Plan</th><th>Today</th><th>Year</th><th>Launch</th><th>Source</th></tr>
     </thead>
     <tbody>
 ${phRows}

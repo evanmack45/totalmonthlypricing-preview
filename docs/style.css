@@ -203,6 +203,11 @@ td:nth-child(5) { white-space: nowrap; }
 .hist-table th, .hist-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .hist-table thead th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
 .hist-table .num { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+.hist-table .price-asof { display: block; font-weight: 400; font-variant-numeric: normal; white-space: nowrap; font-size: 13px; color: var(--ink); margin-top: 2px; }
+@media (min-width: 721px) {
+  .hist-table .price-asof { display: inline; margin: 0 0 0 0.35em; }
+  .hist-wrap { margin-bottom: 40px; }
+}
 .hist-table a { font-weight: 700; }
 .hist a { display: inline-block; padding: 6px 0; }
 @media (max-width: 720px) {
