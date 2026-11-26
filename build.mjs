@@ -132,7 +132,7 @@ ${ldTag}
 <script>document.documentElement.className='js'</script>
 </head>
 <body>
-<header class="bar"><a class="mark" href="./">Total Monthly Pricing</a><nav aria-label="Page"><a href="#prices">Prices and sources</a> <a href="streaming-price-history/">Since launch</a></nav></header>
+<header class="bar"><a class="mark" href="./">Total Monthly Pricing</a><nav aria-label="Page"><a href="#prices">Prices and sources</a> <a class="nav-launch" href="streaming-price-history/">Since launch</a></nav></header>
 <div class="mast">
  <img class="mast-art" src="img/hero.webp" srcset="img/hero-800.webp 800w, img/hero.webp 1280w, img/hero-1920.webp 1920w" sizes="100vw" width="1280" height="714" alt="A long pale-pink receipt paper roll unwinding along a diner counter toward a checkerboard floor, warm wood and stools behind." fetchpriority="high" decoding="async">
 </div>
@@ -189,7 +189,7 @@ ${ldTag}
 </section>
 </main>
 <a class="peek" id="peek" href="#receipt" hidden><span><b id="peek-month"></b></span><span><b id="peek-life"></b> to age ${END}</span><span class="peek-go">See receipt</span></a>
-<footer class="foot"><p>Your picks stay on this page unless you share them.</p></footer>
+<footer class="foot"><p>Your picks stay on this page unless you share them.</p><p class="foot-launch"><a href="streaming-price-history/">Since launch</a></p></footer>
 <script type="application/json" id="data">${JSON.stringify({ asOf, end: END, example: EXAMPLE, items: data.items.map(({ id, service, plan, price, per, source, checked, then }) => ({ id, service, plan, price, per, source, checked, then })) }).replace(/</g, '\\u003c')}</script>
 <script src="app.js" defer></script>
 </body>
@@ -243,6 +243,7 @@ const phHTML = `<!doctype html>
 <link rel="preload" href="../fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='3' y='1' width='10' height='14' fill='%23fffdf6'/%3E%3Cpath d='M5 5h6M5 8h6M5 11h4' stroke='%23222' /%3E%3C/svg%3E">
 </head>
 <body class="hist-page">
 <header class="bar"><a class="mark" href="../">Total Monthly Pricing</a><nav aria-label="Page"><a href="../">Back to the receipt</a></nav></header>
