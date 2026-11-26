@@ -35,9 +35,8 @@ h1 { font-weight: 700; font-stretch: 75%; font-size: clamp(38px, 10vw, 92px); li
 
 /* ---------- printer + receipt ---------- */
 .printer { grid-area: printer; display: flex; flex-direction: column; align-items: center; min-width: 0; }
-.slot { flex: none; width: min(100%, 420px); height: 22px; border-radius: 11px; background: var(--ink); box-shadow: inset 0 -6px 0 #000; position: relative; z-index: 2; }
 .receipt {
-  flex: none; width: min(calc(100% - 22px), 380px); margin-top: -11px; position: relative; z-index: 1;
+  flex: none; width: min(calc(100% - 22px), 380px); margin-top: 0; position: relative; z-index: 1;
   background: var(--paper); color: var(--thermal);
   font: 400 15px/1.45 var(--mono); letter-spacing: 0.01em;
   padding: 28px 20px 34px;
@@ -48,7 +47,8 @@ h1 { font-weight: 700; font-stretch: 75%; font-size: clamp(38px, 10vw, 92px); li
 /* The receipt is already in the HTML (example basket). Do not clip it on
    first paint: clip-path: inset(0 0 100% 0) with fill-mode `both` hid the
    paper but kept its height, so the first screen was a black printer slot
-   over a large orange gap. New lines still use the .ln.new feed animation. */
+   over a large orange gap. The slot bar itself is gone too (bar v1.1: no empty
+   placeholder blocks). New lines still use the .ln.new feed animation. */
 .r-stain {
   position: absolute; left: -86px; bottom: -100px; width: 220px; height: 220px;
   pointer-events: none; z-index: 0; opacity: 0.4; user-select: none;

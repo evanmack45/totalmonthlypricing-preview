@@ -76,7 +76,6 @@ const barcode = () => {
   return `<svg class="barcode" viewBox="0 0 ${x} 52" preserveAspectRatio="none" aria-hidden="true" focusable="false">${rects}</svg>`;
 };
 const receiptHTML = `
-<div class="slot" aria-hidden="true"></div>
 <article class="receipt" id="receipt" aria-labelledby="r-title">
  <img class="r-stain" src="img/coffee-ring-400.webp" width="400" height="400" alt="" decoding="async" aria-hidden="true">
  <header class="r-head">
