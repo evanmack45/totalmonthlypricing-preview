@@ -83,7 +83,7 @@ ${data.items.map(tile).join('\n')}
 </section>
 </main>
 <div class="total" id="total" role="region" aria-label="Your total">
- <div class="tot-life"><span class="tot-k">To age <span id="t-end">${END}</span> <span id="t-example" class="tag">Example</span></span><b id="t-life">${usdC(exLife)}</b></div>
+ <div class="tot-life"><span class="tot-k">To age <span id="t-end">${END}</span> <span id="t-example" class="tag">Example</span><span id="t-count" class="tag tag-n" hidden></span></span><b id="t-life">${usdC(exLife)}</b></div>
  <div class="tot-month"><b id="t-month">${usdC(exMonth)}</b> a month<span id="t-annual" class="tot-sub" hidden></span><span class="tot-sub tot-day"><span id="t-day">${usdC(Math.round(exYear / 365.25))}</span> a day</span></div>
  <button type="button" id="sharebtn" class="share" aria-haspopup="dialog">Share</button>
 </div>

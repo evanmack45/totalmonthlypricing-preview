@@ -72,6 +72,7 @@
   const $$ = (s) => [...document.querySelectorAll(s)];
   const tiles = $$('.tile'), wraps = $$('.tw'), chips = $$('.chip');
   const catOf = new Map(wraps.map((w) => [w.dataset.id, w.dataset.cat]));
+  let touched = false;
   const isExample = () => age === 30 && data.example.length === sel.size && data.example.every((id) => sel.has(id) && sel.get(id) == null);
 
   // ---------- totals ----------
@@ -81,7 +82,10 @@
     const ann = $('#t-annual'); ann.hidden = !a; ann.textContent = a ? `+ ${usd(a)} a year` : '';
     $('#t-life').textContent = usd(life);
     $('#t-day').textContent = usd(Math.round(y / 365.25));
-    $('#t-example').hidden = !isExample();
+    // "Example" only until the first tap; after that the bar says how many are theirs.
+    const ex = !touched && isExample();
+    $('#t-example').hidden = !ex;
+    const cnt = $('#t-count'); cnt.hidden = ex || !sel.size; cnt.textContent = `${sel.size} picked`;
     for (const t of tiles) {
       const id = t.dataset.id, it = byId.get(id);
       t.setAttribute('aria-pressed', String(sel.has(id)));
@@ -107,11 +111,23 @@
     $('#none-picked').hidden = !(c === 'picked' && !sel.size);
   };
   $('#chips').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (b) show(b.dataset.cat); });
+  // Edge fades on the chip row show there is more to scroll; each fade goes away at its end.
+  const chipRow = $('#chips');
+  const fade = () => {
+    const more = chipRow.scrollWidth - chipRow.clientWidth - chipRow.scrollLeft;
+    chipRow.style.setProperty('--fl', chipRow.scrollLeft > 4 ? '40px' : '0px');
+    chipRow.style.setProperty('--fr', more > 4 ? '56px' : '0px');
+    chipRow.dataset.more = more > 4 ? 'right' : '';
+  };
+  chipRow.addEventListener('scroll', fade, { passive: true });
+  addEventListener('resize', fade, { passive: true });
+  fade(); document.fonts.ready.then(fade);
 
   // ---------- tiles ----------
   const swapNote = $('#swap-note');
   $('#tiles').addEventListener('click', (e) => {
     const t = e.target.closest('.tile'); if (!t) return;
+    touched = true;
     const id = t.dataset.id; let swapped = null;
     if (sel.has(id)) sel.delete(id);
     else { for (const s of sibsOf(id)) if (sel.has(s)) { swapped = s; sel.delete(s); } sel.set(id, null); }
@@ -119,7 +135,7 @@
     swapNote.textContent = swapped ? `${it.service}: switched from ${byId.get(swapped).plan} to ${it.plan}. One plan per service.` : '';
     render(); writeHash(); bump();
   });
-  $('#clear').addEventListener('click', () => { sel.clear(); render(); writeHash(); if (cur === 'picked') show('picked'); $('#tiles .tile')?.focus(); });
+  $('#clear').addEventListener('click', () => { touched = true; sel.clear(); render(); writeHash(); if (cur === 'picked') show('picked'); $('#tiles .tile')?.focus(); });
   const ageIn = $('#age');
   ageIn.addEventListener('input', () => { const a = Number(ageIn.value); if (!ageIn.value || !Number.isFinite(a)) return; age = clampAge(a); render(); writeHash(); });
   ageIn.addEventListener('blur', () => { ageIn.value = age; });
@@ -344,8 +360,8 @@
   window.__receipt = drawReceipt;
 
   // ---------- start ----------
-  if (!readHash()) { sel.clear(); for (const id of data.example) sel.set(id, null); }
+  if (readHash()) touched = true; else { sel.clear(); for (const id of data.example) sel.set(id, null); }
   ageIn.value = age;
   render();
-  addEventListener('hashchange', () => { if (readHash()) { ageIn.value = age; render(); } });
+  addEventListener('hashchange', () => { if (readHash()) { touched = true; ageIn.value = age; render(); } });
 })();
