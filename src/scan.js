@@ -181,7 +181,7 @@
   let shareFile = null, shareKey = '', armed = false;
   const buildShare = async () => {
     const key = toHash();
-    const cv = await drawReceipt();
+    const cv = await drawReceipt({ hideZeroMonthly: true });
     const blob = await new Promise((r) => cv.toBlob(r, 'image/png'));
     if (!blob) throw new Error('image not made');
     const file = new File([blob], `receipt-to-age-${END}.png`, { type: 'image/png' });
@@ -239,8 +239,8 @@
   // "+N more" with its monthly sum, one total, then one footer line: price date and the canonical URL, where all
   // 58 sources are listed.
   const SHARE_W = 540, SHARE_H = 675, SHARE_MAX_LINES = 5;
-  // opts.hideZeroMonthly: drop "$0.00 a month" under the total when nothing monthly is picked (one-off assets only;
-  // the Share card always calls drawReceipt() with no options).
+  // opts.hideZeroMonthly: drop "$0.00 a month" under the total when nothing monthly is picked (yearly-only picks
+  // read "$139.00 a year", not "$0.00 a month + $139.00 a year"). The Share card always sets it.
   const drawReceipt = async (opts = {}) => {
     await Promise.all([document.fonts.load('20px Departure'), document.fonts.load('16px Departure'), document.fonts.load('52px Departure')]);
     const W = SHARE_W, H = SHARE_H, PAD = 36, K = 2;
