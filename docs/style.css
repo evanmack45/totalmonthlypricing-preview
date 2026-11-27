@@ -238,10 +238,11 @@ td:nth-child(5) { white-space: nowrap; }
 @media (max-width: 520px) { .col-table th, .col-table td { display: block; width: auto; } .col-table th { padding: 10px 12px 0; border-bottom: 0; } .col-table td { padding: 2px 12px 10px; } }
 
 /* Phone and tablet (one column): the first checkbox sits right under the headline.
-   The photo is dropped, the picker comes before the receipt, and the peek bar
-   carries the running total until the receipt scrolls into view. */
+   The photo shrinks to a thin strip, the picker comes before the receipt, and the
+   peek bar carries the running total until the receipt scrolls into view. */
 @media (max-width: 899px) {
-  .mast { display: none; }
+  .mast, .mast-art { min-height: 120px; height: 120px; }
+  .mast-art { object-position: 50% 62%; }
   .hero { padding-top: 8px; grid-template-areas: "intro" "picker" "printer"; }
   .intro h1 { margin-bottom: 8px; }
 }

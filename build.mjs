@@ -141,7 +141,7 @@ const html = `<!doctype html>
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="${SITE}${OG_HOME}">
 <meta name="twitter:image:alt" content="${esc(OG_ALT)}">
-<link rel="preload" as="image" media="(min-width: 900px)" href="img/hero.webp" imagesrcset="img/hero-800.webp 800w, img/hero.webp 1280w, img/hero-1920.webp 1920w" imagesizes="100vw">
+<link rel="preload" as="image" href="img/hero.webp" imagesrcset="img/hero-800.webp 800w, img/hero.webp 1280w, img/hero-1920.webp 1920w" imagesizes="100vw">
 ${ldTag}
 <link rel="preload" href="fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
@@ -192,7 +192,7 @@ ${ldTag}
 <section class="about" aria-labelledby="about-h">
  <h2 id="about-h">How the math works</h2>
  <p>Monthly plans count 12 times a year, yearly plans once. The total to age 80 multiplies one year by the years you have left, at today's price.</p>
- <p>This page has no accounts, cookies or ads. Your picks are not sent to us or to anyone else unless you share them. They live in the page, and in the link if you copy it.</p>
+ <p>This page has no accounts, cookies or ads.</p>
 </section>
 </main>
 <a class="peek" id="peek" href="#receipt" hidden><span><b id="peek-month"></b></span><span><b id="peek-life"></b> to age ${END}</span><span class="peek-go">See receipt</span></a>
