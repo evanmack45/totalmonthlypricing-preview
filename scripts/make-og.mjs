@@ -1,5 +1,6 @@
 // Draws the home link-card image (1200x630) from a build of this site.
-// Usage: node scripts/make-og.mjs <base url of docs/, e.g. http://localhost:18743/> [out=src/og-receipt.png]
+// Usage: node scripts/make-og.mjs <base url of docs/, e.g. http://localhost:18743/> [out=src/og-receipt.png] [--ansel]
+// --ansel: Ansel's brand-kit layout (lockup, headline, curling receipt from scripts/og-assets/) with the same real numbers.
 // The receipt is the page's own drawReceipt() for the default (example) basket. The big numbers are
 // read from the page, and checked against data/prices.json here. Nothing is typed in by hand.
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -8,8 +9,10 @@ import { fileURLToPath } from 'node:url';
 import { EXAMPLE_IDS } from './example.mjs';
 const here = dirname(fileURLToPath(import.meta.url));
 const { chromium } = await import(process.env.PW || join(here, '../../qa/node_modules/playwright/index.mjs'));
-const base = process.argv[2] || 'http://localhost:18743/';
-const outPath = process.argv[3] || join(here, '../src/og-receipt.png');
+const argv = process.argv.slice(2).filter((a) => !a.startsWith('--'));
+const ANSEL = process.argv.includes('--ansel');
+const base = argv[0] || 'http://localhost:18743/';
+const outPath = argv[1] || join(here, '../src/og-receipt.png');
 
 const data = JSON.parse(readFileSync(join(here, '../data/prices.json'), 'utf8'));
 const byId = new Map(data.items.map((i) => [i.id, i]));
@@ -36,6 +39,7 @@ if (!got.example) throw new Error('page is not on the example basket');
 const names = ex.map((it) => `${it.service} ${it.plan}`);
 const lifeShort = want.life.replace(/\.00$/, '');
 
+if (ANSEL) { await anselCard(); process.exit(0); }
 const card = await b.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });
 await card.goto(base + 'robots.txt'); // same origin as the fonts, so they load without CORS
 await card.setContent(`<!doctype html><html><head><base href="${base}"><link rel="stylesheet" href="style.css">
@@ -69,3 +73,59 @@ if (over.length) throw new Error('left text runs under the receipt: ' + over.joi
 writeFileSync(outPath, await card.screenshot({ type: 'png' }));
 await b.close();
 console.log(JSON.stringify({ out: outPath, ...want, names, asOf: got.asOf }));
+
+// Ansel's og-card layout. The numbers on the paper and in the headline come from `want` (prices.json), and the
+// rendered text is read back and checked before the PNG is written.
+async function anselCard() {
+  const months = (END - AGE) * 12;
+  const allMonthly = ex.every((it) => it.per === 'month');
+  const rate = allMonthly ? `${want.month}/mo x ${months} mo` : `${usd(year)}/yr x ${END - AGE} yrs`;
+  const lifeBig = want.life.replace(/\.00$/, '');
+  const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  // Ansel's phone hero, with the EXAMPLE text on the flat front swapped for real numbers in the same plane.
+  let hero = readFileSync(join(here, 'og-assets/hero-receipt-780x300.svg'), 'utf8');
+  const g0 = hero.indexOf('<g transform="matrix('); if (g0 < 0 || hero.indexOf('<g transform="matrix(', g0 + 1) > 0) throw new Error('hero: expected one text group');
+  const open = hero.indexOf('>', g0) + 1, close = hero.indexOf('</g>', open);
+  const W = 250, T = (t, y, size, col, cls) => `<text class="${cls}" x="${W / 2}" y="${y}" font-size="${size}" fill="${col}" text-anchor="middle" font-family="Departure, monospace">${esc(t)}</text>`;
+  const front = T(`TO AGE ${END}`, 40, 19, '#1D1A16', 'f-k') + `<path d="M16 56H${W - 16}" stroke="#1D1A16" stroke-width="2" stroke-dasharray="6 5"/>` + T(rate, 86, 18, '#4A4239', 'f-rate') + T(lifeBig, 136, 40, '#B2300B', 'f-life');
+  hero = hero.slice(0, open) + front + hero.slice(close).replace(/<title>[^<]*<\/title>/, '');
+  hero = hero.replace(/^<svg /, '<svg class="hero" ');
+  const names = ex.map((it) => `${it.service} ${it.plan}`).join(' + ');
+  const card = await b.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });
+  await card.goto(base + 'robots.txt');
+  await card.setContent(`<!doctype html><html><head><base href="${base}"><link rel="stylesheet" href="style.css">
+<style>
+html,body{margin:0;width:1200px;height:630px;overflow:hidden;background:#FF6A2B;color:#1D1A16}
+.wrap{position:relative;width:1200px;height:630px}
+.lock{position:absolute;left:60px;top:44px;height:66px;width:auto}
+.names{position:absolute;left:62px;top:136px;margin:0;font:400 22px/1 var(--mono)}
+.h{position:absolute;left:58px;top:166px;margin:0;font:700 84px/.98 var(--sans);font-stretch:75%;letter-spacing:-.025em}
+.u{position:absolute;left:60px;top:562px;margin:0;font:400 24px/1 var(--mono)}
+.asof{position:absolute;left:60px;top:522px;margin:0;font:400 18px/1 var(--mono);color:#4A4239}
+.hero{position:absolute;left:380px;top:318px;width:800px;height:308px}
+</style></head><body><div class="wrap">
+<img class="lock" src="scan-preview/logo.svg" alt="">
+<p class="names">${esc(names)}</p>
+<p class="h"><span class="h-life">${esc(lifeBig)} by age ${END}.</span><br><span class="h-day">${esc(want.day)} a day, every day.</span></p>
+<p class="asof">List prices, ${esc(got.asOf)}</p>
+<p class="u">totalmonthlypricing.com</p>
+${hero}
+</div></body></html>`, { waitUntil: 'networkidle' });
+  await card.evaluate(async () => { await Promise.all(['700 84px Instrument', '22px Departure', '40px Departure'].map((f) => document.fonts.load(f))); await document.fonts.ready; });
+  if (!(await card.evaluate(() => document.fonts.check('700 84px Instrument') && document.fonts.check('40px Departure')))) throw new Error('site fonts did not load');
+  const chk = await card.evaluate(() => {
+    const q = (s) => document.querySelector(s);
+    const lim = (e) => e.getComputedTextLength();
+    const box = (s) => q(s).getBoundingClientRect();
+    return { life: q('.f-life').textContent, rate: q('.f-rate').textContent, hl: q('.h-life').textContent, hd: q('.h-day').textContent,
+      fit: ['.f-k', '.f-rate', '.f-life'].map((s) => lim(q(s))), lock: q('.lock').naturalWidth > 0,
+      clash: box('.h').bottom > box('.hero').top + 40 && box('.h').right > box('.hero').left + 120, names: box('.names').right, asof: box('.asof').right };
+  });
+  if (chk.life !== lifeBig || !chk.hl.startsWith(lifeBig) || chk.hd !== `${want.day} a day, every day.` || chk.rate !== rate) throw new Error('ansel card text mismatch: ' + JSON.stringify(chk));
+  if (chk.fit.some((x) => x > 218)) throw new Error('text runs off the paper: ' + chk.fit.join(','));
+  if (!chk.lock) throw new Error('lockup did not load');
+  if (chk.names > 1140 || chk.asof > 370) throw new Error('text overflow: ' + JSON.stringify(chk));
+  writeFileSync(outPath, await card.screenshot({ type: 'png' }));
+  await b.close();
+  console.log(JSON.stringify({ out: outPath, style: 'ansel', ...want, rate, lifeBig, names, asOf: got.asOf }));
+}

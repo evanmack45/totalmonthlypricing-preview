@@ -229,7 +229,9 @@
   // monthly sum, totals, and the canonical URL. Every shown line keeps its source host; the footer points at
   // the page where all 58 sources are listed.
   const SHARE_W = 540, SHARE_H = 675, SHARE_MAX_LINES = 5;
-  const drawReceipt = async () => {
+  // opts.hideZeroMonthly: drop the "TOTAL MONTHLY $0.00" line when nothing monthly is picked (one-off assets only;
+  // the Share card always calls drawReceipt() with no options, so it matches the home page).
+  const drawReceipt = async (opts = {}) => {
     await Promise.all([document.fonts.load('20px Departure'), document.fonts.load('16px Departure'), document.fonts.load('52px Departure')]);
     const W = SHARE_W, H = SHARE_H, PAD = 36, K = 2;
     const F = '20px Departure, monospace', F2 = '16px Departure, monospace';
@@ -280,7 +282,7 @@
     const foot = publicFooter('').replace(/#$/, '').replace(/\/$/, '');
     const slash = foot.indexOf('/');
     const urlRows = (slash > 0 && slash < cols && foot.length > cols) ? [...C(foot.slice(0, slash + 1)), ...C(foot.slice(slash + 1))] : wrap(foot, cols).map((s) => row('c', { s }));
-    const tailA = [DASH(), row('lr', { l: 'TOTAL MONTHLY', r: usd(m) }), ...(a ? [row('lr', { l: 'YEARLY PLANS', r: usd(a) })] : []), row('lr', { l: 'TOTAL YEARLY', r: usd(y) })];
+    const tailA = [DASH(), ...(opts.hideZeroMonthly && !m ? [] : [row('lr', { l: 'TOTAL MONTHLY', r: usd(m) })]), ...(a ? [row('lr', { l: 'YEARLY PLANS', r: usd(a) })] : []), row('lr', { l: 'TOTAL YEARLY', r: usd(y) })];
     const tailB = [DASH(), ...C('List prices, flat, pre-tax. Sources:')];
     const TOP = 20, BOT = 12;
     const ids = [...sel.keys()].sort((a, b) => yearC(b) - yearC(a) || monthC(b) - monthC(a));
@@ -359,7 +361,7 @@
     const moreM = hidden.reduce((s, id) => s + monthC(id), 0);
     const moreA = hidden.reduce((s, id) => s + yearC(id) - monthC(id) * 12, 0);
     cv.dataset.lines = shown.length; cv.dataset.hidden = hidden.length; cv.dataset.overflow = yy > H - BOT + 1 ? '1' : '';
-    cv.dataset.month = m; cv.dataset.year = y; cv.dataset.life = life; cv.dataset.annual = a;
+    cv.dataset.monthlyLine = opts.hideZeroMonthly && !m ? '' : '1'; cv.dataset.month = m; cv.dataset.year = y; cv.dataset.life = life; cv.dataset.annual = a;
     cv.dataset.moreMonth = moreM; cv.dataset.moreYear = moreA;
     return cv;
   };
