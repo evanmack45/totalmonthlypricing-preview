@@ -26,10 +26,13 @@ export function scanPage({ data, SITE, AGE, END, EXAMPLE, asOf, esc, usd, usdC, 
   const catOf = (it) => { const c = CATS.find(([, , gs]) => gs.includes(it.group)); if (!c) throw new Error(`${it.id}: group ${it.group} has no scan filter`); return c[0]; };
   const logo = (it) => {
     const l = LOGOS[it.service]; if (!l) throw new Error(`${it.service}: no logo entry`);
-    const WIDE = ['hbomax', 'youtubetv', 'appletv', 'philo.svg']; // wordmarks get a wider badge so they stay readable
-    const wide = WIDE.includes(l.slug || l.file) ? ' wide' : '';
-    if (l.kind === 'si') return `<span class="lg${wide}" data-logo="si" aria-hidden="true"><svg viewBox="0 0 24 24" style="color:${l.hex}"><use href="#si-${l.slug}"/></svg></span>`;
-    if (l.kind === 'kit') return `<span class="lg${wide}" data-logo="kit" aria-hidden="true"><img src="logos/${l.file}" width="${l.w}" height="${l.h}" alt="" decoding="async"${catOf(it) === 'tv' ? '' : ' loading="lazy"'}></span>`;
+    const WIDE = ['youtubetv', 'appletv']; // Simple Icons wordmarks get a wider badge so they stay readable
+    if (l.kind === 'si') return `<span class="lg${WIDE.includes(l.slug) ? ' wide' : ''}" data-logo="si" aria-hidden="true"><svg viewBox="0 0 24 24" style="color:${l.hex}"><use href="#si-${l.slug}"/></svg></span>`;
+    if (l.kind === 'kit') {
+      const lazy = catOf(it) === 'tv' ? '' : ' loading="lazy"';
+      const imgs = (l.files || [[l.file, l.w, l.h]]).map(([f, w, h]) => `<img src="logos/${f}" width="${w}" height="${h}" alt="" decoding="async"${lazy}>`).join('');
+      return `<span class="lg${l.wide ? ' wide' : ''}${l.dark ? ' dark' : ''}${l.files ? ' pair' : ''}" data-logo="kit" aria-hidden="true">${imgs}</span>`;
+    }
     return `<span class="lg mono" data-logo="mono" data-l="${esc(l.l)}" style="--bg:${l.bg};--fg:${l.fg}" aria-hidden="true"></span>`;
   };
   const sprite = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>${[...new Map(Object.values(LOGOS).filter((l) => l.kind === 'si').map((l) => [l.slug, l])).values()].map((l) => `<symbol id="si-${l.slug}" viewBox="0 0 24 24"><path fill="currentColor" d="${l.path}"/></symbol>`).join('')}</defs></svg>`;
@@ -61,6 +64,7 @@ export function scanPage({ data, SITE, AGE, END, EXAMPLE, asOf, esc, usd, usdC, 
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="${SITE}${OG_HOME}">
+<meta name="twitter:image:alt" content="${esc(OG_ALT)}">
 <link rel="preload" href="../fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="scan.css">
@@ -74,7 +78,7 @@ export function scanPage({ data, SITE, AGE, END, EXAMPLE, asOf, esc, usd, usdC, 
 </head>
 <body>
 ${sprite}
-<header class="bar"><a class="mark" href="${SITE}"><img src="logo.svg" width="710" height="152" alt="Total Monthly Pricing"></a><a class="how-link" href="#how">How we count</a></header>
+<header class="bar"><a class="mark" href="${SITE}"><img src="logo.svg" width="710" height="152" alt="Total Monthly Pricing"></a><nav class="hnav" aria-label="Page"><a class="how-link" href="#how">How we count</a><a class="how-link" href="#all-prices" id="src-link">Sources</a></nav></header>
 <main>
 <section class="pick" aria-labelledby="h1">
  <div class="top">
@@ -84,15 +88,13 @@ ${sprite}
   <source type="image/avif" srcset="hero-receipt-780x300.avif 1x, hero-receipt-1560x600.avif 2x" width="780" height="300">
   <img src="hero-receipt-780x300.webp" srcset="hero-receipt-1560x600.webp 2x" width="780" height="300" alt="An example receipt curling out of a printer: three plans at $10, $5 and $3 a month add up to $10,800.00 over 50 years." fetchpriority="high" decoding="async">
  </picture>
- <div class="top-t">
  <h1 id="h1">What do your subscriptions cost for life?</h1>
- <div class="row">
-  <label class="age"><span>Your age</span><input id="age" type="number" inputmode="numeric" min="13" max="79" value="${AGE}"></label>
+ <label class="age"><span>Your age</span><input id="age" type="number" inputmode="numeric" min="13" max="79" value="${AGE}"></label>
+ </div>
+ <div class="filters">
+  <div class="chips" id="chips" role="group" aria-label="Show services">${chips}</div>
   <button type="button" id="clear" class="ghost">Clear all</button>
  </div>
- </div>
- </div>
- <div class="chips" id="chips" role="group" aria-label="Show services">${chips}</div>
  <p class="sr" id="swap-note" role="status"></p>
  <div class="tiles" id="tiles">
 ${data.items.map(tile).join('\n')}
@@ -109,7 +111,7 @@ ${data.items.map(tile).join('\n')}
   <p>This page has no accounts, cookies or ads. Your picks stay in your browser.</p>
   <p>Logos belong to their owners.</p>
  </details>
- <details>
+ <details id="all-prices">
   <summary>All ${data.items.length} prices and sources</summary>
   <div class="tablewrap" tabindex="0" role="region" aria-label="Prices and sources">
   <table>

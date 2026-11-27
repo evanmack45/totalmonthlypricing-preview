@@ -140,6 +140,12 @@
   ageIn.addEventListener('input', () => { const a = Number(ageIn.value); if (!ageIn.value || !Number.isFinite(a)) return; age = clampAge(a); render(); writeHash(); });
   ageIn.addEventListener('blur', () => { ageIn.value = age; });
 
+  // Header "Sources" jumps to the full list and opens it.
+  const allPrices = $('#all-prices');
+  const openPrices = () => { allPrices.open = true; };
+  $('#src-link').addEventListener('click', openPrices);
+  if (location.hash === '#all-prices') openPrices();
+
   // ---------- share (same flow as app.js; the panel is a dialog with the card) ----------
   const CANONICAL = 'https://totalmonthlypricing.com/';
   // The preview shares and links the real home page, never /scan-preview/.
