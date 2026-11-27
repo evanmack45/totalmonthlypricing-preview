@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://totalmonthlypricing.com/">
+<title>Total Monthly Pricing: what your subscriptions cost for life</title>
+<meta name="description" content="Tap the subscriptions you pay. See your monthly total and what you will pay by age 80. Every price links its source.">
+<meta property="og:url" content="https://totalmonthlypricing.com/">
+<meta property="og:title" content="Your subscriptions, printed for life">
+<meta property="og:description" content="Tap what you pay. Get the receipt. Every price links its source.">
+<meta property="og:image" content="https://totalmonthlypricing.com/og-receipt.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A receipt on orange: Netflix Standard, Spotify Premium Individual, iCloud+ 200 GB add up to $21,582.00 from age 30 to 80, or $1.18 a day.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://totalmonthlypricing.com/og-receipt.png">
+<link rel="preload" href="../fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="scan.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='3' y='1' width='10' height='14' fill='%23fffdf6'/%3E%3Cpath d='M5 5h6M5 8h6M5 11h4' stroke='%23222' /%3E%3C/svg%3E">
+<script>document.documentElement.className='js'</script>
+</head>
+<body>
+<header class="bar"><a class="mark" href="https://totalmonthlypricing.com/">Total Monthly Pricing</a><a class="how-link" href="#how">How we count</a></header>
+<main>
+<section class="pick" aria-labelledby="h1">
+ <h1 id="h1">What do your subscriptions cost for life?</h1>
+ <div class="row">
+  <label class="age"><span>Your age</span><input id="age" type="number" inputmode="numeric" min="13" max="79" value="30"></label>
+  <button type="button" id="clear" class="ghost">Clear all</button>
+ </div>
+ <div class="chips" id="chips" role="group" aria-label="Show services"><button type="button" class="chip" data-cat="tv" aria-pressed="true">TV<span class="n" aria-hidden="true"></span></button><button type="button" class="chip" data-cat="music" aria-pressed="false">Music<span class="n" aria-hidden="true"></span></button><button type="button" class="chip" data-cat="apps" aria-pressed="false">Apps &amp; AI<span class="n" aria-hidden="true"></span></button><button type="button" class="chip" data-cat="games" aria-pressed="false">Games<span class="n" aria-hidden="true"></span></button><button type="button" class="chip" data-cat="more" aria-pressed="false">Shop &amp; fitness<span class="n" aria-hidden="true"></span></button><button type="button" class="chip" data-cat="all" aria-pressed="false">All<span class="n" aria-hidden="true"></span></button><button type="button" class="chip" data-cat="picked" aria-pressed="false">Picked<span class="n" aria-hidden="true"></span></button></div>
+ <p class="sr" id="swap-note" role="status"></p>
+ <div class="tiles" id="tiles">
+<div class="tw" data-id="netflix-ads" data-cat="tv">
+<button type="button" class="tile" data-id="netflix-ads" aria-pressed="false"><span class="t-name">Netflix</span><span class="t-plan">Standard with ads</span><span class="t-price">$8.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-netflix-ads" aria-label="Source for Netflix Standard with ads">i</button>
+<div class="pop" id="src-netflix-ads" popover><p class="pop-h">Netflix Standard with ads</p><p>List price $8.99/mo</p><p>Source: <a href="https://help.netflix.com/en/node/24926" rel="noopener">help.netflix.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-netflix-ads" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="netflix-std" data-cat="tv">
+<button type="button" class="tile" data-id="netflix-std" aria-pressed="true"><span class="t-name">Netflix</span><span class="t-plan">Standard</span><span class="t-price">$19.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-netflix-std" aria-label="Source for Netflix Standard">i</button>
+<div class="pop" id="src-netflix-std" popover><p class="pop-h">Netflix Standard</p><p>List price $19.99/mo</p><p>Source: <a href="https://help.netflix.com/en/node/24926" rel="noopener">help.netflix.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-netflix-std" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="netflix-prem" data-cat="tv">
+<button type="button" class="tile" data-id="netflix-prem" aria-pressed="false"><span class="t-name">Netflix</span><span class="t-plan">Premium</span><span class="t-price">$26.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-netflix-prem" aria-label="Source for Netflix Premium">i</button>
+<div class="pop" id="src-netflix-prem" popover><p class="pop-h">Netflix Premium</p><p>List price $26.99/mo</p><p>Source: <a href="https://help.netflix.com/en/node/24926" rel="noopener">help.netflix.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-netflix-prem" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="disney-ads" data-cat="tv">
+<button type="button" class="tile" data-id="disney-ads" aria-pressed="false"><span class="t-name">Disney+</span><span class="t-plan">With ads</span><span class="t-price">$12.49/mo</span></button>
+<button type="button" class="info" popovertarget="src-disney-ads" aria-label="Source for Disney+ With ads">i</button>
+<div class="pop" id="src-disney-ads" popover><p class="pop-h">Disney+ With ads</p><p>List price $12.49/mo</p><p>Source: <a href="https://help.disneyplus.com/article/disneyplus-price" rel="noopener">help.disneyplus.com</a></p><p>Checked Nov 25, 2026</p><p>In 2019: <a href="https://thewaltdisneycompany.com/news/disney-launches-today-and-a-new-era-of-disney-entertainment-begins/" rel="noopener">$6.99/mo</a></p><button type="button" class="pop-x" popovertarget="src-disney-ads" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="disney-premium" data-cat="tv">
+<button type="button" class="tile" data-id="disney-premium" aria-pressed="false"><span class="t-name">Disney+</span><span class="t-plan">Premium (no ads)</span><span class="t-price">$21.49/mo</span></button>
+<button type="button" class="info" popovertarget="src-disney-premium" aria-label="Source for Disney+ Premium (no ads)">i</button>
+<div class="pop" id="src-disney-premium" popover><p class="pop-h">Disney+ Premium (no ads)</p><p>List price $21.49/mo</p><p>Source: <a href="https://help.disneyplus.com/article/disneyplus-price" rel="noopener">help.disneyplus.com</a></p><p>Checked Nov 25, 2026</p><p>In 2019: <a href="https://thewaltdisneycompany.com/news/disney-launches-today-and-a-new-era-of-disney-entertainment-begins/" rel="noopener">$6.99/mo</a></p><button type="button" class="pop-x" popovertarget="src-disney-premium" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="hulu-ads" data-cat="tv">
+<button type="button" class="tile" data-id="hulu-ads" aria-pressed="false"><span class="t-name">Hulu</span><span class="t-plan">With ads</span><span class="t-price">$12.49/mo</span></button>
+<button type="button" class="info" popovertarget="src-hulu-ads" aria-label="Source for Hulu With ads">i</button>
+<div class="pop" id="src-hulu-ads" popover><p class="pop-h">Hulu With ads</p><p>List price $12.49/mo</p><p>Source: <a href="https://help.hulu.com/article/hulu-how-much-does-hulu-cost" rel="noopener">help.hulu.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-hulu-ads" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="hulu-premium" data-cat="tv">
+<button type="button" class="tile" data-id="hulu-premium" aria-pressed="false"><span class="t-name">Hulu</span><span class="t-plan">Premium (no ads)</span><span class="t-price">$21.49/mo</span></button>
+<button type="button" class="info" popovertarget="src-hulu-premium" aria-label="Source for Hulu Premium (no ads)">i</button>
+<div class="pop" id="src-hulu-premium" popover><p class="pop-h">Hulu Premium (no ads)</p><p>List price $21.49/mo</p><p>Source: <a href="https://help.hulu.com/article/hulu-how-much-does-hulu-cost" rel="noopener">help.hulu.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-hulu-premium" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="disney-hulu" data-cat="tv">
+<button type="button" class="tile" data-id="disney-hulu" aria-pressed="false"><span class="t-name">Disney+, Hulu Bundle</span><span class="t-plan">With ads</span><span class="t-price">$12.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-disney-hulu" aria-label="Source for Disney+, Hulu Bundle With ads">i</button>
+<div class="pop" id="src-disney-hulu" popover><p class="pop-h">Disney+, Hulu Bundle With ads</p><p>List price $12.99/mo</p><p>Source: <a href="https://help.disneyplus.com/article/disneyplus-price" rel="noopener">help.disneyplus.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-disney-hulu" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="max-basic" data-cat="tv">
+<button type="button" class="tile" data-id="max-basic" aria-pressed="false"><span class="t-name">HBO Max</span><span class="t-plan">Basic with Ads</span><span class="t-price">$10.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-max-basic" aria-label="Source for HBO Max Basic with Ads">i</button>
+<div class="pop" id="src-max-basic" popover><p class="pop-h">HBO Max Basic with Ads</p><p>List price $10.99/mo</p><p>Source: <a href="https://help.hbomax.com/us/Answer/Detail/000002547" rel="noopener">help.hbomax.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-max-basic" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="max-std" data-cat="tv">
+<button type="button" class="tile" data-id="max-std" aria-pressed="false"><span class="t-name">HBO Max</span><span class="t-plan">Standard</span><span class="t-price">$18.49/mo</span></button>
+<button type="button" class="info" popovertarget="src-max-std" aria-label="Source for HBO Max Standard">i</button>
+<div class="pop" id="src-max-std" popover><p class="pop-h">HBO Max Standard</p><p>List price $18.49/mo</p><p>Source: <a href="https://help.hbomax.com/us/Answer/Detail/000002547" rel="noopener">help.hbomax.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-max-std" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="max-prem" data-cat="tv">
+<button type="button" class="tile" data-id="max-prem" aria-pressed="false"><span class="t-name">HBO Max</span><span class="t-plan">Premium</span><span class="t-price">$22.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-max-prem" aria-label="Source for HBO Max Premium">i</button>
+<div class="pop" id="src-max-prem" popover><p class="pop-h">HBO Max Premium</p><p>List price $22.99/mo</p><p>Source: <a href="https://help.hbomax.com/us/Answer/Detail/000002547" rel="noopener">help.hbomax.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-max-prem" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="peacock-select" data-cat="tv">
+<button type="button" class="tile" data-id="peacock-select" aria-pressed="false"><span class="t-name">Peacock</span><span class="t-plan">Select</span><span class="t-price">$8.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-peacock-select" aria-label="Source for Peacock Select">i</button>
+<div class="pop" id="src-peacock-select" popover><p class="pop-h">Peacock Select</p><p>List price $8.99/mo</p><p>Source: <a href="https://www.peacocktv.com/plans/base" rel="noopener">peacocktv.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-peacock-select" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="peacock-prem" data-cat="tv">
+<button type="button" class="tile" data-id="peacock-prem" aria-pressed="false"><span class="t-name">Peacock</span><span class="t-plan">Premium</span><span class="t-price">$12.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-peacock-prem" aria-label="Source for Peacock Premium">i</button>
+<div class="pop" id="src-peacock-prem" popover><p class="pop-h">Peacock Premium</p><p>List price $12.99/mo</p><p>Source: <a href="https://www.peacocktv.com/plans/base" rel="noopener">peacocktv.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-peacock-prem" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="peacock-plus" data-cat="tv">
+<button type="button" class="tile" data-id="peacock-plus" aria-pressed="false"><span class="t-name">Peacock</span><span class="t-plan">Premium Plus</span><span class="t-price">$19.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-peacock-plus" aria-label="Source for Peacock Premium Plus">i</button>
+<div class="pop" id="src-peacock-plus" popover><p class="pop-h">Peacock Premium Plus</p><p>List price $19.99/mo</p><p>Source: <a href="https://www.peacocktv.com/plans/base" rel="noopener">peacocktv.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-peacock-plus" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="apple-tv" data-cat="tv">
+<button type="button" class="tile" data-id="apple-tv" aria-pressed="false"><span class="t-name">Apple TV</span><span class="t-plan">Monthly</span><span class="t-price">$14.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-apple-tv" aria-label="Source for Apple TV Monthly">i</button>
+<div class="pop" id="src-apple-tv" popover><p class="pop-h">Apple TV Monthly</p><p>List price $14.99/mo</p><p>Source: <a href="https://www.apple.com/apple-tv/" rel="noopener">apple.com</a></p><p>Checked Nov 25, 2026</p><p>In 2019: <a href="https://www.apple.com/newsroom/2019/09/apple-tv-launches-november-1-featuring-originals-from-the-worlds-greatest-storytellers/" rel="noopener">$4.99/mo</a></p><button type="button" class="pop-x" popovertarget="src-apple-tv" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="amc-ads" data-cat="tv">
+<button type="button" class="tile" data-id="amc-ads" aria-pressed="false"><span class="t-name">AMC+</span><span class="t-plan">Monthly with ads</span><span class="t-price">$7.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-amc-ads" aria-label="Source for AMC+ Monthly with ads">i</button>
+<div class="pop" id="src-amc-ads" popover><p class="pop-h">AMC+ Monthly with ads</p><p>List price $7.99/mo</p><p>Source: <a href="https://www.amcplus.com/" rel="noopener">amcplus.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-amc-ads" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="amc-prem" data-cat="tv">
+<button type="button" class="tile" data-id="amc-prem" aria-pressed="false"><span class="t-name">AMC+</span><span class="t-plan">Monthly Premium (no ads)</span><span class="t-price">$10.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-amc-prem" aria-label="Source for AMC+ Monthly Premium (no ads)">i</button>
+<div class="pop" id="src-amc-prem" popover><p class="pop-h">AMC+ Monthly Premium (no ads)</p><p>List price $10.99/mo</p><p>Source: <a href="https://www.amcplus.com/" rel="noopener">amcplus.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-amc-prem" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="espn-unl" data-cat="tv">
+<button type="button" class="tile" data-id="espn-unl" aria-pressed="false"><span class="t-name">ESPN</span><span class="t-plan">Unlimited</span><span class="t-price">$31.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-espn-unl" aria-label="Source for ESPN Unlimited">i</button>
+<div class="pop" id="src-espn-unl" popover><p class="pop-h">ESPN Unlimited</p><p>List price $31.99/mo</p><p>Source: <a href="https://plus.espn.com/" rel="noopener">plus.espn.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-espn-unl" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="yt-tv" data-cat="tv">
+<button type="button" class="tile" data-id="yt-tv" aria-pressed="false"><span class="t-name">YouTube TV</span><span class="t-plan">Base plan</span><span class="t-price">$82.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-yt-tv" aria-label="Source for YouTube TV Base plan">i</button>
+<div class="pop" id="src-yt-tv" popover><p class="pop-h">YouTube TV Base plan</p><p>List price $82.99/mo</p><p>Source: <a href="https://tv.youtube.com/welcome/" rel="noopener">tv.youtube.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-yt-tv" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="philo" data-cat="tv">
+<button type="button" class="tile" data-id="philo" aria-pressed="false"><span class="t-name">Philo</span><span class="t-plan">Base plan</span><span class="t-price">$25.00/mo</span></button>
+<button type="button" class="info" popovertarget="src-philo" aria-label="Source for Philo Base plan">i</button>
+<div class="pop" id="src-philo" popover><p class="pop-h">Philo Base plan</p><p>List price $25.00/mo</p><p>Source: <a href="https://www.philo.com/login/subscribe" rel="noopener">philo.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-philo" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="spotify" data-cat="music" hidden>
+<button type="button" class="tile" data-id="spotify" aria-pressed="true"><span class="t-name">Spotify</span><span class="t-plan">Premium Individual</span><span class="t-price">$12.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-spotify" aria-label="Source for Spotify Premium Individual">i</button>
+<div class="pop" id="src-spotify" popover><p class="pop-h">Spotify Premium Individual</p><p>List price $12.99/mo</p><p>Source: <a href="https://www.spotify.com/us/premium/" rel="noopener">spotify.com</a></p><p>Checked Nov 25, 2026</p><p>In 2011: <a href="https://www.billboard.com/music/music-news/read-spotifys-us-launch-announcement-1177109/" rel="noopener">$9.99/mo</a></p><button type="button" class="pop-x" popovertarget="src-spotify" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="apple-music" data-cat="music" hidden>
+<button type="button" class="tile" data-id="apple-music" aria-pressed="false"><span class="t-name">Apple Music</span><span class="t-plan">Individual</span><span class="t-price">$11.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-apple-music" aria-label="Source for Apple Music Individual">i</button>
+<div class="pop" id="src-apple-music" popover><p class="pop-h">Apple Music Individual</p><p>List price $11.99/mo</p><p>Source: <a href="https://www.apple.com/apple-music/" rel="noopener">apple.com</a></p><p>Checked Nov 25, 2026</p><p>In 2015: <a href="https://www.apple.com/newsroom/2015/06/08Introducing-Apple-Music-All-The-Ways-You-Love-Music-All-in-One-Place-/" rel="noopener">$9.99/mo</a></p><button type="button" class="pop-x" popovertarget="src-apple-music" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="yt-premium" data-cat="music" hidden>
+<button type="button" class="tile" data-id="yt-premium" aria-pressed="false"><span class="t-name">YouTube Premium</span><span class="t-plan">Individual</span><span class="t-price">$15.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-yt-premium" aria-label="Source for YouTube Premium Individual">i</button>
+<div class="pop" id="src-yt-premium" popover><p class="pop-h">YouTube Premium Individual</p><p>List price $15.99/mo</p><p>Source: <a href="https://www.youtube.com/premium" rel="noopener">youtube.com</a></p><p>Checked Nov 25, 2026</p><p>In 2018: <a href="https://blog.youtube/news-and-events/introducing-youtube-premium/" rel="noopener">$11.99/mo</a></p><button type="button" class="pop-x" popovertarget="src-yt-premium" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="yt-family" data-cat="music" hidden>
+<button type="button" class="tile" data-id="yt-family" aria-pressed="false"><span class="t-name">YouTube Premium</span><span class="t-plan">Family</span><span class="t-price">$26.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-yt-family" aria-label="Source for YouTube Premium Family">i</button>
+<div class="pop" id="src-yt-family" popover><p class="pop-h">YouTube Premium Family</p><p>List price $26.99/mo</p><p>Source: <a href="https://www.youtube.com/premium" rel="noopener">youtube.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-yt-family" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="audible-std" data-cat="music" hidden>
+<button type="button" class="tile" data-id="audible-std" aria-pressed="false"><span class="t-name">Audible</span><span class="t-plan">Standard</span><span class="t-price">$8.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-audible-std" aria-label="Source for Audible Standard">i</button>
+<div class="pop" id="src-audible-std" popover><p class="pop-h">Audible Standard</p><p>List price $8.99/mo</p><p>Source: <a href="https://www.audible.com/ep/memberbenefits" rel="noopener">audible.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-audible-std" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="audible-pp" data-cat="music" hidden>
+<button type="button" class="tile" data-id="audible-pp" aria-pressed="false"><span class="t-name">Audible</span><span class="t-plan">Premium Plus</span><span class="t-price">$14.95/mo</span></button>
+<button type="button" class="info" popovertarget="src-audible-pp" aria-label="Source for Audible Premium Plus">i</button>
+<div class="pop" id="src-audible-pp" popover><p class="pop-h">Audible Premium Plus</p><p>List price $14.95/mo</p><p>Source: <a href="https://www.audible.com/ep/memberbenefits" rel="noopener">audible.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-audible-pp" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="sxm-all" data-cat="music" hidden>
+<button type="button" class="tile" data-id="sxm-all" aria-pressed="false"><span class="t-name">SiriusXM</span><span class="t-plan">All Access</span><span class="t-price">$25.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-sxm-all" aria-label="Source for SiriusXM All Access">i</button>
+<div class="pop" id="src-sxm-all" popover><p class="pop-h">SiriusXM All Access</p><p>List price $25.99/mo</p><p>Source: <a href="https://www.siriusxm.com/plans" rel="noopener">siriusxm.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-sxm-all" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="icloud-50" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="icloud-50" aria-pressed="false"><span class="t-name">iCloud+</span><span class="t-plan">50 GB</span><span class="t-price">$0.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-icloud-50" aria-label="Source for iCloud+ 50 GB">i</button>
+<div class="pop" id="src-icloud-50" popover><p class="pop-h">iCloud+ 50 GB</p><p>List price $0.99/mo</p><p>Source: <a href="https://support.apple.com/en-us/108047" rel="noopener">support.apple.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-icloud-50" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="icloud-200" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="icloud-200" aria-pressed="true"><span class="t-name">iCloud+</span><span class="t-plan">200 GB</span><span class="t-price">$2.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-icloud-200" aria-label="Source for iCloud+ 200 GB">i</button>
+<div class="pop" id="src-icloud-200" popover><p class="pop-h">iCloud+ 200 GB</p><p>List price $2.99/mo</p><p>Source: <a href="https://support.apple.com/en-us/108047" rel="noopener">support.apple.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-icloud-200" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="icloud-2tb" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="icloud-2tb" aria-pressed="false"><span class="t-name">iCloud+</span><span class="t-plan">2 TB</span><span class="t-price">$9.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-icloud-2tb" aria-label="Source for iCloud+ 2 TB">i</button>
+<div class="pop" id="src-icloud-2tb" popover><p class="pop-h">iCloud+ 2 TB</p><p>List price $9.99/mo</p><p>Source: <a href="https://support.apple.com/en-us/108047" rel="noopener">support.apple.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-icloud-2tb" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="apple-one" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="apple-one" aria-pressed="false"><span class="t-name">Apple One</span><span class="t-plan">Individual</span><span class="t-price">$21.95/mo</span></button>
+<button type="button" class="info" popovertarget="src-apple-one" aria-label="Source for Apple One Individual">i</button>
+<div class="pop" id="src-apple-one" popover><p class="pop-h">Apple One Individual</p><p>List price $21.95/mo</p><p>Source: <a href="https://www.apple.com/apple-one/" rel="noopener">apple.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-apple-one" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="apple-one-fam" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="apple-one-fam" aria-pressed="false"><span class="t-name">Apple One</span><span class="t-plan">Family</span><span class="t-price">$27.95/mo</span></button>
+<button type="button" class="info" popovertarget="src-apple-one-fam" aria-label="Source for Apple One Family">i</button>
+<div class="pop" id="src-apple-one-fam" popover><p class="pop-h">Apple One Family</p><p>List price $27.95/mo</p><p>Source: <a href="https://www.apple.com/apple-one/" rel="noopener">apple.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-apple-one-fam" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="gone-100" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="gone-100" aria-pressed="false"><span class="t-name">Google One</span><span class="t-plan">Basic (100 GB)</span><span class="t-price">$1.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-gone-100" aria-label="Source for Google One Basic (100 GB)">i</button>
+<div class="pop" id="src-gone-100" popover><p class="pop-h">Google One Basic (100 GB)</p><p>List price $1.99/mo</p><p>Source: <a href="https://one.google.com/about/plans?g1_landing_page=60" rel="noopener">one.google.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-gone-100" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="gone-aipro" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="gone-aipro" aria-pressed="false"><span class="t-name">Google AI Pro</span><span class="t-plan">5 TB</span><span class="t-price">$19.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-gone-aipro" aria-label="Source for Google AI Pro 5 TB">i</button>
+<div class="pop" id="src-gone-aipro" popover><p class="pop-h">Google AI Pro 5 TB</p><p>List price $19.99/mo</p><p>Source: <a href="https://one.google.com/about/plans?g1_landing_page=60" rel="noopener">one.google.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-gone-aipro" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="m365-personal" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="m365-personal" aria-pressed="false"><span class="t-name">Microsoft 365</span><span class="t-plan">Personal (yearly)</span><span class="t-price">$99.99/yr</span></button>
+<button type="button" class="info" popovertarget="src-m365-personal" aria-label="Source for Microsoft 365 Personal (yearly)">i</button>
+<div class="pop" id="src-m365-personal" popover><p class="pop-h">Microsoft 365 Personal (yearly)</p><p>List price $99.99/yr</p><p>Source: <a href="https://www.microsoft.com/en-us/microsoft-365/buy/compare-all-microsoft-365-products" rel="noopener">microsoft.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-m365-personal" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="m365-family" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="m365-family" aria-pressed="false"><span class="t-name">Microsoft 365</span><span class="t-plan">Family (yearly)</span><span class="t-price">$129.99/yr</span></button>
+<button type="button" class="info" popovertarget="src-m365-family" aria-label="Source for Microsoft 365 Family (yearly)">i</button>
+<div class="pop" id="src-m365-family" popover><p class="pop-h">Microsoft 365 Family (yearly)</p><p>List price $129.99/yr</p><p>Source: <a href="https://www.microsoft.com/en-us/microsoft-365/buy/compare-all-microsoft-365-products" rel="noopener">microsoft.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-m365-family" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="1password" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="1password" aria-pressed="false"><span class="t-name">1Password</span><span class="t-plan">Individual (billed yearly)</span><span class="t-price">$47.88/yr</span></button>
+<button type="button" class="info" popovertarget="src-1password" aria-label="Source for 1Password Individual (billed yearly)">i</button>
+<div class="pop" id="src-1password" popover><p class="pop-h">1Password Individual (billed yearly)</p><p>List price $47.88/yr</p><p>Source: <a href="https://1password.com/pricing/personal" rel="noopener">1password.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-1password" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="photoshop" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="photoshop" aria-pressed="false"><span class="t-name">Adobe Photoshop</span><span class="t-plan">Annual, billed monthly</span><span class="t-price">$22.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-photoshop" aria-label="Source for Adobe Photoshop Annual, billed monthly">i</button>
+<div class="pop" id="src-photoshop" popover><p class="pop-h">Adobe Photoshop Annual, billed monthly</p><p>List price $22.99/mo</p><p>Source: <a href="https://www.adobe.com/products/photoshop/plans.html" rel="noopener">adobe.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-photoshop" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="chatgpt-plus" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="chatgpt-plus" aria-pressed="false"><span class="t-name">ChatGPT</span><span class="t-plan">Plus</span><span class="t-price">$20.00/mo</span></button>
+<button type="button" class="info" popovertarget="src-chatgpt-plus" aria-label="Source for ChatGPT Plus">i</button>
+<div class="pop" id="src-chatgpt-plus" popover><p class="pop-h">ChatGPT Plus</p><p>List price $20.00/mo</p><p>Source: <a href="https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus" rel="noopener">help.openai.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-chatgpt-plus" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="claude-pro" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="claude-pro" aria-pressed="false"><span class="t-name">Claude</span><span class="t-plan">Pro (billed monthly)</span><span class="t-price">$20.00/mo</span></button>
+<button type="button" class="info" popovertarget="src-claude-pro" aria-label="Source for Claude Pro (billed monthly)">i</button>
+<div class="pop" id="src-claude-pro" popover><p class="pop-h">Claude Pro (billed monthly)</p><p>List price $20.00/mo</p><p>Source: <a href="https://claude.com/pricing" rel="noopener">claude.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-claude-pro" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="copilot-pro" data-cat="apps" hidden>
+<button type="button" class="tile" data-id="copilot-pro" aria-pressed="false"><span class="t-name">GitHub Copilot</span><span class="t-plan">Pro</span><span class="t-price">$10.00/mo</span></button>
+<button type="button" class="info" popovertarget="src-copilot-pro" aria-label="Source for GitHub Copilot Pro">i</button>
+<div class="pop" id="src-copilot-pro" popover><p class="pop-h">GitHub Copilot Pro</p><p>List price $10.00/mo</p><p>Source: <a href="https://github.com/features/copilot/plans" rel="noopener">github.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-copilot-pro" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="gamepass-ess" data-cat="games" hidden>
+<button type="button" class="tile" data-id="gamepass-ess" aria-pressed="false"><span class="t-name">Xbox Game Pass</span><span class="t-plan">Essential</span><span class="t-price">$9.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-gamepass-ess" aria-label="Source for Xbox Game Pass Essential">i</button>
+<div class="pop" id="src-gamepass-ess" popover><p class="pop-h">Xbox Game Pass Essential</p><p>List price $9.99/mo</p><p>Source: <a href="https://www.xbox.com/en-US/xbox-game-pass" rel="noopener">xbox.com</a></p><p>Checked Nov 25, 2026</p><p>In 2017: <a href="https://news.xbox.com/en-us/2017/02/28/introducing-xbox-game-pass/" rel="noopener">$9.99/mo</a></p><button type="button" class="pop-x" popovertarget="src-gamepass-ess" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="gamepass-prem" data-cat="games" hidden>
+<button type="button" class="tile" data-id="gamepass-prem" aria-pressed="false"><span class="t-name">Xbox Game Pass</span><span class="t-plan">Premium</span><span class="t-price">$14.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-gamepass-prem" aria-label="Source for Xbox Game Pass Premium">i</button>
+<div class="pop" id="src-gamepass-prem" popover><p class="pop-h">Xbox Game Pass Premium</p><p>List price $14.99/mo</p><p>Source: <a href="https://www.xbox.com/en-US/xbox-game-pass" rel="noopener">xbox.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-gamepass-prem" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="gamepass-ult" data-cat="games" hidden>
+<button type="button" class="tile" data-id="gamepass-ult" aria-pressed="false"><span class="t-name">Xbox Game Pass</span><span class="t-plan">Ultimate</span><span class="t-price">$22.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-gamepass-ult" aria-label="Source for Xbox Game Pass Ultimate">i</button>
+<div class="pop" id="src-gamepass-ult" popover><p class="pop-h">Xbox Game Pass Ultimate</p><p>List price $22.99/mo</p><p>Source: <a href="https://www.xbox.com/en-US/xbox-game-pass" rel="noopener">xbox.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-gamepass-ult" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="psplus-ess" data-cat="games" hidden>
+<button type="button" class="tile" data-id="psplus-ess" aria-pressed="false"><span class="t-name">PlayStation Plus</span><span class="t-plan">Essential (1 month)</span><span class="t-price">$10.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-psplus-ess" aria-label="Source for PlayStation Plus Essential (1 month)">i</button>
+<div class="pop" id="src-psplus-ess" popover><p class="pop-h">PlayStation Plus Essential (1 month)</p><p>List price $10.99/mo</p><p>Source: <a href="https://www.playstation.com/en-us/ps-plus/" rel="noopener">playstation.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-psplus-ess" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="psplus-extra" data-cat="games" hidden>
+<button type="button" class="tile" data-id="psplus-extra" aria-pressed="false"><span class="t-name">PlayStation Plus</span><span class="t-plan">Extra (1 month)</span><span class="t-price">$16.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-psplus-extra" aria-label="Source for PlayStation Plus Extra (1 month)">i</button>
+<div class="pop" id="src-psplus-extra" popover><p class="pop-h">PlayStation Plus Extra (1 month)</p><p>List price $16.99/mo</p><p>Source: <a href="https://www.playstation.com/en-us/ps-plus/" rel="noopener">playstation.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-psplus-extra" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="psplus-prem" data-cat="games" hidden>
+<button type="button" class="tile" data-id="psplus-prem" aria-pressed="false"><span class="t-name">PlayStation Plus</span><span class="t-plan">Premium (1 month)</span><span class="t-price">$19.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-psplus-prem" aria-label="Source for PlayStation Plus Premium (1 month)">i</button>
+<div class="pop" id="src-psplus-prem" popover><p class="pop-h">PlayStation Plus Premium (1 month)</p><p>List price $19.99/mo</p><p>Source: <a href="https://www.playstation.com/en-us/ps-plus/" rel="noopener">playstation.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-psplus-prem" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="nso" data-cat="games" hidden>
+<button type="button" class="tile" data-id="nso" aria-pressed="false"><span class="t-name">Nintendo Switch Online</span><span class="t-plan">Individual</span><span class="t-price">$19.99/yr</span></button>
+<button type="button" class="info" popovertarget="src-nso" aria-label="Source for Nintendo Switch Online Individual">i</button>
+<div class="pop" id="src-nso" popover><p class="pop-h">Nintendo Switch Online Individual</p><p>List price $19.99/yr</p><p>Source: <a href="https://www.nintendo.com/us/online/" rel="noopener">nintendo.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-nso" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="apple-arcade" data-cat="games" hidden>
+<button type="button" class="tile" data-id="apple-arcade" aria-pressed="false"><span class="t-name">Apple Arcade</span><span class="t-plan">Monthly</span><span class="t-price">$6.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-apple-arcade" aria-label="Source for Apple Arcade Monthly">i</button>
+<div class="pop" id="src-apple-arcade" popover><p class="pop-h">Apple Arcade Monthly</p><p>List price $6.99/mo</p><p>Source: <a href="https://www.apple.com/apple-arcade/" rel="noopener">apple.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-apple-arcade" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="prime-month" data-cat="more" hidden>
+<button type="button" class="tile" data-id="prime-month" aria-pressed="false"><span class="t-name">Amazon Prime</span><span class="t-plan">Monthly</span><span class="t-price">$14.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-prime-month" aria-label="Source for Amazon Prime Monthly">i</button>
+<div class="pop" id="src-prime-month" popover><p class="pop-h">Amazon Prime Monthly</p><p>List price $14.99/mo</p><p>Source: <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=G34EUPKVMYFW8N2U" rel="noopener">amazon.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-prime-month" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="prime-year" data-cat="more" hidden>
+<button type="button" class="tile" data-id="prime-year" aria-pressed="false"><span class="t-name">Amazon Prime</span><span class="t-plan">Yearly</span><span class="t-price">$139.00/yr</span></button>
+<button type="button" class="info" popovertarget="src-prime-year" aria-label="Source for Amazon Prime Yearly">i</button>
+<div class="pop" id="src-prime-year" popover><p class="pop-h">Amazon Prime Yearly</p><p>List price $139.00/yr</p><p>Source: <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=G34EUPKVMYFW8N2U" rel="noopener">amazon.com</a></p><p>Checked Nov 25, 2026</p><p>In 2005: <a href="https://press.aboutamazon.com/2005/2/amazon-com-announces-record-free-cash-flow-fueled-by-lower-prices-and-free-shipping-introduces-new-express-shipping-program-amazon-prime" rel="noopener">$79.00/yr</a></p><button type="button" class="pop-x" popovertarget="src-prime-year" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="prime-video" data-cat="tv">
+<button type="button" class="tile" data-id="prime-video" aria-pressed="false"><span class="t-name">Prime Video</span><span class="t-plan">Standalone</span><span class="t-price">$8.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-prime-video" aria-label="Source for Prime Video Standalone">i</button>
+<div class="pop" id="src-prime-video" popover><p class="pop-h">Prime Video Standalone</p><p>List price $8.99/mo</p><p>Source: <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=G34EUPKVMYFW8N2U" rel="noopener">amazon.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-prime-video" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="uber-one" data-cat="more" hidden>
+<button type="button" class="tile" data-id="uber-one" aria-pressed="false"><span class="t-name">Uber One</span><span class="t-plan">Monthly</span><span class="t-price">$9.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-uber-one" aria-label="Source for Uber One Monthly">i</button>
+<div class="pop" id="src-uber-one" popover><p class="pop-h">Uber One Monthly</p><p>List price $9.99/mo</p><p>Source: <a href="https://www.uber.com/us/en/uber-one/" rel="noopener">uber.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-uber-one" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="instacart" data-cat="more" hidden>
+<button type="button" class="tile" data-id="instacart" aria-pressed="false"><span class="t-name">Instacart+</span><span class="t-plan">Yearly</span><span class="t-price">$99.00/yr</span></button>
+<button type="button" class="info" popovertarget="src-instacart" aria-label="Source for Instacart+ Yearly">i</button>
+<div class="pop" id="src-instacart" popover><p class="pop-h">Instacart+ Yearly</p><p>List price $99.00/yr</p><p>Source: <a href="https://www.instacart.com/instacart-plus" rel="noopener">instacart.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-instacart" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="peloton-one" data-cat="more" hidden>
+<button type="button" class="tile" data-id="peloton-one" aria-pressed="false"><span class="t-name">Peloton</span><span class="t-plan">App One</span><span class="t-price">$12.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-peloton-one" aria-label="Source for Peloton App One">i</button>
+<div class="pop" id="src-peloton-one" popover><p class="pop-h">Peloton App One</p><p>List price $12.99/mo</p><p>Source: <a href="https://www.onepeloton.com/app" rel="noopener">onepeloton.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-peloton-one" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="peloton-plus" data-cat="more" hidden>
+<button type="button" class="tile" data-id="peloton-plus" aria-pressed="false"><span class="t-name">Peloton</span><span class="t-plan">App+</span><span class="t-price">$28.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-peloton-plus" aria-label="Source for Peloton App+">i</button>
+<div class="pop" id="src-peloton-plus" popover><p class="pop-h">Peloton App+</p><p>List price $28.99/mo</p><p>Source: <a href="https://www.onepeloton.com/app" rel="noopener">onepeloton.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-peloton-plus" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="strava" data-cat="more" hidden>
+<button type="button" class="tile" data-id="strava" aria-pressed="false"><span class="t-name">Strava</span><span class="t-plan">Yearly</span><span class="t-price">$79.99/yr</span></button>
+<button type="button" class="info" popovertarget="src-strava" aria-label="Source for Strava Yearly">i</button>
+<div class="pop" id="src-strava" popover><p class="pop-h">Strava Yearly</p><p>List price $79.99/yr</p><p>Source: <a href="https://www.strava.com/subscribe" rel="noopener">strava.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-strava" popovertargetaction="hide">Close</button></div>
+</div>
+<div class="tw" data-id="headspace" data-cat="more" hidden>
+<button type="button" class="tile" data-id="headspace" aria-pressed="false"><span class="t-name">Headspace</span><span class="t-plan">Monthly</span><span class="t-price">$12.99/mo</span></button>
+<button type="button" class="info" popovertarget="src-headspace" aria-label="Source for Headspace Monthly">i</button>
+<div class="pop" id="src-headspace" popover><p class="pop-h">Headspace Monthly</p><p>List price $12.99/mo</p><p>Source: <a href="https://www.headspace.com/subscriptions" rel="noopener">headspace.com</a></p><p>Checked Nov 25, 2026</p><button type="button" class="pop-x" popovertarget="src-headspace" popovertargetaction="hide">Close</button></div>
+</div>
+ </div>
+ <p class="none" id="none-picked" hidden>Nothing picked yet. Tap a service.</p>
+ <noscript><p class="none">The totals need JavaScript. Every price and source is in the list below.</p></noscript>
+</section>
+<section class="more" id="how" aria-label="How we count and sources">
+ <details>
+  <summary>How we count</summary>
+  <p>Monthly plans count 12 times a year, yearly plans once. The total to age 80 multiplies one year by the years you have left, at today's price.</p>
+  <p>Today's list prices, held flat. Real prices tend to rise. Taxes not included.</p>
+  <p>US list prices for new subscribers, checked Nov 25, 2026. Intro and student prices left out.</p>
+  <p>This page has no accounts, cookies or ads. Your picks stay in your browser.</p>
+ </details>
+ <details>
+  <summary>All 58 prices and sources</summary>
+  <div class="tablewrap" tabindex="0" role="region" aria-label="Prices and sources">
+  <table>
+   <thead><tr><th scope="col">Service</th><th scope="col">Plan</th><th scope="col" class="num">Price</th><th scope="col">Source</th><th scope="col">Checked</th><th scope="col">Notes</th></tr></thead>
+   <tbody><tr><td>Netflix</td><td>Standard with ads</td><td class="num">$8.99/mo</td><td><a href="https://help.netflix.com/en/node/24926" rel="noopener">help.netflix.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Netflix</td><td>Standard</td><td class="num">$19.99/mo</td><td><a href="https://help.netflix.com/en/node/24926" rel="noopener">help.netflix.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Netflix</td><td>Premium</td><td class="num">$26.99/mo</td><td><a href="https://help.netflix.com/en/node/24926" rel="noopener">help.netflix.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Disney+</td><td>With ads</td><td class="num">$12.49/mo</td><td><a href="https://help.disneyplus.com/article/disneyplus-price" rel="noopener">help.disneyplus.com</a></td><td>Nov 25, 2026</td><td>Price for new subscribers as of Sep 23, 2026, per the source. In 2019: <a href="https://thewaltdisneycompany.com/news/disney-launches-today-and-a-new-era-of-disney-entertainment-begins/" rel="noopener">$6.99/mo</a>.</td></tr>
+<tr><td>Disney+</td><td>Premium (no ads)</td><td class="num">$21.49/mo</td><td><a href="https://help.disneyplus.com/article/disneyplus-price" rel="noopener">help.disneyplus.com</a></td><td>Nov 25, 2026</td><td>Price for new subscribers as of Sep 23, 2026, per the source. In 2019: <a href="https://thewaltdisneycompany.com/news/disney-launches-today-and-a-new-era-of-disney-entertainment-begins/" rel="noopener">$6.99/mo</a>.</td></tr>
+<tr><td>Hulu</td><td>With ads</td><td class="num">$12.49/mo</td><td><a href="https://help.hulu.com/article/hulu-how-much-does-hulu-cost" rel="noopener">help.hulu.com</a></td><td>Nov 25, 2026</td><td>Price for new subscribers as of Sep 23, 2026, per the source.</td></tr>
+<tr><td>Hulu</td><td>Premium (no ads)</td><td class="num">$21.49/mo</td><td><a href="https://help.hulu.com/article/hulu-how-much-does-hulu-cost" rel="noopener">help.hulu.com</a></td><td>Nov 25, 2026</td><td>Price for new subscribers as of Sep 23, 2026, per the source.</td></tr>
+<tr><td>Disney+, Hulu Bundle</td><td>With ads</td><td class="num">$12.99/mo</td><td><a href="https://help.disneyplus.com/article/disneyplus-price" rel="noopener">help.disneyplus.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>HBO Max</td><td>Basic with Ads</td><td class="num">$10.99/mo</td><td><a href="https://help.hbomax.com/us/Answer/Detail/000002547" rel="noopener">help.hbomax.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>HBO Max</td><td>Standard</td><td class="num">$18.49/mo</td><td><a href="https://help.hbomax.com/us/Answer/Detail/000002547" rel="noopener">help.hbomax.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>HBO Max</td><td>Premium</td><td class="num">$22.99/mo</td><td><a href="https://help.hbomax.com/us/Answer/Detail/000002547" rel="noopener">help.hbomax.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Peacock</td><td>Select</td><td class="num">$8.99/mo</td><td><a href="https://www.peacocktv.com/plans/base" rel="noopener">peacocktv.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Peacock</td><td>Premium</td><td class="num">$12.99/mo</td><td><a href="https://www.peacocktv.com/plans/base" rel="noopener">peacocktv.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Peacock</td><td>Premium Plus</td><td class="num">$19.99/mo</td><td><a href="https://www.peacocktv.com/plans/base" rel="noopener">peacocktv.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Apple TV</td><td>Monthly</td><td class="num">$14.99/mo</td><td><a href="https://www.apple.com/apple-tv/" rel="noopener">apple.com</a></td><td>Nov 25, 2026</td><td>In 2019: <a href="https://www.apple.com/newsroom/2019/09/apple-tv-launches-november-1-featuring-originals-from-the-worlds-greatest-storytellers/" rel="noopener">$4.99/mo</a>.</td></tr>
+<tr><td>AMC+</td><td>Monthly with ads</td><td class="num">$7.99/mo</td><td><a href="https://www.amcplus.com/" rel="noopener">amcplus.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>AMC+</td><td>Monthly Premium (no ads)</td><td class="num">$10.99/mo</td><td><a href="https://www.amcplus.com/" rel="noopener">amcplus.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>ESPN</td><td>Unlimited</td><td class="num">$31.99/mo</td><td><a href="https://plus.espn.com/" rel="noopener">plus.espn.com</a></td><td>Nov 25, 2026</td><td>The source page says &quot;starting at&quot;.</td></tr>
+<tr><td>Prime Video</td><td>Standalone</td><td class="num">$8.99/mo</td><td><a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=G34EUPKVMYFW8N2U" rel="noopener">amazon.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>YouTube TV</td><td>Base plan</td><td class="num">$82.99/mo</td><td><a href="https://tv.youtube.com/welcome/" rel="noopener">tv.youtube.com</a></td><td>Nov 25, 2026</td><td>Regular price. The source page also shows an intro offer.</td></tr>
+<tr><td>Philo</td><td>Base plan</td><td class="num">$25.00/mo</td><td><a href="https://www.philo.com/login/subscribe" rel="noopener">philo.com</a></td><td>Nov 25, 2026</td><td>The source page says &quot;starting at&quot;.</td></tr>
+<tr><td>Spotify</td><td>Premium Individual</td><td class="num">$12.99/mo</td><td><a href="https://www.spotify.com/us/premium/" rel="noopener">spotify.com</a></td><td>Nov 25, 2026</td><td>In 2011: <a href="https://www.billboard.com/music/music-news/read-spotifys-us-launch-announcement-1177109/" rel="noopener">$9.99/mo</a>.</td></tr>
+<tr><td>Apple Music</td><td>Individual</td><td class="num">$11.99/mo</td><td><a href="https://www.apple.com/apple-music/" rel="noopener">apple.com</a></td><td>Nov 25, 2026</td><td>In 2015: <a href="https://www.apple.com/newsroom/2015/06/08Introducing-Apple-Music-All-The-Ways-You-Love-Music-All-in-One-Place-/" rel="noopener">$9.99/mo</a>.</td></tr>
+<tr><td>YouTube Premium</td><td>Individual</td><td class="num">$15.99/mo</td><td><a href="https://www.youtube.com/premium" rel="noopener">youtube.com</a></td><td>Nov 25, 2026</td><td>In 2018: <a href="https://blog.youtube/news-and-events/introducing-youtube-premium/" rel="noopener">$11.99/mo</a>.</td></tr>
+<tr><td>YouTube Premium</td><td>Family</td><td class="num">$26.99/mo</td><td><a href="https://www.youtube.com/premium" rel="noopener">youtube.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Audible</td><td>Standard</td><td class="num">$8.99/mo</td><td><a href="https://www.audible.com/ep/memberbenefits" rel="noopener">audible.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Audible</td><td>Premium Plus</td><td class="num">$14.95/mo</td><td><a href="https://www.audible.com/ep/memberbenefits" rel="noopener">audible.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>SiriusXM</td><td>All Access</td><td class="num">$25.99/mo</td><td><a href="https://www.siriusxm.com/plans" rel="noopener">siriusxm.com</a></td><td>Nov 25, 2026</td><td>Regular price after the intro offer shown on the source page.</td></tr>
+<tr><td>iCloud+</td><td>50 GB</td><td class="num">$0.99/mo</td><td><a href="https://support.apple.com/en-us/108047" rel="noopener">support.apple.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>iCloud+</td><td>200 GB</td><td class="num">$2.99/mo</td><td><a href="https://support.apple.com/en-us/108047" rel="noopener">support.apple.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>iCloud+</td><td>2 TB</td><td class="num">$9.99/mo</td><td><a href="https://support.apple.com/en-us/108047" rel="noopener">support.apple.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Apple One</td><td>Individual</td><td class="num">$21.95/mo</td><td><a href="https://www.apple.com/apple-one/" rel="noopener">apple.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Apple One</td><td>Family</td><td class="num">$27.95/mo</td><td><a href="https://www.apple.com/apple-one/" rel="noopener">apple.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Google One</td><td>Basic (100 GB)</td><td class="num">$1.99/mo</td><td><a href="https://one.google.com/about/plans?g1_landing_page=60" rel="noopener">one.google.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Google AI Pro</td><td>5 TB</td><td class="num">$19.99/mo</td><td><a href="https://one.google.com/about/plans?g1_landing_page=60" rel="noopener">one.google.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Microsoft 365</td><td>Personal (yearly)</td><td class="num">$99.99/yr</td><td><a href="https://www.microsoft.com/en-us/microsoft-365/buy/compare-all-microsoft-365-products" rel="noopener">microsoft.com</a></td><td>Nov 25, 2026</td><td>Regular yearly price. The source page also shows a first-year offer.</td></tr>
+<tr><td>Microsoft 365</td><td>Family (yearly)</td><td class="num">$129.99/yr</td><td><a href="https://www.microsoft.com/en-us/microsoft-365/buy/compare-all-microsoft-365-products" rel="noopener">microsoft.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>1Password</td><td>Individual (billed yearly)</td><td class="num">$47.88/yr</td><td><a href="https://1password.com/pricing/personal" rel="noopener">1password.com</a></td><td>Nov 25, 2026</td><td>Regular price is $3.99 a month, billed yearly, per the source.</td></tr>
+<tr><td>Adobe Photoshop</td><td>Annual, billed monthly</td><td class="num">$22.99/mo</td><td><a href="https://www.adobe.com/products/photoshop/plans.html" rel="noopener">adobe.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>ChatGPT</td><td>Plus</td><td class="num">$20.00/mo</td><td><a href="https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus" rel="noopener">help.openai.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Claude</td><td>Pro (billed monthly)</td><td class="num">$20.00/mo</td><td><a href="https://claude.com/pricing" rel="noopener">claude.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>GitHub Copilot</td><td>Pro</td><td class="num">$10.00/mo</td><td><a href="https://github.com/features/copilot/plans" rel="noopener">github.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Xbox Game Pass</td><td>Essential</td><td class="num">$9.99/mo</td><td><a href="https://www.xbox.com/en-US/xbox-game-pass" rel="noopener">xbox.com</a></td><td>Nov 25, 2026</td><td>In 2017: <a href="https://news.xbox.com/en-us/2017/02/28/introducing-xbox-game-pass/" rel="noopener">$9.99/mo</a>.</td></tr>
+<tr><td>Xbox Game Pass</td><td>Premium</td><td class="num">$14.99/mo</td><td><a href="https://www.xbox.com/en-US/xbox-game-pass" rel="noopener">xbox.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Xbox Game Pass</td><td>Ultimate</td><td class="num">$22.99/mo</td><td><a href="https://www.xbox.com/en-US/xbox-game-pass" rel="noopener">xbox.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>PlayStation Plus</td><td>Essential (1 month)</td><td class="num">$10.99/mo</td><td><a href="https://www.playstation.com/en-us/ps-plus/" rel="noopener">playstation.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>PlayStation Plus</td><td>Extra (1 month)</td><td class="num">$16.99/mo</td><td><a href="https://www.playstation.com/en-us/ps-plus/" rel="noopener">playstation.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>PlayStation Plus</td><td>Premium (1 month)</td><td class="num">$19.99/mo</td><td><a href="https://www.playstation.com/en-us/ps-plus/" rel="noopener">playstation.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Nintendo Switch Online</td><td>Individual</td><td class="num">$19.99/yr</td><td><a href="https://www.nintendo.com/us/online/" rel="noopener">nintendo.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Apple Arcade</td><td>Monthly</td><td class="num">$6.99/mo</td><td><a href="https://www.apple.com/apple-arcade/" rel="noopener">apple.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Amazon Prime</td><td>Monthly</td><td class="num">$14.99/mo</td><td><a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=G34EUPKVMYFW8N2U" rel="noopener">amazon.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Amazon Prime</td><td>Yearly</td><td class="num">$139.00/yr</td><td><a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=G34EUPKVMYFW8N2U" rel="noopener">amazon.com</a></td><td>Nov 25, 2026</td><td>In 2005: <a href="https://press.aboutamazon.com/2005/2/amazon-com-announces-record-free-cash-flow-fueled-by-lower-prices-and-free-shipping-introduces-new-express-shipping-program-amazon-prime" rel="noopener">$79.00/yr</a>.</td></tr>
+<tr><td>Uber One</td><td>Monthly</td><td class="num">$9.99/mo</td><td><a href="https://www.uber.com/us/en/uber-one/" rel="noopener">uber.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Instacart+</td><td>Yearly</td><td class="num">$99.00/yr</td><td><a href="https://www.instacart.com/instacart-plus" rel="noopener">instacart.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Peloton</td><td>App One</td><td class="num">$12.99/mo</td><td><a href="https://www.onepeloton.com/app" rel="noopener">onepeloton.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Peloton</td><td>App+</td><td class="num">$28.99/mo</td><td><a href="https://www.onepeloton.com/app" rel="noopener">onepeloton.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Strava</td><td>Yearly</td><td class="num">$79.99/yr</td><td><a href="https://www.strava.com/subscribe" rel="noopener">strava.com</a></td><td>Nov 25, 2026</td><td></td></tr>
+<tr><td>Headspace</td><td>Monthly</td><td class="num">$12.99/mo</td><td><a href="https://www.headspace.com/subscriptions" rel="noopener">headspace.com</a></td><td>Nov 25, 2026</td><td></td></tr></tbody>
+  </table>
+  </div>
+ </details>
+ <p class="links"><a href="../streaming-price-history/">Since launch</a><a href="../data/">Price data (CSV)</a></p>
+</section>
+</main>
+<div class="total" id="total" role="region" aria-label="Your total">
+ <div class="tot-life"><span class="tot-k">To age <span id="t-end">80</span> <span id="t-example" class="tag">Example</span></span><b id="t-life">$21,582.00</b></div>
+ <div class="tot-month"><b id="t-month">$35.97</b> a month<span id="t-annual" class="tot-sub" hidden></span><span class="tot-sub tot-day"><span id="t-day">$1.18</span> a day</span></div>
+ <button type="button" id="sharebtn" class="share" aria-haspopup="dialog">Share</button>
+</div>
+<dialog id="share-dlg" aria-labelledby="share-h">
+ <p id="share-h" class="dlg-h">Your receipt</p>
+ <img id="share-img" alt="Your receipt" width="540" height="675">
+ <div class="dlg-acts">
+  <a id="x-post" class="btn" href="https://x.com/intent/post" target="_blank" rel="noopener noreferrer">Post to X</a>
+  <button type="button" id="save" class="btn">Download image</button>
+  <button type="button" id="share" class="btn">Copy link</button>
+ </div>
+ <span id="share-msg" role="status"></span>
+ <form method="dialog"><button class="dlg-x">Close</button></form>
+</dialog>
+<script type="application/json" id="data">{"asOf":"Nov 25, 2026","end":80,"example":["netflix-std","spotify","icloud-200"],"items":[{"id":"netflix-ads","service":"Netflix","plan":"Standard with ads","price":8.99,"per":"month","source":"https://help.netflix.com/en/node/24926","checked":"2026-11-25"},{"id":"netflix-std","service":"Netflix","plan":"Standard","price":19.99,"per":"month","source":"https://help.netflix.com/en/node/24926","checked":"2026-11-25"},{"id":"netflix-prem","service":"Netflix","plan":"Premium","price":26.99,"per":"month","source":"https://help.netflix.com/en/node/24926","checked":"2026-11-25"},{"id":"disney-ads","service":"Disney+","plan":"With ads","price":12.49,"per":"month","source":"https://help.disneyplus.com/article/disneyplus-price","checked":"2026-11-25","then":{"year":2019,"price":6.99,"per":"month","url":"https://thewaltdisneycompany.com/news/disney-launches-today-and-a-new-era-of-disney-entertainment-begins/","what":"Disney+ launch price (one plan, no ads tier yet), The Walt Disney Company"}},{"id":"disney-premium","service":"Disney+","plan":"Premium (no ads)","price":21.49,"per":"month","source":"https://help.disneyplus.com/article/disneyplus-price","checked":"2026-11-25","then":{"year":2019,"price":6.99,"per":"month","url":"https://thewaltdisneycompany.com/news/disney-launches-today-and-a-new-era-of-disney-entertainment-begins/","what":"Disney+ launch price (one plan, no ads tier yet), The Walt Disney Company"}},{"id":"hulu-ads","service":"Hulu","plan":"With ads","price":12.49,"per":"month","source":"https://help.hulu.com/article/hulu-how-much-does-hulu-cost","checked":"2026-11-25"},{"id":"hulu-premium","service":"Hulu","plan":"Premium (no ads)","price":21.49,"per":"month","source":"https://help.hulu.com/article/hulu-how-much-does-hulu-cost","checked":"2026-11-25"},{"id":"disney-hulu","service":"Disney+, Hulu Bundle","plan":"With ads","price":12.99,"per":"month","source":"https://help.disneyplus.com/article/disneyplus-price","checked":"2026-11-25"},{"id":"max-basic","service":"HBO Max","plan":"Basic with Ads","price":10.99,"per":"month","source":"https://help.hbomax.com/us/Answer/Detail/000002547","checked":"2026-11-25"},{"id":"max-std","service":"HBO Max","plan":"Standard","price":18.49,"per":"month","source":"https://help.hbomax.com/us/Answer/Detail/000002547","checked":"2026-11-25"},{"id":"max-prem","service":"HBO Max","plan":"Premium","price":22.99,"per":"month","source":"https://help.hbomax.com/us/Answer/Detail/000002547","checked":"2026-11-25"},{"id":"peacock-select","service":"Peacock","plan":"Select","price":8.99,"per":"month","source":"https://www.peacocktv.com/plans/base","checked":"2026-11-25"},{"id":"peacock-prem","service":"Peacock","plan":"Premium","price":12.99,"per":"month","source":"https://www.peacocktv.com/plans/base","checked":"2026-11-25"},{"id":"peacock-plus","service":"Peacock","plan":"Premium Plus","price":19.99,"per":"month","source":"https://www.peacocktv.com/plans/base","checked":"2026-11-25"},{"id":"apple-tv","service":"Apple TV","plan":"Monthly","price":14.99,"per":"month","source":"https://www.apple.com/apple-tv/","checked":"2026-11-25","then":{"year":2019,"price":4.99,"per":"month","url":"https://www.apple.com/newsroom/2019/09/apple-tv-launches-november-1-featuring-originals-from-the-worlds-greatest-storytellers/","what":"Apple TV+ launch price, Apple Newsroom"}},{"id":"amc-ads","service":"AMC+","plan":"Monthly with ads","price":7.99,"per":"month","source":"https://www.amcplus.com/","checked":"2026-11-25"},{"id":"amc-prem","service":"AMC+","plan":"Monthly Premium (no ads)","price":10.99,"per":"month","source":"https://www.amcplus.com/","checked":"2026-11-25"},{"id":"espn-unl","service":"ESPN","plan":"Unlimited","price":31.99,"per":"month","source":"https://plus.espn.com/","checked":"2026-11-25"},{"id":"yt-tv","service":"YouTube TV","plan":"Base plan","price":82.99,"per":"month","source":"https://tv.youtube.com/welcome/","checked":"2026-11-25"},{"id":"philo","service":"Philo","plan":"Base plan","price":25,"per":"month","source":"https://www.philo.com/login/subscribe","checked":"2026-11-25"},{"id":"spotify","service":"Spotify","plan":"Premium Individual","price":12.99,"per":"month","source":"https://www.spotify.com/us/premium/","checked":"2026-11-25","then":{"year":2011,"price":9.99,"per":"month","url":"https://www.billboard.com/music/music-news/read-spotifys-us-launch-announcement-1177109/","what":"US launch price of Spotify Premium, from the launch press release (Billboard reprint)"}},{"id":"apple-music","service":"Apple Music","plan":"Individual","price":11.99,"per":"month","source":"https://www.apple.com/apple-music/","checked":"2026-11-25","then":{"year":2015,"price":9.99,"per":"month","url":"https://www.apple.com/newsroom/2015/06/08Introducing-Apple-Music-All-The-Ways-You-Love-Music-All-in-One-Place-/","what":"Apple Music individual price at launch, Apple Newsroom"}},{"id":"yt-premium","service":"YouTube Premium","plan":"Individual","price":15.99,"per":"month","source":"https://www.youtube.com/premium","checked":"2026-11-25","then":{"year":2018,"price":11.99,"per":"month","url":"https://blog.youtube/news-and-events/introducing-youtube-premium/","what":"YouTube Premium launch price, YouTube Official Blog"}},{"id":"yt-family","service":"YouTube Premium","plan":"Family","price":26.99,"per":"month","source":"https://www.youtube.com/premium","checked":"2026-11-25"},{"id":"audible-std","service":"Audible","plan":"Standard","price":8.99,"per":"month","source":"https://www.audible.com/ep/memberbenefits","checked":"2026-11-25"},{"id":"audible-pp","service":"Audible","plan":"Premium Plus","price":14.95,"per":"month","source":"https://www.audible.com/ep/memberbenefits","checked":"2026-11-25"},{"id":"sxm-all","service":"SiriusXM","plan":"All Access","price":25.99,"per":"month","source":"https://www.siriusxm.com/plans","checked":"2026-11-25"},{"id":"icloud-50","service":"iCloud+","plan":"50 GB","price":0.99,"per":"month","source":"https://support.apple.com/en-us/108047","checked":"2026-11-25"},{"id":"icloud-200","service":"iCloud+","plan":"200 GB","price":2.99,"per":"month","source":"https://support.apple.com/en-us/108047","checked":"2026-11-25"},{"id":"icloud-2tb","service":"iCloud+","plan":"2 TB","price":9.99,"per":"month","source":"https://support.apple.com/en-us/108047","checked":"2026-11-25"},{"id":"apple-one","service":"Apple One","plan":"Individual","price":21.95,"per":"month","source":"https://www.apple.com/apple-one/","checked":"2026-11-25"},{"id":"apple-one-fam","service":"Apple One","plan":"Family","price":27.95,"per":"month","source":"https://www.apple.com/apple-one/","checked":"2026-11-25"},{"id":"gone-100","service":"Google One","plan":"Basic (100 GB)","price":1.99,"per":"month","source":"https://one.google.com/about/plans?g1_landing_page=60","checked":"2026-11-25"},{"id":"gone-aipro","service":"Google AI Pro","plan":"5 TB","price":19.99,"per":"month","source":"https://one.google.com/about/plans?g1_landing_page=60","checked":"2026-11-25"},{"id":"m365-personal","service":"Microsoft 365","plan":"Personal (yearly)","price":99.99,"per":"year","source":"https://www.microsoft.com/en-us/microsoft-365/buy/compare-all-microsoft-365-products","checked":"2026-11-25"},{"id":"m365-family","service":"Microsoft 365","plan":"Family (yearly)","price":129.99,"per":"year","source":"https://www.microsoft.com/en-us/microsoft-365/buy/compare-all-microsoft-365-products","checked":"2026-11-25"},{"id":"1password","service":"1Password","plan":"Individual (billed yearly)","price":47.88,"per":"year","source":"https://1password.com/pricing/personal","checked":"2026-11-25"},{"id":"photoshop","service":"Adobe Photoshop","plan":"Annual, billed monthly","price":22.99,"per":"month","source":"https://www.adobe.com/products/photoshop/plans.html","checked":"2026-11-25"},{"id":"chatgpt-plus","service":"ChatGPT","plan":"Plus","price":20,"per":"month","source":"https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus","checked":"2026-11-25"},{"id":"claude-pro","service":"Claude","plan":"Pro (billed monthly)","price":20,"per":"month","source":"https://claude.com/pricing","checked":"2026-11-25"},{"id":"copilot-pro","service":"GitHub Copilot","plan":"Pro","price":10,"per":"month","source":"https://github.com/features/copilot/plans","checked":"2026-11-25"},{"id":"gamepass-ess","service":"Xbox Game Pass","plan":"Essential","price":9.99,"per":"month","source":"https://www.xbox.com/en-US/xbox-game-pass","checked":"2026-11-25","then":{"year":2017,"price":9.99,"per":"month","url":"https://news.xbox.com/en-us/2017/02/28/introducing-xbox-game-pass/","what":"Xbox Game Pass launch price (one plan), Xbox Wire"}},{"id":"gamepass-prem","service":"Xbox Game Pass","plan":"Premium","price":14.99,"per":"month","source":"https://www.xbox.com/en-US/xbox-game-pass","checked":"2026-11-25"},{"id":"gamepass-ult","service":"Xbox Game Pass","plan":"Ultimate","price":22.99,"per":"month","source":"https://www.xbox.com/en-US/xbox-game-pass","checked":"2026-11-25"},{"id":"psplus-ess","service":"PlayStation Plus","plan":"Essential (1 month)","price":10.99,"per":"month","source":"https://www.playstation.com/en-us/ps-plus/","checked":"2026-11-25"},{"id":"psplus-extra","service":"PlayStation Plus","plan":"Extra (1 month)","price":16.99,"per":"month","source":"https://www.playstation.com/en-us/ps-plus/","checked":"2026-11-25"},{"id":"psplus-prem","service":"PlayStation Plus","plan":"Premium (1 month)","price":19.99,"per":"month","source":"https://www.playstation.com/en-us/ps-plus/","checked":"2026-11-25"},{"id":"nso","service":"Nintendo Switch Online","plan":"Individual","price":19.99,"per":"year","source":"https://www.nintendo.com/us/online/","checked":"2026-11-25"},{"id":"apple-arcade","service":"Apple Arcade","plan":"Monthly","price":6.99,"per":"month","source":"https://www.apple.com/apple-arcade/","checked":"2026-11-25"},{"id":"prime-month","service":"Amazon Prime","plan":"Monthly","price":14.99,"per":"month","source":"https://www.amazon.com/gp/help/customer/display.html?nodeId=G34EUPKVMYFW8N2U","checked":"2026-11-25"},{"id":"prime-year","service":"Amazon Prime","plan":"Yearly","price":139,"per":"year","source":"https://www.amazon.com/gp/help/customer/display.html?nodeId=G34EUPKVMYFW8N2U","checked":"2026-11-25","then":{"year":2005,"price":79,"per":"year","url":"https://press.aboutamazon.com/2005/2/amazon-com-announces-record-free-cash-flow-fueled-by-lower-prices-and-free-shipping-introduces-new-express-shipping-program-amazon-prime","what":"Amazon Prime launch fee, Amazon press release"}},{"id":"prime-video","service":"Prime Video","plan":"Standalone","price":8.99,"per":"month","source":"https://www.amazon.com/gp/help/customer/display.html?nodeId=G34EUPKVMYFW8N2U","checked":"2026-11-25"},{"id":"uber-one","service":"Uber One","plan":"Monthly","price":9.99,"per":"month","source":"https://www.uber.com/us/en/uber-one/","checked":"2026-11-25"},{"id":"instacart","service":"Instacart+","plan":"Yearly","price":99,"per":"year","source":"https://www.instacart.com/instacart-plus","checked":"2026-11-25"},{"id":"peloton-one","service":"Peloton","plan":"App One","price":12.99,"per":"month","source":"https://www.onepeloton.com/app","checked":"2026-11-25"},{"id":"peloton-plus","service":"Peloton","plan":"App+","price":28.99,"per":"month","source":"https://www.onepeloton.com/app","checked":"2026-11-25"},{"id":"strava","service":"Strava","plan":"Yearly","price":79.99,"per":"year","source":"https://www.strava.com/subscribe","checked":"2026-11-25"},{"id":"headspace","service":"Headspace","plan":"Monthly","price":12.99,"per":"month","source":"https://www.headspace.com/subscriptions","checked":"2026-11-25"}]}</script>
+<script src="scan.js" defer></script>
+</body>
+</html>

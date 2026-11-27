@@ -8,6 +8,7 @@ const out = join(here, 'docs');
 const data = JSON.parse(readFileSync(join(here, 'data/prices.json'), 'utf8'));
 const SITE = 'https://totalmonthlypricing.com/';
 import { EXAMPLE_IDS } from './scripts/example.mjs';
+import { scanPage, SCAN_DIR } from './scan-page.mjs';
 export const EXAMPLE = EXAMPLE_IDS;
 const PH = `${SITE}streaming-price-history/`;
 const APP_LD = { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Total Monthly Pricing', url: SITE, description: 'Tick the subscriptions you pay. A receipt prints your monthly total and what you will pay each company by age 80. Every price links its source.', applicationCategory: 'FinanceApplication', operatingSystem: 'Any', browserRequirements: 'Requires JavaScript', isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } };
@@ -402,6 +403,7 @@ ${CSV_COLS.map(([n, d]) => `      <tr><th scope="row"><code>${n}</code></th><td>
 </body>
 </html>`;
 
+const scanHTML = scanPage({ data, SITE, AGE, END, EXAMPLE, asOf, esc, usd, usdC, perLabel, host, fmtDate, tableHTML, exMonth, exYear, exLife, OG_HOME, OG_ALT });
 rmSync(out, { recursive: true, force: true });
 mkdirSync(join(out, 'fonts'), { recursive: true });
 mkdirSync(join(out, 'data'), { recursive: true });
@@ -417,6 +419,9 @@ for (const f of readdirSync(join(here, 'src/fonts'))) copyFileSync(join(here, 's
 copyFileSync(join(here, 'data/prices.json'), join(out, 'data/prices.json'));
 writeFileSync(join(out, 'data/index.html'), dataHTML);
 writeFileSync(join(out, 'data/prices.csv'), csvText);
+mkdirSync(join(out, SCAN_DIR), { recursive: true });
+writeFileSync(join(out, SCAN_DIR, 'index.html'), scanHTML);
+for (const f of ['scan.css', 'scan.js']) copyFileSync(join(here, 'src', f), join(out, SCAN_DIR, f));
 writeFileSync(join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}sitemap.xml\n`);
 writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[SITE, PH, ...(DATA_INDEXED ? [DATA] : [])].map((u) => `<url><loc>${u}</loc></url>`).join('')}</urlset>\n`);
 writeFileSync(join(out, 'CNAME'), 'totalmonthlypricing.com'); // no trailing newline: same bytes as the committed file
