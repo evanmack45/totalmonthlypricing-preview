@@ -419,6 +419,6 @@ writeFileSync(join(out, 'data/index.html'), dataHTML);
 writeFileSync(join(out, 'data/prices.csv'), csvText);
 writeFileSync(join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}sitemap.xml\n`);
 writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[SITE, PH, ...(DATA_INDEXED ? [DATA] : [])].map((u) => `<url><loc>${u}</loc></url>`).join('')}</urlset>\n`);
-writeFileSync(join(out, 'CNAME'), 'totalmonthlypricing.com\n');
+writeFileSync(join(out, 'CNAME'), 'totalmonthlypricing.com'); // no trailing newline: same bytes as the committed file
 writeFileSync(join(out, '.nojekyll'), '');
 console.log(`built ${out}: ${data.items.length} prices, ${groups.length} groups, as of ${asOf}`);
