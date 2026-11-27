@@ -166,3 +166,4 @@ dialog::backdrop { background: rgba(29, 26, 22, .55); }
 /* Popular count, inside the i panel, below the price source */
 .pop-n { margin-top: 10px; padding-top: 10px; border-top: 2px dashed var(--ink); }
 .pop .pop-k { font-weight: 700; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; }
+.pop .pop-scope { font-style: italic; }

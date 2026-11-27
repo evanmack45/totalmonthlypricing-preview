@@ -7,7 +7,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const out = join(here, 'docs');
 const data = JSON.parse(readFileSync(join(here, 'data/prices.json'), 'utf8'));
 const SITE = 'https://totalmonthlypricing.com/';
-import { EXAMPLE_IDS } from './scripts/example.mjs';
+import { EXAMPLE_IDS, SCAN_EXAMPLE_IDS } from './scripts/example.mjs';
 import { scanPage, SCAN_DIR } from './scan-page.mjs';
 export const EXAMPLE = EXAMPLE_IDS;
 const PH = `${SITE}streaming-price-history/`;
@@ -28,7 +28,7 @@ for (const it of data.items) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(it.checked)) throw new Error(`${it.id}: bad date`);
   if (it.then && !/^https:\/\//.test(it.then.url)) throw new Error(`${it.id}: bad then url`);
 }
-for (const id of EXAMPLE) if (!ids.has(id)) throw new Error(`example ${id} missing`);
+for (const id of [...EXAMPLE, ...SCAN_EXAMPLE_IDS]) if (!ids.has(id)) throw new Error(`example ${id} missing`);
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const cents = (n) => Math.round(Number(n) * 100);
@@ -403,7 +403,7 @@ ${CSV_COLS.map(([n, d]) => `      <tr><th scope="row"><code>${n}</code></th><td>
 </body>
 </html>`;
 
-const scanHTML = scanPage({ data, SITE, AGE, END, EXAMPLE, asOf, esc, usd, usdC, perLabel, host, fmtDate, tableHTML, exMonth, exYear, exLife, OG_HOME, OG_ALT });
+const scanHTML = scanPage({ data, SITE, AGE, END, EXAMPLE: SCAN_EXAMPLE_IDS, monthC, yearC, asOf, esc, usd, usdC, perLabel, host, fmtDate, tableHTML, exMonth, exYear, exLife, OG_HOME, OG_ALT });
 rmSync(out, { recursive: true, force: true });
 mkdirSync(join(out, 'fonts'), { recursive: true });
 mkdirSync(join(out, 'data'), { recursive: true });

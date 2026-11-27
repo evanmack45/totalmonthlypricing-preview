@@ -106,16 +106,9 @@
   // ---------- filters ----------
   let cur = 'popular';
   const popular = new Set(data.popular);
-  const tilesEl = $('#tiles');
-  // Popular: your picks first, then by published count (unranked last). Every other chip: data order.
-  // Order is set when a chip is opened, never on a tap, so tiles don't move under a finger.
-  const orderFor = (c) => c === 'popular' ? [...data.popular.filter((id) => sel.has(id)), ...data.popular.filter((id) => !sel.has(id))] : data.items.map((it) => it.id);
-  const wrapOf = new Map(wraps.map((w) => [w.dataset.id, w]));
+  // The grid order is fixed in the HTML (Popular ranking first); chips only show and hide tiles.
   const show = (c) => {
     cur = c;
-    const want = orderFor(c), rest = data.items.map((it) => it.id).filter((id) => !want.includes(id));
-    const ids = [...want, ...rest];
-    if ([...tilesEl.children].some((w, i) => w.dataset.id !== ids[i])) for (const id of ids) tilesEl.append(wrapOf.get(id));
     for (const b of chips) b.setAttribute('aria-pressed', String(b.dataset.cat === c));
     for (const w of wraps) w.hidden = !(c === 'all' || (c === 'picked' ? sel.has(w.dataset.id) : c === 'popular' ? popular.has(w.dataset.id) : w.dataset.cat === c));
     $('#none-picked').hidden = !(c === 'picked' && !sel.size);
@@ -380,6 +373,6 @@
   // ---------- start ----------
   if (readHash()) touched = true; else { sel.clear(); for (const id of data.example) sel.set(id, null); }
   ageIn.value = age;
-  render(); show(cur);
-  addEventListener('hashchange', () => { if (readHash()) { touched = true; ageIn.value = age; render(); show(cur); } });
+  render();
+  addEventListener('hashchange', () => { if (readHash()) { touched = true; ageIn.value = age; render(); } });
 })();

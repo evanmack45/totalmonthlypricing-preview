@@ -1,16 +1,124 @@
 {
-  "about": "Popular chip on /scan-preview/. Ranked by each company's own most recent published count for the service. Counts measure different things; 'measure' quotes what the source counts. 'count' is the number the source states (a floor where it says 'over' or 'more than') and is used only to sort. null = no service-specific count published; listed after the ranked ones. Separate from price sources in prices.json. Checked 2026-11-27.",
-  "checked": "2026-11-27",
-  "items": [
-    { "id": "netflix-std", "count": 325000000, "countText": "Over 325 million", "measure": "paid memberships, global", "period": "crossed during Q4 2025", "source": "https://www.sec.gov/Archives/edgar/data/1065280/000106528026000033/ex991_q425.htm", "publisher": "Netflix shareholder letter", "published": "2026-01-20", "note": "Netflix stopped reporting quarterly counts in 2025; its 2026 letters give no newer total." },
-    { "id": "spotify", "count": 306000000, "countText": "306 million", "measure": "Premium subscribers, global", "period": "Q3 2026", "source": "https://newsroom.spotify.com/2026-10-22/spotify-q3-2026-earnings/", "publisher": "Spotify Q3 2026 earnings", "published": "2026-10-22" },
-    { "id": "yt-premium", "count": 150000000, "countText": "Over 150 million", "measure": "YouTube Music and Premium subscribers combined, global, including trials", "period": "Q3 2026", "source": "https://blog.google/company-news/inside-google/message-ceo/alphabet-earnings-q3-2026/", "publisher": "Alphabet Q3 2026 earnings, CEO remarks", "published": "2026-10-28" },
-    { "id": "max-basic", "count": 140000000, "countText": "More than 140 million", "measure": "global streaming subscribers, counting HBO Max, HBO, discovery+ and sports streaming together", "period": "end of Q1 2026", "source": "https://www.sec.gov/Archives/edgar/data/1437107/000143710726000055/a992wbd1q26earningsshare.htm", "publisher": "Warner Bros. Discovery Q1 2026 shareholder letter", "published": "2026-05-06", "note": "Its last own count before the Skydance merger. Not HBO Max alone." },
-    { "id": "disney-ads", "count": 131600000, "countText": "131.6 million", "measure": "Disney+ paid subscribers, global", "period": "Sept 27, 2025", "source": "https://investors.thewaltdisneycompany.com/news/news-details/2025/The-Walt-Disney-Company-Reports-Fourth-Quarter-and-Full-Year-Earnings-for-Fiscal-2025/default.aspx", "publisher": "Disney fiscal 2025 Q4 earnings", "published": "2025-11-13", "note": "Disney stopped reporting subscriber counts after this." },
-    { "id": "hulu-ads", "count": 64100000, "countText": "64.1 million", "measure": "Hulu paid subscribers (SVOD Only and Live TV)", "period": "Sept 27, 2025", "source": "https://investors.thewaltdisneycompany.com/news/news-details/2025/The-Walt-Disney-Company-Reports-Fourth-Quarter-and-Full-Year-Earnings-for-Fiscal-2025/default.aspx", "publisher": "Disney fiscal 2025 Q4 earnings", "published": "2025-11-13", "note": "Disney stopped reporting subscriber counts after this." },
-    { "id": "uber-one", "count": 55000000, "countText": "About 55 million", "measure": "Uber One members, global", "period": "Q3 2026", "source": "https://s23.q4cdn.com/407969754/files/doc_earnings/2026/q3/transcript/Uber-Q3-26-Prepared-Remarks.pdf", "publisher": "Uber Q3 2026 prepared remarks", "published": "2026-11-04" },
-    { "id": "peacock-select", "count": 48000000, "countText": "48 million", "measure": "Peacock paid subscribers", "period": "Q3 2026", "source": "https://cmcsa.gcs-web.com/news-releases/news-release-details/comcast-reports-3rd-quarter-2026-results", "publisher": "Comcast Q3 2026 results", "published": "2026-10-22" },
-    { "id": "sxm-all", "count": 31260000, "countText": "31.26 million", "measure": "SiriusXM self-pay subscribers", "period": "Sept 30, 2026", "source": "https://investor.siriusxm.com/sec-filings/all-sec-filings/content/0000908937-26-000027/siriq32026earningsrelease.htm", "publisher": "SiriusXM Q3 2026 results", "published": "2026-10-29" },
-    { "id": "icloud-200", "count": null, "countText": "Not published", "measure": "Apple gives no iCloud+ count. It reports over 1.5 billion paid subscriptions across all Apple services and App Store apps", "period": "Q4 fiscal 2026", "source": "https://www.fool.com/earnings/call-transcripts/2026/11/02/apple-aapl-q4-2026-earnings-call-transcript/", "publisher": "Apple earnings call (transcript)", "published": "2026-11-02", "note": "Not ranked: the Apple-wide figure is not an iCloud+ count." }
-  ]
+ "about": "Popular chip on /scan-preview/. Ranked by each company's own most recent published count for the service. Counts measure different things; 'measure' quotes what the source counts. 'count' is the number the source states (a floor where it says 'over' or 'more than') and is used only to sort. null = no service-specific count published; not ranked; 'slots' puts it at a fixed place in the grid (iCloud+ third) and the page says it is not ranked. Each tile is the service's entry plan; the count is for the whole service, never the plan. Separate from price sources in prices.json. Checked 2026-11-27.",
+ "checked": "2026-11-27",
+ "items": [
+  {
+   "id": "netflix-ads",
+   "count": 325000000,
+   "countText": "Over 325 million",
+   "measure": "paid memberships, global",
+   "period": "crossed during Q4 2025",
+   "source": "https://www.sec.gov/Archives/edgar/data/1065280/000106528026000033/ex991_q425.htm",
+   "publisher": "Netflix shareholder letter",
+   "published": "2026-01-20",
+   "note": "Netflix stopped reporting quarterly counts in 2025; its 2026 letters give no newer total.",
+   "scope": "Counts all of Netflix, every plan, not just this one."
+  },
+  {
+   "id": "spotify",
+   "count": 306000000,
+   "countText": "306 million",
+   "measure": "Premium subscribers, global",
+   "period": "Q3 2026",
+   "source": "https://newsroom.spotify.com/2026-10-22/spotify-q3-2026-earnings/",
+   "publisher": "Spotify Q3 2026 earnings",
+   "published": "2026-10-22",
+   "scope": "Counts all Spotify Premium plans, not just this one."
+  },
+  {
+   "id": "yt-premium",
+   "count": 150000000,
+   "countText": "Over 150 million",
+   "measure": "YouTube Music and Premium subscribers combined, global, including trials",
+   "period": "Q3 2026",
+   "source": "https://blog.google/company-news/inside-google/message-ceo/alphabet-earnings-q3-2026/",
+   "publisher": "Alphabet Q3 2026 earnings, CEO remarks",
+   "published": "2026-10-28",
+   "scope": "Counts YouTube Music and YouTube Premium together, every plan, not just this one."
+  },
+  {
+   "id": "max-basic",
+   "count": 140000000,
+   "countText": "More than 140 million",
+   "measure": "global streaming subscribers, counting HBO Max, HBO, discovery+ and sports streaming together",
+   "period": "end of Q1 2026",
+   "source": "https://www.sec.gov/Archives/edgar/data/1437107/000143710726000055/a992wbd1q26earningsshare.htm",
+   "publisher": "Warner Bros. Discovery Q1 2026 shareholder letter",
+   "published": "2026-05-06",
+   "note": "Its last own count before the Skydance merger. Not HBO Max alone.",
+   "scope": "Counts all of the company's streaming, every plan: more than HBO Max alone."
+  },
+  {
+   "id": "disney-ads",
+   "count": 131600000,
+   "countText": "131.6 million",
+   "measure": "Disney+ paid subscribers, global",
+   "period": "Sept 27, 2025",
+   "source": "https://investors.thewaltdisneycompany.com/news/news-details/2025/The-Walt-Disney-Company-Reports-Fourth-Quarter-and-Full-Year-Earnings-for-Fiscal-2025/default.aspx",
+   "publisher": "Disney fiscal 2025 Q4 earnings",
+   "published": "2025-11-13",
+   "note": "Disney stopped reporting subscriber counts after this.",
+   "scope": "Counts all of Disney+, every plan, not just this one."
+  },
+  {
+   "id": "hulu-ads",
+   "count": 64100000,
+   "countText": "64.1 million",
+   "measure": "Hulu paid subscribers (SVOD Only and Live TV)",
+   "period": "Sept 27, 2025",
+   "source": "https://investors.thewaltdisneycompany.com/news/news-details/2025/The-Walt-Disney-Company-Reports-Fourth-Quarter-and-Full-Year-Earnings-for-Fiscal-2025/default.aspx",
+   "publisher": "Disney fiscal 2025 Q4 earnings",
+   "published": "2025-11-13",
+   "note": "Disney stopped reporting subscriber counts after this.",
+   "scope": "Counts all of Hulu, every plan, not just this one."
+  },
+  {
+   "id": "uber-one",
+   "count": 55000000,
+   "countText": "About 55 million",
+   "measure": "Uber One members, global",
+   "period": "Q3 2026",
+   "source": "https://s23.q4cdn.com/407969754/files/doc_earnings/2026/q3/transcript/Uber-Q3-26-Prepared-Remarks.pdf",
+   "publisher": "Uber Q3 2026 prepared remarks",
+   "published": "2026-11-04",
+   "scope": "Counts all Uber One members, every plan."
+  },
+  {
+   "id": "peacock-select",
+   "count": 48000000,
+   "countText": "48 million",
+   "measure": "Peacock paid subscribers",
+   "period": "Q3 2026",
+   "source": "https://cmcsa.gcs-web.com/news-releases/news-release-details/comcast-reports-3rd-quarter-2026-results",
+   "publisher": "Comcast Q3 2026 results",
+   "published": "2026-10-22",
+   "scope": "Counts all of Peacock, every plan, not just this one."
+  },
+  {
+   "id": "sxm-all",
+   "count": 31260000,
+   "countText": "31.26 million",
+   "measure": "SiriusXM self-pay subscribers",
+   "period": "Sept 30, 2026",
+   "source": "https://investor.siriusxm.com/sec-filings/all-sec-filings/content/0000908937-26-000027/siriq32026earningsrelease.htm",
+   "publisher": "SiriusXM Q3 2026 results",
+   "published": "2026-10-29",
+   "scope": "Counts all SiriusXM self-pay plans, not just this one."
+  },
+  {
+   "id": "icloud-50",
+   "count": null,
+   "countText": "Not published",
+   "measure": "Apple gives no iCloud+ count. It reports over 1.5 billion paid subscriptions across all Apple services and App Store apps",
+   "period": "Q4 fiscal 2026",
+   "source": "https://www.fool.com/earnings/call-transcripts/2026/11/02/apple-aapl-q4-2026-earnings-call-transcript/",
+   "publisher": "Apple earnings call (transcript)",
+   "published": "2026-11-02",
+   "note": "Not ranked: the Apple-wide figure is not an iCloud+ count.",
+   "scope": "Apple gives no count for iCloud+ or any of its plans."
+  }
+ ],
+ "slots": {
+  "icloud-50": 3
+ }
 }

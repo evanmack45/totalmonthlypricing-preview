@@ -25,21 +25,30 @@ const CATS = [
   ['games', 'Games', ['Games']],
   ['more', 'Shop & fitness', ['Shopping & delivery', 'Fitness & mind']],
 ];
-export function scanPage({ data, SITE, AGE, END, EXAMPLE, asOf, esc, usd, usdC, perLabel, host, fmtDate, tableHTML, exMonth, exYear, exLife, OG_HOME, OG_ALT }) {
+export function scanPage({ data, SITE, AGE, END, EXAMPLE, monthC, yearC, asOf, esc, usd, usdC, perLabel, host, fmtDate, tableHTML, OG_HOME, OG_ALT }) {
+  // The preview's own default basket (SCAN_EXAMPLE_IDS), so the bar on first paint matches the ticked tiles.
+  const exItems = EXAMPLE.map((id) => data.items.find((i) => i.id === id));
+  const exMonth = exItems.reduce((t, it) => t + monthC(it), 0), exYear = exItems.reduce((t, it) => t + yearC(it), 0), exLife = exYear * (END - AGE);
   // Ranked by the published count, biggest first; services with no service-specific count go last.
   const byIdAll = new Map(data.items.map((it) => [it.id, it]));
   for (const p of POP.items) {
     const it = byIdAll.get(p.id); if (!it) throw new Error(`popularity: unknown id ${p.id}`);
-    for (const k of ['countText', 'measure', 'period', 'source', 'publisher', 'published']) if (!p[k]) throw new Error(`popularity ${p.id}: missing ${k}`);
+    for (const k of ['countText', 'measure', 'scope', 'period', 'source', 'publisher', 'published']) if (!p[k]) throw new Error(`popularity ${p.id}: missing ${k}`);
     if (!/^https:\/\//.test(p.source) || !/^\d{4}-\d{2}-\d{2}$/.test(p.published)) throw new Error(`popularity ${p.id}: bad source or date`);
     if (p.count !== null && !(Number.isInteger(p.count) && p.count > 0)) throw new Error(`popularity ${p.id}: count must be a published integer or null`);
   }
   if (new Set(POP.items.map((p) => byIdAll.get(p.id).service)).size !== POP.items.length) throw new Error('popularity: one tile per service');
-  const POPULAR = [...POP.items].sort((a, b) => (a.count === null) - (b.count === null) || (b.count ?? 0) - (a.count ?? 0));
-  const popOf = new Map(POPULAR.map((p, i) => [p.id, { ...p, rank: p.count === null ? 0 : i + 1 }]));
-  // First paint matches scan.js show('popular'): your picks (the example) first, then the ranking.
-  const popIds = POPULAR.map((p) => p.id);
-  const firstOrder = [...popIds.filter((id) => EXAMPLE.includes(id)), ...popIds.filter((id) => !EXAMPLE.includes(id)), ...data.items.map((it) => it.id).filter((id) => !popOf.has(id))];
+  // Ranked: biggest published count first. Unranked services (no count of their own) sit at a fixed slot from
+  // popularity.json "slots" and say "not ranked"; they never get a number. The order never changes on the page.
+  const ranked = POP.items.filter((p) => p.count !== null).sort((a, b) => b.count - a.count);
+  const unranked = POP.items.filter((p) => p.count === null);
+  for (const p of unranked) if (!(POP.slots && Number.isInteger(POP.slots[p.id]))) throw new Error(`popularity ${p.id}: no count, so it needs a fixed slot`);
+  const popOf = new Map(ranked.map((p, i) => [p.id, { ...p, rank: i + 1 }]));
+  for (const p of unranked) popOf.set(p.id, { ...p, rank: 0 });
+  const popIds = ranked.map((p) => p.id);
+  for (const p of [...unranked].sort((a, b) => POP.slots[a.id] - POP.slots[b.id])) popIds.splice(POP.slots[p.id] - 1, 0, p.id);
+  for (const id of EXAMPLE) if (!popIds.includes(id) || popIds.indexOf(id) >= 6) throw new Error(`example ${id} must be one of Popular's first 6 tiles`);
+  const firstOrder = [...popIds, ...data.items.map((it) => it.id).filter((id) => !popOf.has(id))];
   const catOf = (it) => { const c = CATS.find(([, , gs]) => gs.includes(it.group)); if (!c) throw new Error(`${it.id}: group ${it.group} has no scan filter`); return c[0]; };
   const logo = (it) => {
     const l = LOGOS[it.service]; if (!l) throw new Error(`${it.service}: no logo entry`);
@@ -54,7 +63,7 @@ export function scanPage({ data, SITE, AGE, END, EXAMPLE, asOf, esc, usd, usdC, 
   };
   const sprite = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>${[...new Map(Object.values(LOGOS).filter((l) => l.kind === 'si').map((l) => [l.slug, l])).values()].map((l) => `<symbol id="si-${l.slug}" viewBox="0 0 24 24"><path fill="currentColor" d="${l.path}"/></symbol>`).join('')}</defs></svg>`;
   const popP = (it) => { const p = popOf.get(it.id); if (!p) return '';
-    return `<div class="pop-n" data-pop="${p.rank || 'none'}"><p class="pop-k">Popular${p.rank ? ` #${p.rank}` : ', not ranked'}</p><p><b>${esc(p.countText)}</b> ${esc(p.measure)} (${esc(p.period)})</p><p>Count source: <a href="${esc(p.source)}" rel="noopener">${esc(p.publisher)}</a></p><p>Published ${fmtDate(p.published)}</p>${p.note ? `<p>${esc(p.note)}</p>` : ''}</div>`; };
+    return `<div class="pop-n" data-pop="${p.rank || 'none'}"><p class="pop-k">${p.rank ? `Popular #${p.rank}: ${esc(it.service)} as a whole` : 'Popular, not ranked'}</p><p><b>${esc(p.countText)}</b> ${esc(p.measure)} (${esc(p.period)})</p><p class="pop-scope">${esc(p.scope)}</p><p>Count source: <a href="${esc(p.source)}" rel="noopener">${esc(p.publisher)}</a></p><p>Published ${fmtDate(p.published)}</p>${p.note ? `<p>${esc(p.note)}</p>` : ''}</div>`; };
   const tile = (it) => `<div class="tw" data-id="${it.id}" data-cat="${catOf(it)}"${popOf.has(it.id) ? ` data-pop="${popOf.get(it.id).rank || 'none'}"` : ' hidden'}>
 <button type="button" class="tile" data-id="${it.id}" aria-pressed="${EXAMPLE.includes(it.id)}">${logo(it)}<span class="t-name">${esc(it.service)}</span><span class="t-plan">${esc(it.plan)}</span><span class="t-price">${usd(it.price)}${perLabel(it.per)}</span></button>
 <button type="button" class="info" popovertarget="src-${it.id}" aria-label="Source for ${esc(it.service)} ${esc(it.plan)}">i</button>
@@ -102,10 +111,10 @@ ${sprite}
 <section class="pick" aria-labelledby="h1">
  <div class="top">
  <picture class="art">
-  <source media="(min-width: 1100px)" type="image/avif" srcset="hero-receipt-1200x500.avif 1x, hero-receipt-2400x1000.avif 2x" width="1200" height="500">
-  <source media="(min-width: 1100px)" type="image/webp" srcset="hero-receipt-1200x500.webp 1x, hero-receipt-2400x1000.webp 2x" width="1200" height="500">
-  <source type="image/avif" srcset="hero-receipt-780x300.avif 1x, hero-receipt-1560x600.avif 2x" width="780" height="300">
-  <img src="hero-receipt-780x300.webp" srcset="hero-receipt-1560x600.webp 2x" width="780" height="300" alt="An example receipt curling out of a printer: three plans at $10, $5 and $3 a month add up to $10,800.00 over 50 years." fetchpriority="high" decoding="async">
+  <source media="(min-width: 1100px)" type="image/avif" srcset="hero-receipt-1200x500-nonum.avif 1x, hero-receipt-2400x1000-nonum.avif 2x" width="1200" height="500">
+  <source media="(min-width: 1100px)" type="image/webp" srcset="hero-receipt-1200x500-nonum.webp 1x, hero-receipt-2400x1000-nonum.webp 2x" width="1200" height="500">
+  <source type="image/avif" srcset="hero-receipt-780x300-nonum.avif 1x, hero-receipt-1560x600-nonum.avif 2x" width="780" height="300">
+  <img src="hero-receipt-780x300-nonum.webp" srcset="hero-receipt-1560x600-nonum.webp 2x" width="780" height="300" alt="A long blank example receipt curling out of a printer, with a red bar where the total goes." fetchpriority="high" decoding="async">
  </picture>
  <h1 id="h1">What do your subscriptions cost for life?</h1>
  <label class="age"><span>Your age</span><input id="age" type="number" inputmode="numeric" min="13" max="79" value="${AGE}"></label>
@@ -128,7 +137,7 @@ ${firstOrder.map((id) => tile(byIdAll.get(id))).join('\n')}
   <p>Today's list prices, held flat. Real prices tend to rise. Taxes not included.</p>
   <p>US list prices for new subscribers, checked ${asOf}. Intro and student prices left out.</p>
   <p>This page has no accounts, cookies or ads. Your picks stay in your browser.</p>
-  <p>Popular = largest published subscriber counts; companies count differently. Your picks show first. Each count's source is under its i.</p>
+  <p>Popular = largest published subscriber counts; companies count differently. Each count is for the whole service, not the plan on the tile. iCloud+ has no published count, so it sits third, not ranked. Sources are under each i.</p>
   <p>Logos belong to their owners.</p>
  </details>
  <details id="all-prices">

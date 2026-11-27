@@ -6,7 +6,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { EXAMPLE_IDS } from './example.mjs';
+import { EXAMPLE_IDS, SCAN_EXAMPLE_IDS } from './example.mjs';
 const here = dirname(fileURLToPath(import.meta.url));
 const { chromium } = await import(process.env.PW || join(here, '../../qa/node_modules/playwright/index.mjs'));
 const argv = process.argv.slice(2).filter((a) => !a.startsWith('--'));
@@ -19,20 +19,23 @@ const byId = new Map(data.items.map((i) => [i.id, i]));
 const cents = (n) => Math.round(Number(n) * 100);
 const usd = (c) => `$${Math.floor(c / 100).toLocaleString('en-US')}.${String(c % 100).padStart(2, '0')}`;
 const AGE = 30, END = 80;
-const ex = EXAMPLE_IDS.map((id) => byId.get(id));
+// --ansel stages og-receipt-v2 for the scan preview, so it uses (and checks) the preview's default basket and page.
+const ex = (ANSEL ? SCAN_EXAMPLE_IDS : EXAMPLE_IDS).map((id) => byId.get(id));
 const year = ex.reduce((s, it) => s + (it.per === 'month' ? cents(it.price) * 12 : cents(it.price)), 0);
 const month = ex.reduce((s, it) => s + (it.per === 'month' ? cents(it.price) : 0), 0);
 const want = { life: usd(year * (END - AGE)), day: usd(Math.round(year / 365.25)), month: usd(month) };
 
 const b = await chromium.launch({ channel: 'chrome' });
 const p = await b.newPage({ viewport: { width: 1280, height: 800 } });
-await p.goto(base, { waitUntil: 'networkidle' });
-const got = await p.evaluate(async () => {
+await p.goto(ANSEL ? base + 'scan-preview/' : base, { waitUntil: 'networkidle' });
+const got = await p.evaluate(async (scan) => {
   const cv = await window.__receipt();
   return { png: cv.toDataURL('image/png'), life: document.querySelector('#t-life').textContent, day: document.querySelector('#t-day').textContent,
     month: document.querySelector('#t-month').textContent, cvLife: Number(cv.dataset.life), w: cv.width, h: cv.height,
-    asOf: document.querySelector('#r-asof').textContent, example: !document.querySelector('#r-example').hidden };
-});
+    asOf: scan ? JSON.parse(document.getElementById('data').textContent).asOf : document.querySelector('#r-asof').textContent,
+    example: !document.querySelector(scan ? '#t-example' : '#r-example').hidden, picked: scan ? [...document.querySelectorAll('.tile[aria-pressed=true]')].map((t) => t.dataset.id).sort() : null };
+}, ANSEL);
+if (ANSEL && got.picked.join() !== [...SCAN_EXAMPLE_IDS].sort().join()) throw new Error(`scan preview default picks ${got.picked} != ${SCAN_EXAMPLE_IDS}`);
 for (const k of ['life', 'day', 'month']) if (got[k] !== want[k]) throw new Error(`${k}: page ${got[k]} != prices.json ${want[k]}`);
 if (usd(got.cvLife) !== want.life) throw new Error(`receipt card ${usd(got.cvLife)} != ${want.life}`);
 if (!got.example) throw new Error('page is not on the example basket');
