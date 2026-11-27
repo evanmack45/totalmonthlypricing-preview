@@ -4,6 +4,8 @@ import { readFileSync } from 'node:fs';
 export const SCAN_DIR = 'scan-preview';
 // One logo per service (scripts/make-scan-logos.mjs): Simple Icons, a press-kit file, or a letter badge.
 const { logos: LOGOS } = JSON.parse(readFileSync(new URL('./src/scan-logos.json', import.meta.url), 'utf8'));
+// Popular chip: published subscriber counts (data/popularity.json), kept apart from the price sources.
+const POP = JSON.parse(readFileSync(new URL('./data/popularity.json', import.meta.url), 'utf8'));
 // Small chip pictograms, drawn here (not logos).
 const ICON = {
   tv: '<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/>',
@@ -12,6 +14,7 @@ const ICON = {
   games: '<rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10.5v4M5 12.5h4"/><circle cx="15.5" cy="11.5" r=".8" fill="currentColor"/><circle cx="17.5" cy="14" r=".8" fill="currentColor"/>',
   more: '<path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8a3 3 0 0 1 6 0"/>',
   picked: '<path d="M4 12.5l5 5L20 6.5"/>',
+  popular: '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>',
 };
 const icon = (k) => ICON[k] ? `<svg class="ci" viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg>` : '';
 // A few big filters, made from the groups already in prices.json.
@@ -23,26 +26,42 @@ const CATS = [
   ['more', 'Shop & fitness', ['Shopping & delivery', 'Fitness & mind']],
 ];
 export function scanPage({ data, SITE, AGE, END, EXAMPLE, asOf, esc, usd, usdC, perLabel, host, fmtDate, tableHTML, exMonth, exYear, exLife, OG_HOME, OG_ALT }) {
+  // Ranked by the published count, biggest first; services with no service-specific count go last.
+  const byIdAll = new Map(data.items.map((it) => [it.id, it]));
+  for (const p of POP.items) {
+    const it = byIdAll.get(p.id); if (!it) throw new Error(`popularity: unknown id ${p.id}`);
+    for (const k of ['countText', 'measure', 'period', 'source', 'publisher', 'published']) if (!p[k]) throw new Error(`popularity ${p.id}: missing ${k}`);
+    if (!/^https:\/\//.test(p.source) || !/^\d{4}-\d{2}-\d{2}$/.test(p.published)) throw new Error(`popularity ${p.id}: bad source or date`);
+    if (p.count !== null && !(Number.isInteger(p.count) && p.count > 0)) throw new Error(`popularity ${p.id}: count must be a published integer or null`);
+  }
+  if (new Set(POP.items.map((p) => byIdAll.get(p.id).service)).size !== POP.items.length) throw new Error('popularity: one tile per service');
+  const POPULAR = [...POP.items].sort((a, b) => (a.count === null) - (b.count === null) || (b.count ?? 0) - (a.count ?? 0));
+  const popOf = new Map(POPULAR.map((p, i) => [p.id, { ...p, rank: p.count === null ? 0 : i + 1 }]));
+  // First paint matches scan.js show('popular'): your picks (the example) first, then the ranking.
+  const popIds = POPULAR.map((p) => p.id);
+  const firstOrder = [...popIds.filter((id) => EXAMPLE.includes(id)), ...popIds.filter((id) => !EXAMPLE.includes(id)), ...data.items.map((it) => it.id).filter((id) => !popOf.has(id))];
   const catOf = (it) => { const c = CATS.find(([, , gs]) => gs.includes(it.group)); if (!c) throw new Error(`${it.id}: group ${it.group} has no scan filter`); return c[0]; };
   const logo = (it) => {
     const l = LOGOS[it.service]; if (!l) throw new Error(`${it.service}: no logo entry`);
     const WIDE = ['youtubetv', 'appletv']; // Simple Icons wordmarks get a wider badge so they stay readable
     if (l.kind === 'si') return `<span class="lg${WIDE.includes(l.slug) ? ' wide' : ''}" data-logo="si" aria-hidden="true"><svg viewBox="0 0 24 24" style="color:${l.hex}"><use href="#si-${l.slug}"/></svg></span>`;
     if (l.kind === 'kit') {
-      const lazy = catOf(it) === 'tv' ? '' : ' loading="lazy"';
+      const lazy = popOf.has(it.id) ? '' : ' loading="lazy"';
       const imgs = (l.files || [[l.file, l.w, l.h]]).map(([f, w, h]) => `<img src="logos/${f}" width="${w}" height="${h}" alt="" decoding="async"${lazy}>`).join('');
       return `<span class="lg${l.wide ? ' wide' : ''}${l.dark ? ' dark' : ''}${l.files ? ' pair' : ''}" data-logo="kit" aria-hidden="true">${imgs}</span>`;
     }
     return `<span class="lg mono" data-logo="mono" data-l="${esc(l.l)}" style="--bg:${l.bg};--fg:${l.fg}" aria-hidden="true"></span>`;
   };
   const sprite = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>${[...new Map(Object.values(LOGOS).filter((l) => l.kind === 'si').map((l) => [l.slug, l])).values()].map((l) => `<symbol id="si-${l.slug}" viewBox="0 0 24 24"><path fill="currentColor" d="${l.path}"/></symbol>`).join('')}</defs></svg>`;
-  const tile = (it) => `<div class="tw" data-id="${it.id}" data-cat="${catOf(it)}"${catOf(it) === 'tv' ? '' : ' hidden'}>
+  const popP = (it) => { const p = popOf.get(it.id); if (!p) return '';
+    return `<div class="pop-n" data-pop="${p.rank || 'none'}"><p class="pop-k">Popular${p.rank ? ` #${p.rank}` : ', not ranked'}</p><p><b>${esc(p.countText)}</b> ${esc(p.measure)} (${esc(p.period)})</p><p>Count source: <a href="${esc(p.source)}" rel="noopener">${esc(p.publisher)}</a></p><p>Published ${fmtDate(p.published)}</p>${p.note ? `<p>${esc(p.note)}</p>` : ''}</div>`; };
+  const tile = (it) => `<div class="tw" data-id="${it.id}" data-cat="${catOf(it)}"${popOf.has(it.id) ? ` data-pop="${popOf.get(it.id).rank || 'none'}"` : ' hidden'}>
 <button type="button" class="tile" data-id="${it.id}" aria-pressed="${EXAMPLE.includes(it.id)}">${logo(it)}<span class="t-name">${esc(it.service)}</span><span class="t-plan">${esc(it.plan)}</span><span class="t-price">${usd(it.price)}${perLabel(it.per)}</span></button>
 <button type="button" class="info" popovertarget="src-${it.id}" aria-label="Source for ${esc(it.service)} ${esc(it.plan)}">i</button>
-<div class="pop" id="src-${it.id}" popover><p class="pop-h">${esc(it.service)} ${esc(it.plan)}</p><p>List price ${usd(it.price)}${perLabel(it.per)}</p><p>Source: <a href="${esc(it.source)}" rel="noopener">${esc(host(it.source))}</a></p><p>Checked ${fmtDate(it.checked)}</p>${it.then ? `<p>In ${it.then.year}: <a href="${esc(it.then.url)}" rel="noopener">${usd(it.then.price)}${perLabel(it.then.per)}</a></p>` : ''}<button type="button" class="pop-x" popovertarget="src-${it.id}" popovertargetaction="hide">Close</button></div>
+<div class="pop" id="src-${it.id}" popover><p class="pop-h">${esc(it.service)} ${esc(it.plan)}</p><p>List price ${usd(it.price)}${perLabel(it.per)}</p><p>Source: <a href="${esc(it.source)}" rel="noopener">${esc(host(it.source))}</a></p><p>Checked ${fmtDate(it.checked)}</p>${it.then ? `<p>In ${it.then.year}: <a href="${esc(it.then.url)}" rel="noopener">${usd(it.then.price)}${perLabel(it.then.per)}</a></p>` : ''}${popP(it)}<button type="button" class="pop-x" popovertarget="src-${it.id}" popovertargetaction="hide">Close</button></div>
 </div>`;
-  const chips = [...CATS.map(([k, label]) => [k, label]), ['all', 'All'], ['picked', 'Picked']]
-    .map(([k, label]) => `<button type="button" class="chip" data-cat="${k}" aria-pressed="${k === 'tv'}">${icon(k)}${esc(label)}<span class="n" aria-hidden="true"></span></button>`).join('');
+  const chips = [['popular', 'Popular'], ...CATS.map(([k, label]) => [k, label]), ['all', 'All'], ['picked', 'Picked']]
+    .map(([k, label]) => `<button type="button" class="chip" data-cat="${k}" aria-pressed="${k === 'popular'}">${icon(k)}${esc(label)}<span class="n" aria-hidden="true"></span></button>`).join('');
   const page = `${SITE}${SCAN_DIR}/`;
   return `<!doctype html>
 <html lang="en">
@@ -97,7 +116,7 @@ ${sprite}
  </div>
  <p class="sr" id="swap-note" role="status"></p>
  <div class="tiles" id="tiles">
-${data.items.map(tile).join('\n')}
+${firstOrder.map((id) => tile(byIdAll.get(id))).join('\n')}
  </div>
  <p class="none" id="none-picked" hidden>Nothing picked yet. Tap a service.</p>
  <noscript><p class="none">The totals need JavaScript. Every price and source is in the list below.</p></noscript>
@@ -109,6 +128,7 @@ ${data.items.map(tile).join('\n')}
   <p>Today's list prices, held flat. Real prices tend to rise. Taxes not included.</p>
   <p>US list prices for new subscribers, checked ${asOf}. Intro and student prices left out.</p>
   <p>This page has no accounts, cookies or ads. Your picks stay in your browser.</p>
+  <p>Popular = largest published subscriber counts; companies count differently. Your picks show first. Each count's source is under its i.</p>
   <p>Logos belong to their owners.</p>
  </details>
  <details id="all-prices">
@@ -139,7 +159,7 @@ ${data.items.map(tile).join('\n')}
  <span id="share-msg" role="status"></span>
  <form method="dialog"><button class="dlg-x">Close</button></form>
 </dialog>
-<script type="application/json" id="data">${JSON.stringify({ asOf, end: END, example: EXAMPLE, items: data.items.map(({ id, service, plan, price, per, source, checked, then }) => ({ id, service, plan, price, per, source, checked, then })) }).replace(/</g, '\\u003c')}</script>
+<script type="application/json" id="data">${JSON.stringify({ asOf, end: END, example: EXAMPLE, popular: popIds, items: data.items.map(({ id, service, plan, price, per, source, checked, then }) => ({ id, service, plan, price, per, source, checked, then })) }).replace(/</g, '\\u003c')}</script>
 <script src="scan.js" defer></script>
 </body>
 </html>`;
