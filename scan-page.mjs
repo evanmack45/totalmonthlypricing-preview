@@ -1,6 +1,19 @@
 // Scan layout preview (/scan-preview/): big tiles, one running total, sources one tap away.
 // Same data file and the same math as the home page. Not linked, noindex, not in the sitemap.
+import { readFileSync } from 'node:fs';
 export const SCAN_DIR = 'scan-preview';
+// One logo per service (scripts/make-scan-logos.mjs): Simple Icons, a press-kit file, or a letter badge.
+const { logos: LOGOS } = JSON.parse(readFileSync(new URL('./src/scan-logos.json', import.meta.url), 'utf8'));
+// Small chip pictograms, drawn here (not logos).
+const ICON = {
+  tv: '<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  music: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+  apps: '<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+  games: '<rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10.5v4M5 12.5h4"/><circle cx="15.5" cy="11.5" r=".8" fill="currentColor"/><circle cx="17.5" cy="14" r=".8" fill="currentColor"/>',
+  more: '<path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8a3 3 0 0 1 6 0"/>',
+  picked: '<path d="M4 12.5l5 5L20 6.5"/>',
+};
+const icon = (k) => ICON[k] ? `<svg class="ci" viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg>` : '';
 // A few big filters, made from the groups already in prices.json.
 const CATS = [
   ['tv', 'TV', ['TV', 'Live TV']],
@@ -11,13 +24,22 @@ const CATS = [
 ];
 export function scanPage({ data, SITE, AGE, END, EXAMPLE, asOf, esc, usd, usdC, perLabel, host, fmtDate, tableHTML, exMonth, exYear, exLife, OG_HOME, OG_ALT }) {
   const catOf = (it) => { const c = CATS.find(([, , gs]) => gs.includes(it.group)); if (!c) throw new Error(`${it.id}: group ${it.group} has no scan filter`); return c[0]; };
+  const logo = (it) => {
+    const l = LOGOS[it.service]; if (!l) throw new Error(`${it.service}: no logo entry`);
+    const WIDE = ['hbomax', 'youtubetv', 'appletv', 'philo.svg']; // wordmarks get a wider badge so they stay readable
+    const wide = WIDE.includes(l.slug || l.file) ? ' wide' : '';
+    if (l.kind === 'si') return `<span class="lg${wide}" data-logo="si" aria-hidden="true"><svg viewBox="0 0 24 24" style="color:${l.hex}"><use href="#si-${l.slug}"/></svg></span>`;
+    if (l.kind === 'kit') return `<span class="lg${wide}" data-logo="kit" aria-hidden="true"><img src="logos/${l.file}" width="${l.w}" height="${l.h}" alt="" decoding="async"${catOf(it) === 'tv' ? '' : ' loading="lazy"'}></span>`;
+    return `<span class="lg mono" data-logo="mono" data-l="${esc(l.l)}" style="--bg:${l.bg};--fg:${l.fg}" aria-hidden="true"></span>`;
+  };
+  const sprite = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>${[...new Map(Object.values(LOGOS).filter((l) => l.kind === 'si').map((l) => [l.slug, l])).values()].map((l) => `<symbol id="si-${l.slug}" viewBox="0 0 24 24"><path fill="currentColor" d="${l.path}"/></symbol>`).join('')}</defs></svg>`;
   const tile = (it) => `<div class="tw" data-id="${it.id}" data-cat="${catOf(it)}"${catOf(it) === 'tv' ? '' : ' hidden'}>
-<button type="button" class="tile" data-id="${it.id}" aria-pressed="${EXAMPLE.includes(it.id)}"><span class="t-name">${esc(it.service)}</span><span class="t-plan">${esc(it.plan)}</span><span class="t-price">${usd(it.price)}${perLabel(it.per)}</span></button>
+<button type="button" class="tile" data-id="${it.id}" aria-pressed="${EXAMPLE.includes(it.id)}">${logo(it)}<span class="t-name">${esc(it.service)}</span><span class="t-plan">${esc(it.plan)}</span><span class="t-price">${usd(it.price)}${perLabel(it.per)}</span></button>
 <button type="button" class="info" popovertarget="src-${it.id}" aria-label="Source for ${esc(it.service)} ${esc(it.plan)}">i</button>
 <div class="pop" id="src-${it.id}" popover><p class="pop-h">${esc(it.service)} ${esc(it.plan)}</p><p>List price ${usd(it.price)}${perLabel(it.per)}</p><p>Source: <a href="${esc(it.source)}" rel="noopener">${esc(host(it.source))}</a></p><p>Checked ${fmtDate(it.checked)}</p>${it.then ? `<p>In ${it.then.year}: <a href="${esc(it.then.url)}" rel="noopener">${usd(it.then.price)}${perLabel(it.then.per)}</a></p>` : ''}<button type="button" class="pop-x" popovertarget="src-${it.id}" popovertargetaction="hide">Close</button></div>
 </div>`;
   const chips = [...CATS.map(([k, label]) => [k, label]), ['all', 'All'], ['picked', 'Picked']]
-    .map(([k, label]) => `<button type="button" class="chip" data-cat="${k}" aria-pressed="${k === 'tv'}">${esc(label)}<span class="n" aria-hidden="true"></span></button>`).join('');
+    .map(([k, label]) => `<button type="button" class="chip" data-cat="${k}" aria-pressed="${k === 'tv'}">${icon(k)}${esc(label)}<span class="n" aria-hidden="true"></span></button>`).join('');
   const page = `${SITE}${SCAN_DIR}/`;
   return `<!doctype html>
 <html lang="en">
@@ -42,17 +64,26 @@ export function scanPage({ data, SITE, AGE, END, EXAMPLE, asOf, esc, usd, usdC, 
 <link rel="preload" href="../fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="scan.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='3' y='1' width='10' height='14' fill='%23fffdf6'/%3E%3Cpath d='M5 5h6M5 8h6M5 11h4' stroke='%23222' /%3E%3C/svg%3E">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <script>document.documentElement.className='js'</script>
 </head>
 <body>
-<header class="bar"><a class="mark" href="${SITE}">Total Monthly Pricing</a><a class="how-link" href="#how">How we count</a></header>
+${sprite}
+<header class="bar"><a class="mark" href="${SITE}"><img src="logo.svg" width="710" height="152" alt="Total Monthly Pricing"></a><a class="how-link" href="#how">How we count</a></header>
 <main>
 <section class="pick" aria-labelledby="h1">
+ <div class="top">
+ <picture class="art">
+  <source media="(min-width: 1100px)" srcset="receipt-card-760.webp" width="760" height="362">
+  <img src="receipt-strip-780.webp" width="780" height="200" alt="A long receipt roll curling across a diner floor" fetchpriority="high" decoding="async">
+ </picture>
+ <div class="top-t">
  <h1 id="h1">What do your subscriptions cost for life?</h1>
  <div class="row">
   <label class="age"><span>Your age</span><input id="age" type="number" inputmode="numeric" min="13" max="79" value="${AGE}"></label>
   <button type="button" id="clear" class="ghost">Clear all</button>
+ </div>
+ </div>
  </div>
  <div class="chips" id="chips" role="group" aria-label="Show services">${chips}</div>
  <p class="sr" id="swap-note" role="status"></p>
@@ -69,6 +100,7 @@ ${data.items.map(tile).join('\n')}
   <p>Today's list prices, held flat. Real prices tend to rise. Taxes not included.</p>
   <p>US list prices for new subscribers, checked ${asOf}. Intro and student prices left out.</p>
   <p>This page has no accounts, cookies or ads. Your picks stay in your browser.</p>
+  <p>Logos belong to their owners.</p>
  </details>
  <details>
   <summary>All ${data.items.length} prices and sources</summary>

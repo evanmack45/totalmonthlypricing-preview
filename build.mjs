@@ -1,5 +1,5 @@
 // Builds docs/ from ../data/prices.json. No dependencies.
-import { readFileSync, writeFileSync, mkdirSync, copyFileSync, readdirSync, rmSync } from 'node:fs';
+import { cpSync, readFileSync, writeFileSync, mkdirSync, copyFileSync, readdirSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -422,6 +422,8 @@ writeFileSync(join(out, 'data/prices.csv'), csvText);
 mkdirSync(join(out, SCAN_DIR), { recursive: true });
 writeFileSync(join(out, SCAN_DIR, 'index.html'), scanHTML);
 for (const f of ['scan.css', 'scan.js']) copyFileSync(join(here, 'src', f), join(out, SCAN_DIR, f));
+// Preview-only images and logos live inside /scan-preview/ so nothing outside it changes.
+cpSync(join(here, 'src/scan-assets'), join(out, SCAN_DIR), { recursive: true });
 writeFileSync(join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}sitemap.xml\n`);
 writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[SITE, PH, ...(DATA_INDEXED ? [DATA] : [])].map((u) => `<url><loc>${u}</loc></url>`).join('')}</urlset>\n`);
 writeFileSync(join(out, 'CNAME'), 'totalmonthlypricing.com'); // no trailing newline: same bytes as the committed file
