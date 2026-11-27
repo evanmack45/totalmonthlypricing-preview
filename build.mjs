@@ -7,7 +7,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const out = join(here, 'docs');
 const data = JSON.parse(readFileSync(join(here, 'data/prices.json'), 'utf8'));
 const SITE = 'https://totalmonthlypricing.com/';
-export const EXAMPLE = ['netflix-std', 'spotify', 'icloud-200'];
+import { EXAMPLE_IDS } from './scripts/example.mjs';
+export const EXAMPLE = EXAMPLE_IDS;
 const PH = `${SITE}streaming-price-history/`;
 const APP_LD = { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Total Monthly Pricing', url: SITE, description: 'Tick the subscriptions you pay. A receipt prints your monthly total and what you will pay each company by age 80. Every price links its source.', applicationCategory: 'FinanceApplication', operatingSystem: 'Any', browserRequirements: 'Requires JavaScript', isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } };
 const ldTag = `<script type="application/ld+json">${JSON.stringify(APP_LD).replace(/</g, '\\u003c')}</script>`;
@@ -78,6 +79,9 @@ const barcode = () => {
   while (x < 300) { seed = (seed * 9301 + 49297) % 233280; const w = 1 + (seed % 4); rects += `<rect x="${x}" width="${w}" height="52"/>`; x += w + 1 + (seed % 3); }
   return `<svg class="barcode" viewBox="0 0 ${x} 52" preserveAspectRatio="none" aria-hidden="true" focusable="false">${rects}</svg>`;
 };
+// Home link-card image: scripts/make-og.mjs draws it from this build with the site's own drawReceipt().
+const OG_HOME = 'og-receipt.png';
+const OG_ALT = `A receipt on orange: ${ex.map((it) => `${it.service} ${it.plan}`).join(', ')} add up to ${usdC(exLife)} from age ${AGE} to ${END}, or ${usdC(Math.round(exYear / 365.25))} a day.`;
 const receiptHTML = `
 <article class="receipt" id="receipt" aria-labelledby="r-title">
  <img class="r-stain" src="img/coffee-ring-400.webp" width="400" height="400" alt="" decoding="async" aria-hidden="true">
@@ -92,6 +96,17 @@ const receiptHTML = `
   <p class="r-due-k">To age ${END}</p>
   <p class="r-due-amt" id="t-life">${usdC(exLife)}</p>
   <p class="r-due-day">That is <span id="t-day">${usdC(Math.round(exYear / 365.25))}</span> a day, every day.</p>
+  <div class="r-actions">
+   <button type="button" id="sharebtn" class="share-main" aria-expanded="false" aria-controls="share-panel">Share receipt</button>
+   <p id="share-note" class="share-note" hidden>Tick a subscription to share your receipt.</p>
+   <div id="share-panel" class="share-panel" role="group" aria-label="Share your receipt" hidden>
+    <a id="x-post" class="btn" href="https://x.com/intent/post" target="_blank" rel="noopener noreferrer">Post to X</a>
+    <button type="button" id="save">Download image</button>
+    <button type="button" id="share">Copy link</button>
+    <p class="share-tip">Instagram: download the image, then add it to a story or post.</p>
+   </div>
+   <span id="share-msg" role="status"></span>
+  </div>
  </div>
  <p class="r-tick" aria-live="off"><span>Since you got here</span><span id="r-tick">$0.000000</span></p>
  <ol class="r-lines" id="r-lines">${ex.map((it) => lineHTML(it)).join('')}</ol>
@@ -117,13 +132,16 @@ const html = `<!doctype html>
 <meta name="description" content="Tick the subscriptions you pay. A receipt prints your monthly total and what you will pay each company by age 80. Every price links its source.">
 <meta property="og:title" content="Your subscriptions, printed for life">
 <meta property="og:description" content="Tick what you pay. Get the receipt. Every price links its source.">
-<meta property="og:image" content="${SITE}og.jpg">
+<meta property="og:image" content="${SITE}${OG_HOME}">
+<meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A single white receipt curling in a loop on a mint-green backdrop with a coral stamp circle.">
+<meta property="og:image:alt" content="${esc(OG_ALT)}">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="preload" as="image" href="img/hero.webp" imagesrcset="img/hero-800.webp 800w, img/hero.webp 1280w, img/hero-1920.webp 1920w" imagesizes="100vw">
+<meta name="twitter:image" content="${SITE}${OG_HOME}">
+<meta name="twitter:image:alt" content="${esc(OG_ALT)}">
+<link rel="preload" as="image" media="(min-width: 900px)" href="img/hero.webp" imagesrcset="img/hero-800.webp 800w, img/hero.webp 1280w, img/hero-1920.webp 1920w" imagesizes="100vw">
 ${ldTag}
 <link rel="preload" href="fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
@@ -143,17 +161,6 @@ ${ldTag}
   <p class="dek">Tick what you pay. The receipt adds it up to age 80.</p>
  </div>
  <div class="printer">${receiptHTML}
-  <div class="r-actions">
-   <button type="button" id="sharebtn" class="share-main" aria-expanded="false" aria-controls="share-panel">Share receipt</button>
-   <p id="share-note" class="share-note" hidden>Tick a subscription to share your receipt.</p>
-   <div id="share-panel" class="share-panel" role="group" aria-label="Share your receipt" hidden>
-    <a id="x-post" class="btn" href="https://x.com/intent/post" target="_blank" rel="noopener noreferrer">Post to X</a>
-    <button type="button" id="save">Download image</button>
-    <button type="button" id="share">Copy link</button>
-    <p class="share-tip">Instagram: download the image, then add it to a story or post.</p>
-   </div>
-   <span id="share-msg" role="status"></span>
-  </div>
  </div>
  <form class="picker" id="picker" aria-labelledby="pick-h" onsubmit="return false">
   <h2 id="pick-h">What do you pay for?</h2>
@@ -185,7 +192,7 @@ ${ldTag}
 <section class="about" aria-labelledby="about-h">
  <h2 id="about-h">How the math works</h2>
  <p>Monthly plans count 12 times a year, yearly plans once. The total to age 80 multiplies one year by the years you have left, at today's price.</p>
- <p>This page has no accounts, no cookies, no tracking and no ads. Your picks live in the page and, if you copy the link, in the link itself.</p>
+ <p>This page has no accounts, cookies or ads. Your picks are not sent to us or to anyone else unless you share them. They live in the page, and in the link if you copy it.</p>
 </section>
 </main>
 <a class="peek" id="peek" href="#receipt" hidden><span><b id="peek-month"></b></span><span><b id="peek-life"></b> to age ${END}</span><span class="peek-go">See receipt</span></a>
@@ -405,6 +412,7 @@ for (const f of ['style.css', 'app.js']) copyFileSync(join(here, 'src', f), join
 mkdirSync(join(out, 'img'), { recursive: true });
 for (const f of readdirSync(join(here, 'src/img'))) copyFileSync(join(here, 'src/img', f), join(out, 'img', f));
 copyFileSync(join(here, 'src/img/og.jpg'), join(out, 'og.jpg'));
+try { copyFileSync(join(here, 'src', OG_HOME), join(out, OG_HOME)); } catch { console.warn(`no src/${OG_HOME} yet: run node scripts/make-og.mjs`); }
 for (const f of readdirSync(join(here, 'src/fonts'))) copyFileSync(join(here, 'src/fonts', f), join(out, 'fonts', f));
 copyFileSync(join(here, 'data/prices.json'), join(out, 'data/prices.json'));
 writeFileSync(join(out, 'data/index.html'), dataHTML);

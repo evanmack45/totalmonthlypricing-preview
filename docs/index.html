@@ -9,13 +9,16 @@
 <meta name="description" content="Tick the subscriptions you pay. A receipt prints your monthly total and what you will pay each company by age 80. Every price links its source.">
 <meta property="og:title" content="Your subscriptions, printed for life">
 <meta property="og:description" content="Tick what you pay. Get the receipt. Every price links its source.">
-<meta property="og:image" content="https://totalmonthlypricing.com/og.jpg">
+<meta property="og:image" content="https://totalmonthlypricing.com/og-receipt.png">
+<meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A single white receipt curling in a loop on a mint-green backdrop with a coral stamp circle.">
+<meta property="og:image:alt" content="A receipt on orange: Netflix Standard, Spotify Premium Individual, iCloud+ 200 GB add up to $21,582.00 from age 30 to 80, or $1.18 a day.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="preload" as="image" href="img/hero.webp" imagesrcset="img/hero-800.webp 800w, img/hero.webp 1280w, img/hero-1920.webp 1920w" imagesizes="100vw">
+<meta name="twitter:image" content="https://totalmonthlypricing.com/og-receipt.png">
+<meta name="twitter:image:alt" content="A receipt on orange: Netflix Standard, Spotify Premium Individual, iCloud+ 200 GB add up to $21,582.00 from age 30 to 80, or $1.18 a day.">
+<link rel="preload" as="image" media="(min-width: 900px)" href="img/hero.webp" imagesrcset="img/hero-800.webp 800w, img/hero.webp 1280w, img/hero-1920.webp 1920w" imagesizes="100vw">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Total Monthly Pricing","url":"https://totalmonthlypricing.com/","description":"Tick the subscriptions you pay. A receipt prints your monthly total and what you will pay each company by age 80. Every price links its source.","applicationCategory":"FinanceApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <link rel="preload" href="fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
@@ -48,6 +51,17 @@
   <p class="r-due-k">To age 80</p>
   <p class="r-due-amt" id="t-life">$21,582.00</p>
   <p class="r-due-day">That is <span id="t-day">$1.18</span> a day, every day.</p>
+  <div class="r-actions">
+   <button type="button" id="sharebtn" class="share-main" aria-expanded="false" aria-controls="share-panel">Share receipt</button>
+   <p id="share-note" class="share-note" hidden>Tick a subscription to share your receipt.</p>
+   <div id="share-panel" class="share-panel" role="group" aria-label="Share your receipt" hidden>
+    <a id="x-post" class="btn" href="https://x.com/intent/post" target="_blank" rel="noopener noreferrer">Post to X</a>
+    <button type="button" id="save">Download image</button>
+    <button type="button" id="share">Copy link</button>
+    <p class="share-tip">Instagram: download the image, then add it to a story or post.</p>
+   </div>
+   <span id="share-msg" role="status"></span>
+  </div>
  </div>
  <p class="r-tick" aria-live="off"><span>Since you got here</span><span id="r-tick">$0.000000</span></p>
  <ol class="r-lines" id="r-lines"><li class="ln" data-id="netflix-std">
@@ -76,17 +90,6 @@
  <svg class="barcode" viewBox="0 0 301 52" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect x="0" width="1" height="52"/><rect x="4" width="2" height="52"/><rect x="7" width="3" height="52"/><rect x="12" width="4" height="52"/><rect x="19" width="1" height="52"/><rect x="21" width="2" height="52"/><rect x="25" width="3" height="52"/><rect x="31" width="4" height="52"/><rect x="36" width="1" height="52"/><rect x="39" width="2" height="52"/><rect x="44" width="3" height="52"/><rect x="48" width="4" height="52"/><rect x="54" width="1" height="52"/><rect x="58" width="2" height="52"/><rect x="61" width="3" height="52"/><rect x="66" width="4" height="52"/><rect x="73" width="1" height="52"/><rect x="75" width="2" height="52"/><rect x="79" width="3" height="52"/><rect x="85" width="4" height="52"/><rect x="90" width="1" height="52"/><rect x="93" width="2" height="52"/><rect x="98" width="3" height="52"/><rect x="102" width="4" height="52"/><rect x="108" width="1" height="52"/><rect x="112" width="2" height="52"/><rect x="115" width="3" height="52"/><rect x="120" width="4" height="52"/><rect x="127" width="1" height="52"/><rect x="129" width="2" height="52"/><rect x="133" width="3" height="52"/><rect x="139" width="4" height="52"/><rect x="144" width="1" height="52"/><rect x="147" width="2" height="52"/><rect x="152" width="3" height="52"/><rect x="156" width="4" height="52"/><rect x="162" width="1" height="52"/><rect x="166" width="2" height="52"/><rect x="169" width="3" height="52"/><rect x="174" width="4" height="52"/><rect x="181" width="1" height="52"/><rect x="183" width="2" height="52"/><rect x="187" width="3" height="52"/><rect x="193" width="4" height="52"/><rect x="198" width="1" height="52"/><rect x="201" width="2" height="52"/><rect x="206" width="3" height="52"/><rect x="210" width="4" height="52"/><rect x="216" width="1" height="52"/><rect x="220" width="2" height="52"/><rect x="223" width="3" height="52"/><rect x="228" width="4" height="52"/><rect x="235" width="1" height="52"/><rect x="237" width="2" height="52"/><rect x="241" width="3" height="52"/><rect x="247" width="4" height="52"/><rect x="252" width="1" height="52"/><rect x="255" width="2" height="52"/><rect x="260" width="3" height="52"/><rect x="264" width="4" height="52"/><rect x="270" width="1" height="52"/><rect x="274" width="2" height="52"/><rect x="277" width="3" height="52"/><rect x="282" width="4" height="52"/><rect x="289" width="1" height="52"/><rect x="291" width="2" height="52"/><rect x="295" width="3" height="52"/></svg>
  <p class="r-thanks">Thank you for subscribing</p>
 </article>
-  <div class="r-actions">
-   <button type="button" id="sharebtn" class="share-main" aria-expanded="false" aria-controls="share-panel">Share receipt</button>
-   <p id="share-note" class="share-note" hidden>Tick a subscription to share your receipt.</p>
-   <div id="share-panel" class="share-panel" role="group" aria-label="Share your receipt" hidden>
-    <a id="x-post" class="btn" href="https://x.com/intent/post" target="_blank" rel="noopener noreferrer">Post to X</a>
-    <button type="button" id="save">Download image</button>
-    <button type="button" id="share">Copy link</button>
-    <p class="share-tip">Instagram: download the image, then add it to a story or post.</p>
-   </div>
-   <span id="share-msg" role="status"></span>
-  </div>
  </div>
  <form class="picker" id="picker" aria-labelledby="pick-h" onsubmit="return false">
   <h2 id="pick-h">What do you pay for?</h2>
@@ -488,7 +491,7 @@
 <section class="about" aria-labelledby="about-h">
  <h2 id="about-h">How the math works</h2>
  <p>Monthly plans count 12 times a year, yearly plans once. The total to age 80 multiplies one year by the years you have left, at today's price.</p>
- <p>This page has no accounts, no cookies, no tracking and no ads. Your picks live in the page and, if you copy the link, in the link itself.</p>
+ <p>This page has no accounts, cookies or ads. Your picks are not sent to us or to anyone else unless you share them. They live in the page, and in the link if you copy it.</p>
 </section>
 </main>
 <a class="peek" id="peek" href="#receipt" hidden><span><b id="peek-month"></b></span><span><b id="peek-life"></b> to age 80</span><span class="peek-go">See receipt</span></a>
