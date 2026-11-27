@@ -118,7 +118,7 @@
   };
   // Picked with nothing picked would be an empty grid; show Start here instead.
   const pick = (c) => (c === 'picked' && !sel.size ? 'start' : c);
-  $('#chips').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (b) show(pick(b.dataset.cat)); });
+  $('#chips').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (!b) return; const c = pick(b.dataset.cat); if (c !== b.dataset.cat) toStart(); else show(c); });
   // Edge fades on the chip row show there is more to scroll; each fade goes away at its end.
   const chipRow = $('#chips');
   const fade = () => {
