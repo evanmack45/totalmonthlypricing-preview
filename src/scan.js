@@ -1,4 +1,5 @@
-// Total Monthly Pricing, scan layout (preview at /scan-preview/). Same data, math, hash and share card as app.js.
+// Total Monthly Pricing home page (scan layout). Same data, math and share hash format as the old home app.js,
+// so old share links (#p=id,id~price&age=N) still load.
 // The data/math/hash block is copied from app.js unchanged. drawReceipt() is the lean v4 card (names, prices, one
 // total); the home page's card follows it at promotion.
 (() => {
@@ -149,11 +150,11 @@
   const allPrices = $('#all-prices');
   const openPrices = () => { allPrices.open = true; };
   $('#src-link').addEventListener('click', openPrices);
-  if (location.hash === '#all-prices') openPrices();
+  if (location.hash === '#all-prices' || location.hash === '#prices') openPrices(); // #prices: the old home's anchor
 
   // ---------- share (same flow as app.js; the panel is a dialog with the card) ----------
   const CANONICAL = 'https://totalmonthlypricing.com/';
-  // The preview shares and links the real home page, never /scan-preview/.
+  // Shares and links always point at the canonical home, never localhost.
   const publicPage = () => CANONICAL;
   const publicLink = (hash) => `${publicPage()}${hash && hash !== '#' ? (hash.startsWith('#') ? hash : '#' + hash) : ''}`;
   const publicFooter = (hash) => publicLink(hash).replace(/^https?:\/\//, '');
@@ -324,7 +325,7 @@
     const g = cv.getContext('2d'); g.scale(K, K);
     g.fillStyle = '#fffdf6'; g.fillRect(0, 0, W, H);
     try {
-      const perf = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = '../img/perforation.webp'; });
+      const perf = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = 'img/perforation.webp'; });
       g.drawImage(perf, 0, Math.floor(perf.height * 0.35), perf.width, Math.floor(perf.height * 0.3), 0, 0, W, 14);
     } catch { /* decorative; receipt still prints without it */ }
     g.fillStyle = '#ece6da'; g.beginPath(); g.moveTo(0, H); for (let x = 0; x <= W; x += 12) g.lineTo(x, H - (x / 12 % 2 ? 10 : 0)); g.lineTo(W, H); g.fill();

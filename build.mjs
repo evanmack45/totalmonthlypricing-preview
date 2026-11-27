@@ -8,7 +8,7 @@ const out = join(here, 'docs');
 const data = JSON.parse(readFileSync(join(here, 'data/prices.json'), 'utf8'));
 const SITE = 'https://totalmonthlypricing.com/';
 import { EXAMPLE_IDS, SCAN_EXAMPLE_IDS } from './scripts/example.mjs';
-import { scanPage, SCAN_DIR } from './scan-page.mjs';
+import { scanPage, previewRedirect, SCAN_DIR } from './scan-page.mjs';
 export const EXAMPLE = EXAMPLE_IDS;
 const PH = `${SITE}streaming-price-history/`;
 const APP_LD = { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Total Monthly Pricing', url: SITE, description: 'Tick the subscriptions you pay. A receipt prints your monthly total and what you will pay each company by age 80. Every price links its source.', applicationCategory: 'FinanceApplication', operatingSystem: 'Any', browserRequirements: 'Requires JavaScript', isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } };
@@ -403,14 +403,24 @@ ${CSV_COLS.map(([n, d]) => `      <tr><th scope="row"><code>${n}</code></th><td>
 </body>
 </html>`;
 
-const scanHTML = scanPage({ data, SITE, AGE, END, EXAMPLE: SCAN_EXAMPLE_IDS, monthC, yearC, asOf, esc, usd, usdC, perLabel, host, fmtDate, tableHTML, exMonth, exYear, exLife, OG_HOME, OG_ALT });
+// Promoted 11/27/2026 (Shears PASS 0414406, Dash: promote on PASS): the scan layout is the home page. The old receipt
+// page above (html, app.js) is no longer written; its code stays until the next cleanup so the diff stays small.
+// Link card: og-receipt-v2.png, a new path so share caches don't keep the old basket. make-og.mjs --ansel draws it from
+// this page and fails if its numbers differ from prices.json for SCAN_EXAMPLE_IDS.
+const SCAN_OG = 'og-receipt-v2.png';
+const HOME_LASTMOD = '2026-11-27'; // the day the home page changed to the scan layout
+const scanEx = SCAN_EXAMPLE_IDS.map((id) => data.items.find((i) => i.id === id));
+const scanYear = scanEx.reduce((t, it) => t + yearC(it), 0);
+const SCAN_OG_ALT = `A receipt on orange: ${scanEx.map((it) => `${it.service} ${it.plan}`).join(', ')} add up to ${usdC(scanYear * (END - AGE))} from age ${AGE} to ${END}, or ${usdC(Math.round(scanYear / 365.25))} a day.`;
+const SCAN_LD = { ...APP_LD, description: `Tap the subscriptions you pay. See your monthly total and what you will pay by age ${END}. Every price links its source.` };
+const scanHTML = scanPage({ data, SITE, AGE, END, EXAMPLE: SCAN_EXAMPLE_IDS, monthC, yearC, asOf, esc, usd, usdC, perLabel, host, fmtDate, tableHTML, exMonth, exYear, exLife, OG_HOME: SCAN_OG, OG_ALT: SCAN_OG_ALT, LD: `<script type="application/ld+json">${JSON.stringify(SCAN_LD).replace(/</g, '\\u003c')}</script>` });
 rmSync(out, { recursive: true, force: true });
 mkdirSync(join(out, 'fonts'), { recursive: true });
 mkdirSync(join(out, 'data'), { recursive: true });
-writeFileSync(join(out, 'index.html'), html);
+writeFileSync(join(out, 'index.html'), scanHTML);
 mkdirSync(join(out, 'streaming-price-history'), { recursive: true });
 writeFileSync(join(out, 'streaming-price-history/index.html'), phHTML);
-for (const f of ['style.css', 'app.js']) copyFileSync(join(here, 'src', f), join(out, f));
+copyFileSync(join(here, 'src/style.css'), join(out, 'style.css')); // history and /data/ pages
 mkdirSync(join(out, 'img'), { recursive: true });
 for (const f of readdirSync(join(here, 'src/img'))) copyFileSync(join(here, 'src/img', f), join(out, 'img', f));
 copyFileSync(join(here, 'src/img/og.jpg'), join(out, 'og.jpg'));
@@ -420,12 +430,13 @@ copyFileSync(join(here, 'data/prices.json'), join(out, 'data/prices.json'));
 writeFileSync(join(out, 'data/index.html'), dataHTML);
 writeFileSync(join(out, 'data/prices.csv'), csvText);
 mkdirSync(join(out, SCAN_DIR), { recursive: true });
-writeFileSync(join(out, SCAN_DIR, 'index.html'), scanHTML);
-for (const f of ['scan.css', 'scan.js']) copyFileSync(join(here, 'src', f), join(out, SCAN_DIR, f));
-// Preview-only images and logos live inside /scan-preview/ so nothing outside it changes.
-cpSync(join(here, 'src/scan-assets'), join(out, SCAN_DIR), { recursive: true });
+writeFileSync(join(out, SCAN_DIR, 'index.html'), previewRedirect({ SITE }));
+copyFileSync(join(here, 'src/scan-assets', SCAN_OG), join(out, SCAN_DIR, SCAN_OG)); // the staged card URL Shears/Dash saw keeps working
+for (const f of ['scan.css', 'scan.js']) copyFileSync(join(here, 'src', f), join(out, f));
+// Home images, logos, favicons and the link card sit at the site root.
+cpSync(join(here, 'src/scan-assets'), out, { recursive: true });
 writeFileSync(join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}sitemap.xml\n`);
-writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[SITE, PH, ...(DATA_INDEXED ? [DATA] : [])].map((u) => `<url><loc>${u}</loc></url>`).join('')}</urlset>\n`);
+writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[SITE, PH, ...(DATA_INDEXED ? [DATA] : [])].map((u) => `<url><loc>${u}</loc>${u === SITE ? `<lastmod>${HOME_LASTMOD}</lastmod>` : ''}</url>`).join('')}</urlset>\n`);
 writeFileSync(join(out, 'CNAME'), 'totalmonthlypricing.com'); // no trailing newline: same bytes as the committed file
 writeFileSync(join(out, '.nojekyll'), '');
 console.log(`built ${out}: ${data.items.length} prices, ${groups.length} groups, as of ${asOf}`);

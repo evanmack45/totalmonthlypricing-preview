@@ -19,7 +19,7 @@ const byId = new Map(data.items.map((i) => [i.id, i]));
 const cents = (n) => Math.round(Number(n) * 100);
 const usd = (c) => `$${Math.floor(c / 100).toLocaleString('en-US')}.${String(c % 100).padStart(2, '0')}`;
 const AGE = 30, END = 80;
-// --ansel stages og-receipt-v2 for the scan preview, so it uses (and checks) the preview's default basket and page.
+// --ansel draws og-receipt-v2 for the home (scan layout), so it uses (and checks) that page's default basket.
 const ex = (ANSEL ? SCAN_EXAMPLE_IDS : EXAMPLE_IDS).map((id) => byId.get(id));
 const year = ex.reduce((s, it) => s + (it.per === 'month' ? cents(it.price) * 12 : cents(it.price)), 0);
 const month = ex.reduce((s, it) => s + (it.per === 'month' ? cents(it.price) : 0), 0);
@@ -27,7 +27,7 @@ const want = { life: usd(year * (END - AGE)), day: usd(Math.round(year / 365.25)
 
 const b = await chromium.launch({ channel: 'chrome' });
 const p = await b.newPage({ viewport: { width: 1280, height: 800 } });
-await p.goto(ANSEL ? base + 'scan-preview/' : base, { waitUntil: 'networkidle' });
+await p.goto(base, { waitUntil: 'networkidle' }); // --ansel: the scan layout is the home page since 11/27
 const got = await p.evaluate(async (scan) => {
   const cv = await window.__receipt();
   return { png: cv.toDataURL('image/png'), life: document.querySelector('#t-life').textContent, day: document.querySelector('#t-day').textContent,
@@ -107,7 +107,7 @@ html,body{margin:0;width:1200px;height:630px;overflow:hidden;background:#FF6A2B;
 .asof{position:absolute;left:60px;top:522px;margin:0;font:400 18px/1 var(--mono);color:#4A4239}
 .hero{position:absolute;left:380px;top:318px;width:800px;height:308px}
 </style></head><body><div class="wrap">
-<img class="lock" src="scan-preview/logo.svg" alt="">
+<img class="lock" src="logo.svg" alt="">
 <p class="names">${esc(names)}</p>
 <p class="h"><span class="h-life">${esc(lifeBig)} by age ${END}.</span><br><span class="h-day">${esc(want.day)} a day, every day.</span></p>
 <p class="asof">List prices, ${esc(got.asOf)}</p>

@@ -1,7 +1,7 @@
-// Scan layout preview (/scan-preview/): big tiles, one running total, sources one tap away.
-// Same data file and the same math as the home page. Not linked, noindex, not in the sitemap.
+// The home page (/), scan layout: big tiles, one running total, sources one tap away. Promoted from /scan-preview/
+// on 11/27/2026 after Shears PASSED 0414406. /scan-preview/ is now a noindex redirect to / (see previewRedirect).
 import { readFileSync } from 'node:fs';
-export const SCAN_DIR = 'scan-preview';
+export const SCAN_DIR = 'scan-preview'; // old preview path, kept as a redirect
 // One logo per service (scripts/make-scan-logos.mjs): Simple Icons, a press-kit file, or a letter badge.
 const { logos: LOGOS } = JSON.parse(readFileSync(new URL('./src/scan-logos.json', import.meta.url), 'utf8'));
 // Start here chip: published subscriber counts (data/published-counts.json), kept apart from the price sources.
@@ -25,8 +25,8 @@ const CATS = [
   ['games', 'Games', ['Games']],
   ['more', 'Shop & fitness', ['Shopping & delivery', 'Fitness & mind']],
 ];
-export function scanPage({ data, SITE, AGE, END, EXAMPLE, monthC, yearC, asOf, esc, usd, usdC, perLabel, host, fmtDate, tableHTML, OG_HOME, OG_ALT }) {
-  // The preview's own default basket (SCAN_EXAMPLE_IDS), so the bar on first paint matches the ticked tiles.
+export function scanPage({ data, SITE, AGE, END, EXAMPLE, monthC, yearC, asOf, esc, usd, usdC, perLabel, host, fmtDate, tableHTML, OG_HOME, OG_ALT, LD }) {
+  // The page's default basket (SCAN_EXAMPLE_IDS), so the bar on first paint matches the ticked tiles.
   const exItems = EXAMPLE.map((id) => data.items.find((i) => i.id === id));
   const exMonth = exItems.reduce((t, it) => t + monthC(it), 0), exYear = exItems.reduce((t, it) => t + yearC(it), 0), exLife = exYear * (END - AGE);
   // Ranked by the published count, biggest first; services with no service-specific count go last.
@@ -83,7 +83,6 @@ export function scanPage({ data, SITE, AGE, END, EXAMPLE, monthC, yearC, asOf, e
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="robots" content="noindex">
 <link rel="canonical" href="${SITE}">
 <title>Total Monthly Pricing: what your subscriptions cost for life</title>
 <meta name="description" content="Tap the subscriptions you pay. See your monthly total and what you will pay by age ${END}. Every price links its source.">
@@ -99,8 +98,9 @@ export function scanPage({ data, SITE, AGE, END, EXAMPLE, monthC, yearC, asOf, e
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="${SITE}${OG_HOME}">
 <meta name="twitter:image:alt" content="${esc(OG_ALT)}">
-<link rel="preload" href="../fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="../fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
+${LD}
+<link rel="preload" href="fonts/instrument.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/departure.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="scan.css">
 <link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -142,7 +142,7 @@ ${firstOrder.map((id) => tile(byIdAll.get(id))).join('\n')}
   <p>Today's list prices, held flat. Real prices tend to rise. Taxes not included.</p>
   <p>US list prices for new subscribers, checked ${asOf}. Intro and student prices left out.</p>
   <p>This page has no accounts, cookies or ads. Your picks stay in your browser.</p>
-  <p>Start here lists large published subscriber counts, with iCloud+ parked third because it has no count. Each count is for the whole service, not the plan on the tile. Sources are under each i.</p>
+  <p>Start here lists large published subscriber counts. Each count is for the whole service, not the plan on the tile. Sources are under each i.</p>
   <p>Logos belong to their owners.</p>
  </details>
  <details id="all-prices">
@@ -154,7 +154,7 @@ ${firstOrder.map((id) => tile(byIdAll.get(id))).join('\n')}
   </table>
   </div>
  </details>
- <p class="links"><a href="../streaming-price-history/">Since launch</a><a href="../data/">Price data (CSV)</a></p>
+ <p class="links"><a href="streaming-price-history/">Since launch</a><a href="data/">Price data (CSV)</a></p>
 </section>
 </main>
 <div class="total" id="total" role="region" aria-label="Your total">
@@ -177,4 +177,25 @@ ${firstOrder.map((id) => tile(byIdAll.get(id))).join('\n')}
 <script src="scan.js" defer></script>
 </body>
 </html>`;
+}
+
+// /scan-preview/ after promotion: links Shears and Dash hold keep working. noindex, canonical to /, meta refresh
+// (drops the hash) plus a script that keeps the hash (#p=...&age=...), and a plain link for no-JS.
+export function previewRedirect({ SITE }) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="${SITE}">
+<title>Moved: Total Monthly Pricing</title>
+<script>location.replace('../' + location.search + location.hash)</script>
+<meta http-equiv="refresh" content="0; url=../">
+</head>
+<body>
+<p>This page moved to <a href="../">totalmonthlypricing.com</a>.</p>
+</body>
+</html>
+`;
 }
