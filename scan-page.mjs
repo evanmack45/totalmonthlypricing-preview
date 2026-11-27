@@ -121,7 +121,6 @@ ${sprite}
  </div>
  <div class="filters">
   <div class="chips" id="chips" role="group" aria-label="Show services">${chips}</div>
-  <button type="button" id="clear" class="ghost">Clear all</button>
  </div>
  <p class="sr" id="swap-note" role="status"></p>
  <div class="tiles" id="tiles">
@@ -154,8 +153,8 @@ ${firstOrder.map((id) => tile(byIdAll.get(id))).join('\n')}
 </main>
 <div class="total" id="total" role="region" aria-label="Your total">
  <div class="tot-life"><span class="tot-k">To age <span id="t-end">${END}</span> <span id="t-example" class="tag">Example</span><span id="t-count" class="tag tag-n" hidden></span></span><b id="t-life">${usdC(exLife)}</b></div>
- <div class="tot-month"><b id="t-month">${usdC(exMonth)}</b> a month<span id="t-annual" class="tot-sub" hidden></span><span class="tot-sub tot-day"><span id="t-day">${usdC(Math.round(exYear / 365.25))}</span> a day</span></div>
- <button type="button" id="sharebtn" class="share" aria-haspopup="dialog">Share</button>
+ <div class="tot-month"><b id="t-month">${usdC(exMonth)}</b><span> a month</span><span id="t-annual" class="tot-sub" hidden></span><span class="tot-sub tot-day"><span id="t-day">${usdC(Math.round(exYear / 365.25))}</span> a day</span><span id="t-hint" class="tot-sub" hidden>Tap a service to add it up</span></div>
+ <div class="tot-acts"><button type="button" id="sharebtn" class="share" aria-haspopup="dialog">Share</button><button type="button" id="clear" class="ghost">Clear all</button></div>
 </div>
 <dialog id="share-dlg" aria-labelledby="share-h">
  <p id="share-h" class="dlg-h">Your receipt</p>
@@ -164,9 +163,9 @@ ${firstOrder.map((id) => tile(byIdAll.get(id))).join('\n')}
   <a id="x-post" class="btn" href="https://x.com/intent/post" target="_blank" rel="noopener noreferrer">Post to X</a>
   <button type="button" id="save" class="btn">Download image</button>
   <button type="button" id="share" class="btn">Copy link</button>
+  <form method="dialog"><button class="dlg-x">Close</button></form>
  </div>
  <span id="share-msg" role="status"></span>
- <form method="dialog"><button class="dlg-x">Close</button></form>
 </dialog>
 <script type="application/json" id="data">${JSON.stringify({ asOf, end: END, example: EXAMPLE, popular: popIds, items: data.items.map(({ id, service, plan, price, per, source, checked, then }) => ({ id, service, plan, price, per, source, checked, then })) }).replace(/</g, '\\u003c')}</script>
 <script src="scan.js" defer></script>

@@ -1,5 +1,6 @@
 // Total Monthly Pricing, scan layout (preview at /scan-preview/). Same data, math, hash and share card as app.js.
-// The data/math/hash block and drawReceipt() are copied from app.js unchanged (image paths point one folder up).
+// The data/math/hash block is copied from app.js unchanged. drawReceipt() is the lean v4 card (names, prices, one
+// total); the home page's card follows it at promotion.
 (() => {
   const data = JSON.parse(document.getElementById('data').textContent);
   const byId = new Map(data.items.map((it) => [it.id, it]));
@@ -20,7 +21,6 @@
     return `${sign}$${Math.floor(a / 100).toLocaleString('en-US')}.${String(a % 100).padStart(2, '0')}`;
   };
   const per = (p) => (p === 'month' ? '/mo' : '/yr');
-  const host = (u) => new URL(u).hostname.replace(/^www\./, '');
   const short = (d) => { const [y, m, day] = d.split('-'); return `${m}/${day}/${y.slice(2)}`; };
 
   // state: ordered map of id -> price the user typed (null = list price)
@@ -98,6 +98,8 @@
       c.querySelector('.n').textContent = n ? String(n) : '';
     }
     $('#clear').hidden = !sel.size;
+    $('#total').toggleAttribute('data-empty', !sel.size);
+    $('#t-hint').hidden = sel.size > 0;
     if (cur === 'picked') $('#none-picked').hidden = sel.size > 0;
     afterRender();
   };
@@ -168,7 +170,6 @@
   const syncShare = () => {
     const any = sel.size > 0;
     shareBtn.disabled = !any;
-    shareBtn.textContent = any ? 'Share' : 'Tap a service';
     xLink.href = `https://x.com/intent/post?text=${encodeURIComponent(shareText())}&url=${encodeURIComponent(shareUrl())}`;
   };
   let shareFile = null, shareKey = '', armed = false;
@@ -228,12 +229,12 @@
   });
   xLink.addEventListener('click', () => { history.replaceState(null, '', toHash()); });
 
-  // Share image: a 4:5 card, 1080x1350. Hero number, the 5 costliest lines that fit, "+N more" with its
-  // monthly sum, totals, and the canonical URL. Every shown line keeps its source host; the footer points at
-  // the page where all 58 sources are listed.
+  // Share image: a 4:5 card, 1080x1350. The 5 costliest lines that fit (name, plan, list price, subtotal to END),
+  // "+N more" with its monthly sum, one total, then one footer line: price date and the canonical URL, where all
+  // 58 sources are listed.
   const SHARE_W = 540, SHARE_H = 675, SHARE_MAX_LINES = 5;
-  // opts.hideZeroMonthly: drop the "TOTAL MONTHLY $0.00" line when nothing monthly is picked (one-off assets only;
-  // the Share card always calls drawReceipt() with no options, so it matches the home page).
+  // opts.hideZeroMonthly: drop "$0.00 a month" under the total when nothing monthly is picked (one-off assets only;
+  // the Share card always calls drawReceipt() with no options).
   const drawReceipt = async (opts = {}) => {
     await Promise.all([document.fonts.load('20px Departure'), document.fonts.load('16px Departure'), document.fonts.load('52px Departure')]);
     const W = SHARE_W, H = SHARE_H, PAD = 36, K = 2;
@@ -262,31 +263,28 @@
     const DASH = () => row('dash');
     const { m, y, a, life } = sums();
     const lifeTxt = usd(life);
-    const day = usd(Math.round(y / 365.25));
 
-    // one shown line = 2 rows (name + price, then lifetime + source host), plus optional detail rows
+    // one shown line = 2 rows (name + price, then subtotal to END), plus "your price" when it was edited
     const lineRows = (id, withThen) => {
       const it = byId.get(id); const p = priceC(id); const yv = yearC(id);
       const pr = usd(p) + per(it.per);
       const out = [];
       wrap(`${it.service} ${it.plan}`, cols - pr.length - 1).forEach((n, i) => out.push(row('lr', { l: n, r: i === 0 ? pr : '' })));
-      const amt = usd(yv * (END - age)); const h = host(it.source);
-      const left = `  to ${END} src ${h}`;
-      if (left.length + 1 + amt.length <= cols2) out.push(row('lr2', { l: left, r: amt }));
-      else { out.push(row('lr2', { l: `  to ${END}`, r: amt })); wrap(`src ${h}`, cols2 - 2).forEach((s) => out.push(row('lr2', { l: '  ' + s }))); }
+      out.push(row('lr2', { l: `  to ${END}`, r: usd(yv * (END - age)) }));
       if (sel.get(id) != null) out.push(row('lr2', { l: `  your price, list ${usd(cents(it.price))}` }));
-      if (withThen && it.then) out.push(row('lr2', { l: `  in ${it.then.year}: ${usd(cents(it.then.price))}${per(it.then.per)}` }));
-      out.push(row('gap', { gap: 3 }));
+      out.push(row('gap', { gap: 6 }));
       return out;
     };
     const sum = (rs) => rs.reduce((s, r) => s + r.h, 0);
 
-    const head = [...C('TOTAL MONTHLY PRICING'), ...C('Receipt for one life'), ...C(`Age ${age} to ${END}, prices ${data.asOf}`), DASH(), row('hero', { kicker: 'TO AGE ' + END, amount: lifeTxt, sub: `${day} a day, every day` }), DASH()];
+    // Lean card (v4 critique #8): names, prices, one total. No motto, no source hosts, no history asides;
+    // the sources live on the page the footer names.
+    const head = [...C('TOTAL MONTHLY PRICING'), ...C(`Age ${age} to ${END}`), DASH()];
     const foot = publicFooter('').replace(/#$/, '').replace(/\/$/, '');
-    const slash = foot.indexOf('/');
-    const urlRows = (slash > 0 && slash < cols && foot.length > cols) ? [...C(foot.slice(0, slash + 1)), ...C(foot.slice(slash + 1))] : wrap(foot, cols).map((s) => row('c', { s }));
-    const tailA = [DASH(), ...(opts.hideZeroMonthly && !m ? [] : [row('lr', { l: 'TOTAL MONTHLY', r: usd(m) })]), ...(a ? [row('lr', { l: 'YEARLY PLANS', r: usd(a) })] : []), row('lr', { l: 'TOTAL YEARLY', r: usd(y) })];
-    const tailB = [DASH(), ...C('List prices, flat, pre-tax. Sources:')];
+    const urlRows = [];
+    const rate = [...(opts.hideZeroMonthly && !m ? [] : [`${usd(m)} a month`]), ...(a ? [`${usd(a)} a year`] : [])].join(' + ');
+    const tailA = [DASH(), row('hero', { kicker: 'TOTAL TO AGE ' + END, amount: lifeTxt, sub: rate })];
+    const tailB = [DASH(), ...C(`List prices, ${data.asOf}`), ...C(foot)];
     const TOP = 20, BOT = 12;
     const ids = [...sel.keys()].sort((a, b) => yearC(b) - yearC(a) || monthC(b) - monthC(a));
     const fixed = TOP + sum(head) + sum(tailA) + sum(tailB) + sum(urlRows) + BOT;
@@ -317,7 +315,7 @@
 
     const rows = [...head, ...body, ...tailA];
     const free = H - TOP - BOT - sum(rows) - sum(tailB) - sum(urlRows);
-    const decor = [row('bar'), row('c', { s: 'THANK YOU FOR SUBSCRIBING' })];
+    const decor = [row('bar')];
     if (free >= sum(decor) + 24) { const s = Math.floor((free - sum(decor)) / 2); rows.push(row('gap', { gap: s }), ...decor, row('gap', { gap: free - sum(decor) - s })); }
     else rows.push(row('gap', { gap: Math.max(0, free) }));
     rows.push(...tailB, ...urlRows);
@@ -328,16 +326,6 @@
     try {
       const perf = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = '../img/perforation.webp'; });
       g.drawImage(perf, 0, Math.floor(perf.height * 0.35), perf.width, Math.floor(perf.height * 0.3), 0, 0, W, 14);
-    } catch { /* decorative; receipt still prints without it */ }
-    try {
-      const ring = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = '../img/coffee-ring.webp'; });
-      // Source ring is ~720px in an 800 canvas; draw at the 600px spec size, scaled to this card.
-      const size = 800 * (600 / 720) * (W / 576);
-      const heroBottom = TOP + sum(head);
-      let rx = -size * 0.52;
-      let ry = H - size * 0.78;
-      if (ry < heroBottom - 24) ry = heroBottom - 24;
-      g.save(); g.globalAlpha = 0.4; g.drawImage(ring, rx, ry, size, size); g.restore();
     } catch { /* decorative; receipt still prints without it */ }
     g.fillStyle = '#ece6da'; g.beginPath(); g.moveTo(0, H); for (let x = 0; x <= W; x += 12) g.lineTo(x, H - (x / 12 % 2 ? 10 : 0)); g.lineTo(W, H); g.fill();
     g.fillStyle = '#26252c'; g.textBaseline = 'top';
@@ -366,13 +354,20 @@
     cv.dataset.lines = shown.length; cv.dataset.hidden = hidden.length; cv.dataset.overflow = yy > H - BOT + 1 ? '1' : '';
     cv.dataset.monthlyLine = opts.hideZeroMonthly && !m ? '' : '1'; cv.dataset.month = m; cv.dataset.year = y; cv.dataset.life = life; cv.dataset.annual = a;
     cv.dataset.moreMonth = moreM; cv.dataset.moreYear = moreA;
+    cv.dataset.text = rows.filter((r) => r.type === 'c' || r.type === 'lr' || r.type === 'lr2' || r.type === 'hero').map((r) => r.type === 'hero' ? [r.kicker, r.amount, r.sub].join(' | ') : [r.s ?? r.l, r.r].filter(Boolean).join(' | ')).join('\n');
     return cv;
   };
   window.__receipt = drawReceipt;
 
   // ---------- start ----------
+  // Land where every pick is on screen: Popular when it holds them all (the example basket does), else Picked.
+  // Never a single category, so a shared link can't open on TV with its other picks hidden.
+  const land = () => {
+    show(!sel.size || [...sel.keys()].every((id) => popular.has(id)) ? 'popular' : 'picked');
+    const on = $('.chip[aria-pressed=true]'); chipRow.scrollLeft = on.offsetLeft - chipRow.offsetLeft - 16; fade();
+  };
   if (readHash()) touched = true; else { sel.clear(); for (const id of data.example) sel.set(id, null); }
   ageIn.value = age;
-  render();
-  addEventListener('hashchange', () => { if (readHash()) { touched = true; ageIn.value = age; render(); } });
+  render(); land();
+  addEventListener('hashchange', () => { if (readHash()) { touched = true; ageIn.value = age; render(); land(); } });
 })();
