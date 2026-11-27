@@ -54,6 +54,9 @@ h1 { font-weight: 700; font-stretch: 75%; font-size: clamp(38px, 10vw, 92px); li
    paper but kept its height, so the first screen was a black printer slot
    over a large orange gap. The slot bar itself is gone too (bar v1.1: no empty
    placeholder blocks). New lines still use the .ln.new feed animation. */
+/* The mask already hides the stain past the paper edge; clip it too, so it does not
+   make the desktop receipt column scroll when the receipt is short (empty state). */
+.receipt { overflow: clip; }
 .r-stain {
   position: absolute; left: -86px; bottom: -100px; width: 220px; height: 220px;
   pointer-events: none; z-index: 0; opacity: 0.4; user-select: none;
