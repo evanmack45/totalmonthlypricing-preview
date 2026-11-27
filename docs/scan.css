@@ -37,12 +37,13 @@ h1 { grid-area: h1; font-weight: 700; font-stretch: 75%; font-size: clamp(29px, 
 .ghost { flex: none; min-height: 48px; padding: 4px 12px; border: 0; border-radius: 999px; background: transparent; color: var(--ink); font-weight: 600; font-size: 15px; text-decoration: underline; text-underline-offset: 3px; }
 .ghost[hidden] { display: none; }
 
-.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px 14px; padding: 2px 16px 4px; }
+.chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px 14px; padding: 2px 16px 4px; }
 .chips::-webkit-scrollbar { display: none; }
 .chips { --fl: 0px; --fr: 0px; scroll-padding-inline: 56px; -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fl), #000 calc(100% - var(--fr)), transparent); mask-image: linear-gradient(to right, transparent, #000 var(--fl), #000 calc(100% - var(--fr)), transparent); }
-.chip { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 48px; padding: 8px 16px; border: 2px solid var(--ink); border-radius: 999px; background: var(--cream); font-weight: 700; font-size: 16px; }
+.chip { flex: none; display: inline-flex; align-items: center; gap: 5px; min-height: 48px; padding: 8px 12px; border: 2px solid var(--ink); border-radius: 999px; background: var(--cream); font-weight: 700; font-size: 16px; }
 .ci { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .chip[aria-pressed=true] { background: var(--ink); color: var(--paper); }
+.chip .n:empty { display: none; }
 .chip .n:not(:empty) { min-width: 22px; padding: 1px 6px; border-radius: 999px; background: var(--orange); color: var(--ink); font-size: 14px; text-align: center; }
 
 .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
@@ -57,7 +58,7 @@ h1 { grid-area: h1; font-weight: 700; font-stretch: 75%; font-size: clamp(29px, 
    get shorter, never wider (no wide pills, nothing clipped). */
 .lg.wide { overflow: visible; }
 .lg.wide svg { width: 26px; height: 26px; }
-.lg.wide img { width: 32px; height: 24px; }
+.lg.wide img { width: 36px; height: 30px; } /* wordmarks use the badge's full width (2px inset) */
 .lg.dark { background: #000; box-shadow: none; }
 .lg.pair { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
 .lg.pair img { width: 32px; height: 13px; }
@@ -83,7 +84,8 @@ h1 { grid-area: h1; font-weight: 700; font-stretch: 75%; font-size: clamp(29px, 
 .pop p { margin: 0 0 6px; }
 .pop .pop-h { font-weight: 700; font-size: 18px; }
 .pop a { display: inline-flex; align-items: center; min-height: 48px; font-weight: 600; }
-.pop-x { margin-top: 8px; min-height: 48px; padding: 8px 18px; border: 0; border-radius: 999px; background: var(--ink); color: var(--paper); font-weight: 600; }
+.pop-acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.pop-x { min-height: 48px; padding: 8px 18px; border: 0; border-radius: 999px; background: var(--ink); color: var(--paper); font-weight: 600; }
 .none { margin: 16px 0; font-weight: 600; }
 
 .more { max-width: 1240px; margin: 24px auto 0; padding: 0 16px; }
@@ -133,9 +135,11 @@ body:has(#share-dlg[open]) .total { visibility: hidden; }
 .btn[data-state=copied] { background: var(--ink); color: var(--paper); }
 #share-msg { display: block; min-height: 1.4em; margin-top: 8px; font-size: 15px; overflow-wrap: anywhere; }
 .dlg-x { min-height: 48px; padding: 8px 18px; border: 0; border-radius: 999px; background: var(--ink); color: var(--paper); font-weight: 600; }
+/* desktop: Post / Download / Copy / Close on one action row, Close at its end */
+@media (min-width: 700px) { #share-dlg { width: min(600px, calc(100vw - 48px)); } .dlg-acts { flex-wrap: nowrap; } .dlg-acts form { margin-left: auto; } }
 
 @media (min-width: 1100px) { :root { --barh: 112px; } }
-@media (max-width: 370px) { .tot-life b { font-size: 26px; } .share { padding: 12px 16px; } }
+@media (max-width: 370px) { .tot-life b { font-size: 26px; } .share { padding: 12px 16px; } .chip { padding: 8px 10px; } }
 @media (min-width: 700px) {
   .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .bar, .pick, .more { padding-left: 32px; padding-right: 32px; }
@@ -154,7 +158,7 @@ body:has(#share-dlg[open]) .total { visibility: hidden; }
   .lg img { width: 32px; height: 32px; }
   .lg.mono { font-size: 25px; }
   .lg.wide svg { width: 32px; height: 32px; }
-  .lg.wide img { width: 40px; height: 30px; }
+  .lg.wide img { width: 44px; height: 38px; }
   .lg.pair img { width: 40px; height: 16px; }
   .top { grid-template-columns: minmax(0, 1fr) 380px; grid-template-areas: "h1 art" "age art"; column-gap: 32px; row-gap: 10px; margin-bottom: 14px; }
   .age { flex-direction: row; align-items: center; gap: 8px; font-size: 16px; }
@@ -175,5 +179,5 @@ body:has(#share-dlg[open]) .total { visibility: hidden; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 /* Published count, inside the i panel, below the price source */
 .pop-n { margin-top: 10px; padding-top: 10px; border-top: 2px dashed var(--ink); }
-.pop .pop-k { font-weight: 700; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; }
+.pop .pop-k { font-weight: 700; font-size: 15px; }
 .pop .pop-scope { font-style: italic; }

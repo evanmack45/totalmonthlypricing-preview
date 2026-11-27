@@ -158,10 +158,10 @@
   },
   "ChatGPT": {
    "kind": "kit",
-   "file": "chatgpt.svg",
-   "w": 721,
-   "h": 721,
-   "src": "https://openai.com/brand/ (https://cdn.openai.com/brand/OpenAI-Logos-2025.zip, OpenAI-black-monoblossom.svg)"
+   "file": "chatgpt-sq.svg",
+   "w": 489,
+   "h": 486,
+   "src": "chatgpt-sq.svg = chatgpt.svg with the viewBox tightened to the drawn mark (scripts/recrop-logos.mjs); https://openai.com/brand/ (https://cdn.openai.com/brand/OpenAI-Logos-2025.zip, OpenAI-black-monoblossom.svg)"
   },
   "SiriusXM": {
    "kind": "kit",
@@ -276,11 +276,11 @@
   },
   "HBO Max": {
    "kind": "kit",
-   "file": "hbomax.svg",
-   "w": 1091,
-   "h": 173,
+   "file": "hbomax-sq.svg",
+   "w": 643,
+   "h": 392,
    "wide": true,
-   "src": "https://commons.wikimedia.org/wiki/File:HBO_Max_May_2025_(Horizontal).svg ({{PD-Textlogo}}, {{Trademarked}}); current HBO Max wordmark; hbomax.com serves a raster; Simple Icons hbomax still draws the 2025 Max logo"
+   "src": "hbomax-sq.svg = the same paths as hbomax.svg, HBO stacked over max so it reads in a square badge (scripts/recrop-logos.mjs); https://commons.wikimedia.org/wiki/File:HBO_Max_May_2025_(Horizontal).svg ({{PD-Textlogo}}, {{Trademarked}}); current HBO Max wordmark; hbomax.com serves a raster; Simple Icons hbomax still draws the 2025 Max logo"
   }
  }
 }

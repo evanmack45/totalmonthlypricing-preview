@@ -72,7 +72,6 @@
 
   const $$ = (s) => [...document.querySelectorAll(s)];
   const tiles = $$('.tile'), wraps = $$('.tw'), chips = $$('.chip');
-  const catOf = new Map(wraps.map((w) => [w.dataset.id, w.dataset.cat]));
   let touched = false;
   const isExample = () => age === 30 && data.example.length === sel.size && data.example.every((id) => sel.has(id) && sel.get(id) == null);
 
@@ -83,9 +82,9 @@
     const ann = $('#t-annual'); ann.hidden = !a; ann.textContent = a ? `+ ${usd(a)} a year` : '';
     $('#t-life').textContent = usd(life);
     $('#t-day').textContent = usd(Math.round(y / 365.25));
-    // "Example" only until the first tap; after that the bar says how many are theirs.
+    // The starting basket carries no label (Dash 11/27: no EXAMPLE on the money). After the first tap the bar says how many are theirs.
     const ex = !touched && isExample();
-    $('#t-example').hidden = !ex;
+    $('#total').toggleAttribute('data-start', ex);
     const cnt = $('#t-count'); cnt.hidden = ex || !sel.size; cnt.textContent = `${sel.size} picked`;
     for (const t of tiles) {
       const id = t.dataset.id, it = byId.get(id);
@@ -95,7 +94,8 @@
     }
     for (const c of chips) {
       const k = c.dataset.cat;
-      const n = k === 'all' ? 0 : k === 'picked' ? sel.size : k === 'start' ? [...sel.keys()].filter((id) => starter.has(id)).length : [...sel.keys()].filter((id) => catOf.get(id) === k).length;
+      // Only Picked carries a count (Dash 11/27: 'Start here 3' pushed Music off a 390px row); the tiles' check pips show the rest.
+      const n = k === 'picked' ? sel.size : 0;
       c.querySelector('.n').textContent = n ? String(n) : '';
     }
     $('#clear').hidden = !sel.size;
@@ -116,7 +116,9 @@
     for (const w of wraps) w.hidden = !(c === 'all' || (c === 'picked' ? sel.has(w.dataset.id) : c === 'start' ? starter.has(w.dataset.id) : w.dataset.cat === c));
     $('#none-picked').hidden = !(c === 'picked' && !sel.size);
   };
-  $('#chips').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (b) show(b.dataset.cat); });
+  // Picked with nothing picked would be an empty grid; show Start here instead.
+  const pick = (c) => (c === 'picked' && !sel.size ? 'start' : c);
+  $('#chips').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (b) show(pick(b.dataset.cat)); });
   // Edge fades on the chip row show there is more to scroll; each fade goes away at its end.
   const chipRow = $('#chips');
   const fade = () => {
@@ -140,8 +142,11 @@
     const it = byId.get(id);
     swapNote.textContent = swapped ? `${it.service}: switched from ${byId.get(swapped).plan} to ${it.plan}. One plan per service.` : '';
     render(); writeHash(); bump();
+    if (cur === 'picked' && !sel.size) toStart();
   });
-  $('#clear').addEventListener('click', () => { touched = true; sel.clear(); render(); writeHash(); if (cur === 'picked') show('picked'); $('#tiles .tile')?.focus(); });
+  // Clear all never leaves an empty grid: back to Start here, chip row scrolled to its start, $0 and a one-line hint in the bar.
+  const toStart = () => { show('start'); chipRow.scrollTo({ left: 0, behavior: reduced ? 'auto' : 'smooth' }); };
+  $('#clear').addEventListener('click', () => { touched = true; sel.clear(); swapNote.textContent = ''; render(); writeHash(); toStart(); $('.tw:not([hidden]) .tile')?.focus(); });
   const ageIn = $('#age');
   ageIn.addEventListener('input', () => { const a = Number(ageIn.value); if (!ageIn.value || !Number.isFinite(a)) return; age = clampAge(a); render(); writeHash(); });
   ageIn.addEventListener('blur', () => { ageIn.value = age; });

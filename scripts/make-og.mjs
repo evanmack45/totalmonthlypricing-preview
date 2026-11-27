@@ -33,7 +33,7 @@ const got = await p.evaluate(async (scan) => {
   return { png: cv.toDataURL('image/png'), life: document.querySelector('#t-life').textContent, day: document.querySelector('#t-day').textContent,
     month: document.querySelector('#t-month').textContent, cvLife: Number(cv.dataset.life), w: cv.width, h: cv.height,
     asOf: scan ? JSON.parse(document.getElementById('data').textContent).asOf : document.querySelector('#r-asof').textContent,
-    example: !document.querySelector(scan ? '#t-example' : '#r-example').hidden, picked: scan ? [...document.querySelectorAll('.tile[aria-pressed=true]')].map((t) => t.dataset.id).sort() : null };
+    example: scan ? document.querySelector('#total').hasAttribute('data-start') : !document.querySelector('#r-example').hidden, picked: scan ? [...document.querySelectorAll('.tile[aria-pressed=true]')].map((t) => t.dataset.id).sort() : null };
 }, ANSEL);
 if (ANSEL && got.picked.join() !== [...SCAN_EXAMPLE_IDS].sort().join()) throw new Error(`scan preview default picks ${got.picked} != ${SCAN_EXAMPLE_IDS}`);
 for (const k of ['life', 'day', 'month']) if (got[k] !== want[k]) throw new Error(`${k}: page ${got[k]} != prices.json ${want[k]}`);

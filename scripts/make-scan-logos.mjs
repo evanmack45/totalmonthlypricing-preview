@@ -10,7 +10,7 @@ const SI = { 'Netflix': 'netflix', 'Apple TV': 'appletv', 'YouTube TV': 'youtube
 const KIT = {
   // Files served on the company's own site (or its press page) first; Wikimedia Commons copies of the official mark only when the site serves a raster.
   'Philo': { file: 'philo.svg', w: 256, h: 107, wide: true, src: 'https://www.philo.com/press/assets (Philo Logo, transparent, SVG format)' },
-  'ChatGPT': { file: 'chatgpt.svg', w: 721, h: 721, src: 'https://openai.com/brand/ (https://cdn.openai.com/brand/OpenAI-Logos-2025.zip, OpenAI-black-monoblossom.svg)' },
+  'ChatGPT': { file: 'chatgpt-sq.svg', w: 489, h: 486, src: 'chatgpt-sq.svg = chatgpt.svg with the viewBox tightened to the drawn mark (scripts/recrop-logos.mjs); https://openai.com/brand/ (https://cdn.openai.com/brand/OpenAI-Logos-2025.zip, OpenAI-black-monoblossom.svg)' },
   'SiriusXM': { file: 'siriusxm.png', w: 96, h: 96, src: 'https://corporate.siriusxm.com/media-assets (SiriusXM Icon - Blue, PNG, trimmed and scaled to 96px)' },
   'Hulu': { file: 'hulu.svg', w: 61, h: 24, wide: true, src: 'https://www.hulu.com/welcome header logo (inline SVG; fill set to the #1CE783 green hulu.com shows it in)' },
   'Peacock': { file: 'peacock.svg', w: 1607, h: 400, wide: true, dark: true, src: 'https://www.peacocktv.com/ header logo (inline SVG, data-testid="peacock-wob-logo", white on black)' },
@@ -24,7 +24,7 @@ const KIT = {
   'Xbox Game Pass': { file: 'xboxgamepass.svg', w: 151, h: 106, src: 'https://commons.wikimedia.org/wiki/File:Xbox_Game_Pass_new_logo_-_colored_version.svg ({{PD-textlogo}}, {{Trademarked}}); xbox.com serves a raster' },
   'Amazon Prime': { file: 'amazonprime.svg', w: 4606, h: 2724, wide: true, src: 'https://commons.wikimedia.org/wiki/File:Amazon_Prime_logo_(2024).svg ({{PD-textlogo}}, {{Trademarked}}); amazon.com serves a raster' },
   'Prime Video': { file: 'primevideo.svg', w: 846, h: 266, wide: true, src: 'https://commons.wikimedia.org/wiki/File:Prime_Video_logo_(2024).svg ({{PD-textlogo}}, {{Trademarked}}); primevideo.com serves a raster' },
-  'HBO Max': { file: 'hbomax.svg', w: 1091, h: 173, wide: true, src: 'https://commons.wikimedia.org/wiki/File:HBO_Max_May_2025_(Horizontal).svg ({{PD-Textlogo}}, {{Trademarked}}); current HBO Max wordmark; hbomax.com serves a raster; Simple Icons hbomax still draws the 2025 Max logo' },
+  'HBO Max': { file: 'hbomax-sq.svg', w: 643, h: 392, wide: true, src: 'hbomax-sq.svg = the same paths as hbomax.svg, HBO stacked over max so it reads in a square badge (scripts/recrop-logos.mjs); https://commons.wikimedia.org/wiki/File:HBO_Max_May_2025_(Horizontal).svg ({{PD-Textlogo}}, {{Trademarked}}); current HBO Max wordmark; hbomax.com serves a raster; Simple Icons hbomax still draws the 2025 Max logo' },
 };
 const MONO = {}; // letter badges: none left
 const all = Object.values(si).filter((x) => x && x.slug);

@@ -73,7 +73,7 @@ export function scanPage({ data, SITE, AGE, END, EXAMPLE, monthC, yearC, asOf, e
   const tile = (it) => `<div class="tw" data-id="${it.id}" data-cat="${catOf(it)}"${popOf.has(it.id) ? ` data-rank="${popOf.get(it.id).rank || 'none'}"` : ' hidden'}>
 <button type="button" class="tile" data-id="${it.id}" aria-pressed="${EXAMPLE.includes(it.id)}">${logo(it)}<span class="t-name">${esc(it.service)}</span><span class="t-plan">${esc(it.plan)}</span><span class="t-price">${usd(it.price)}${perLabel(it.per)}</span></button>
 <button type="button" class="info" popovertarget="src-${it.id}" aria-label="Source for ${esc(it.service)} ${esc(it.plan)}">i</button>
-<div class="pop" id="src-${it.id}" popover><p class="pop-h">${esc(it.service)} ${esc(it.plan)}</p><p>List price ${usd(it.price)}${perLabel(it.per)}</p><p>Source: <a href="${esc(it.source)}" rel="noopener">${esc(host(it.source))}</a></p><p>Checked ${fmtDate(it.checked)}</p>${it.then ? `<p>In ${it.then.year}: <a href="${esc(it.then.url)}" rel="noopener">${usd(it.then.price)}${perLabel(it.then.per)}</a></p>` : ''}${popP(it)}<button type="button" class="pop-x" popovertarget="src-${it.id}" popovertargetaction="hide">Close</button></div>
+<div class="pop" id="src-${it.id}" popover><p class="pop-h">${esc(it.service)} ${esc(it.plan)}</p><p>List price ${usd(it.price)}${perLabel(it.per)}</p><p>Source: <a href="${esc(it.source)}" rel="noopener">${esc(host(it.source))}</a></p><p>Checked ${fmtDate(it.checked)}</p>${it.then ? `<p>In ${it.then.year}: <a href="${esc(it.then.url)}" rel="noopener">${usd(it.then.price)}${perLabel(it.then.per)}</a></p>` : ''}${popP(it)}<div class="pop-acts"><button type="button" class="pop-x" popovertarget="src-${it.id}" popovertargetaction="hide">Close</button></div></div>
 </div>`;
   const chips = [['start', 'Start here'], ...CATS.map(([k, label]) => [k, label]), ['all', 'All'], ['picked', 'Picked']]
     .map(([k, label]) => `<button type="button" class="chip" data-cat="${k}" aria-pressed="${k === 'start'}">${icon(k)}${esc(label)}<span class="n" aria-hidden="true"></span></button>`).join('');
@@ -158,7 +158,7 @@ ${firstOrder.map((id) => tile(byIdAll.get(id))).join('\n')}
 </section>
 </main>
 <div class="total" id="total" role="region" aria-label="Your total">
- <div class="tot-life"><span class="tot-k">To age <span id="t-end">${END}</span> <span id="t-example" class="tag">Example</span><span id="t-count" class="tag tag-n" hidden></span></span><b id="t-life">${usdC(exLife)}</b></div>
+ <div class="tot-life"><span class="tot-k">To age <span id="t-end">${END}</span><span id="t-count" class="tag tag-n" hidden></span></span><b id="t-life">${usdC(exLife)}</b></div>
  <div class="tot-month"><b id="t-month">${usdC(exMonth)}</b><span> a month</span><span id="t-annual" class="tot-sub" hidden></span><span class="tot-sub tot-day"><span id="t-day">${usdC(Math.round(exYear / 365.25))}</span> a day</span><span id="t-hint" class="tot-sub" hidden>Tap a service to add it up</span></div>
  <div class="tot-acts"><button type="button" id="sharebtn" class="share" aria-haspopup="dialog">Share</button><button type="button" id="clear" class="ghost">Clear all</button></div>
 </div>
