@@ -1,5 +1,5 @@
 {
- "about": "Popular chip on /scan-preview/. Ranked by each company's own most recent published count for the service. Counts measure different things; 'measure' quotes what the source counts. 'count' is the number the source states (a floor where it says 'over' or 'more than') and is used only to sort. null = no service-specific count published; not ranked; 'slots' puts it at a fixed place in the grid (iCloud+ third) and the page says it is not ranked. Each tile is the service's entry plan; the count is for the whole service, never the plan. Separate from price sources in prices.json. Checked 2026-11-27.",
+ "about": "Start here chip on /scan-preview/. A hand-picked starter set: nine services ordered by each company's own most recent published count for the service, plus iCloud+, which has no published count, at a fixed unnumbered slot (third) so the default basket sits in the first screen. Counts measure different things; 'measure' quotes what the source counts and 'heading' names that measure on the panel. 'count' is the number the source states (a floor where it says 'over' or 'more than') and is used only to sort. null = no service-specific count published: no number, no source, never ranked, never called popular. Each tile is the service's entry plan; the count is for the whole service, never the plan. Separate from price sources in prices.json. Checked 2026-11-27.",
  "checked": "2026-11-27",
  "items": [
   {
@@ -34,7 +34,8 @@
    "source": "https://blog.google/company-news/inside-google/message-ceo/alphabet-earnings-q3-2026/",
    "publisher": "Alphabet Q3 2026 earnings, CEO remarks",
    "published": "2026-10-28",
-   "scope": "Counts YouTube Music and YouTube Premium together, every plan, not just this one."
+   "scope": "Counts YouTube Music and YouTube Premium together, every plan, not just this one.",
+   "heading": "YouTube Music + Premium subscribers, including trials"
   },
   {
    "id": "max-basic",
@@ -46,7 +47,8 @@
    "publisher": "Warner Bros. Discovery Q1 2026 shareholder letter",
    "published": "2026-05-06",
    "note": "Its last own count before the Skydance merger. Not HBO Max alone.",
-   "scope": "Counts all of the company's streaming, every plan: more than HBO Max alone."
+   "scope": "Counts all of the company's streaming, every plan: more than HBO Max alone.",
+   "heading": "Warner Bros. Discovery global streaming subscribers, not HBO Max alone"
   },
   {
    "id": "disney-ads",
@@ -109,13 +111,7 @@
    "id": "icloud-50",
    "count": null,
    "countText": "Not published",
-   "measure": "Apple gives no iCloud+ count. It reports over 1.5 billion paid subscriptions across all Apple services and App Store apps",
-   "period": "Q4 fiscal 2026",
-   "source": "https://www.fool.com/earnings/call-transcripts/2026/11/02/apple-aapl-q4-2026-earnings-call-transcript/",
-   "publisher": "Apple earnings call (transcript)",
-   "published": "2026-11-02",
-   "note": "Not ranked: the Apple-wide figure is not an iCloud+ count.",
-   "scope": "Apple gives no count for iCloud+ or any of its plans."
+   "measure": "Apple publishes no subscriber count for iCloud+."
   }
  ],
  "slots": {

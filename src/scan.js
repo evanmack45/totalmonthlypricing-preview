@@ -94,7 +94,7 @@
     }
     for (const c of chips) {
       const k = c.dataset.cat;
-      const n = k === 'all' ? 0 : k === 'picked' ? sel.size : k === 'popular' ? [...sel.keys()].filter((id) => popular.has(id)).length : [...sel.keys()].filter((id) => catOf.get(id) === k).length;
+      const n = k === 'all' ? 0 : k === 'picked' ? sel.size : k === 'start' ? [...sel.keys()].filter((id) => starter.has(id)).length : [...sel.keys()].filter((id) => catOf.get(id) === k).length;
       c.querySelector('.n').textContent = n ? String(n) : '';
     }
     $('#clear').hidden = !sel.size;
@@ -106,13 +106,13 @@
   const bump = () => { if (reduced) return; const g = $('#t-life'); g.classList.remove('bump'); void g.offsetWidth; g.classList.add('bump'); };
 
   // ---------- filters ----------
-  let cur = 'popular';
-  const popular = new Set(data.popular);
-  // The grid order is fixed in the HTML (Popular ranking first); chips only show and hide tiles.
+  let cur = 'start';
+  const starter = new Set(data.start);
+  // The grid order is fixed in the HTML (the Start here set first); chips only show and hide tiles.
   const show = (c) => {
     cur = c;
     for (const b of chips) b.setAttribute('aria-pressed', String(b.dataset.cat === c));
-    for (const w of wraps) w.hidden = !(c === 'all' || (c === 'picked' ? sel.has(w.dataset.id) : c === 'popular' ? popular.has(w.dataset.id) : w.dataset.cat === c));
+    for (const w of wraps) w.hidden = !(c === 'all' || (c === 'picked' ? sel.has(w.dataset.id) : c === 'start' ? starter.has(w.dataset.id) : w.dataset.cat === c));
     $('#none-picked').hidden = !(c === 'picked' && !sel.size);
   };
   $('#chips').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (b) show(b.dataset.cat); });
@@ -360,10 +360,10 @@
   window.__receipt = drawReceipt;
 
   // ---------- start ----------
-  // Land where every pick is on screen: Popular when it holds them all (the example basket does), else Picked.
+  // Land where every pick is on screen: Start here when it holds them all (the example basket does), else Picked.
   // Never a single category, so a shared link can't open on TV with its other picks hidden.
   const land = () => {
-    show(!sel.size || [...sel.keys()].every((id) => popular.has(id)) ? 'popular' : 'picked');
+    show(!sel.size || [...sel.keys()].every((id) => starter.has(id)) ? 'start' : 'picked');
     const on = $('.chip[aria-pressed=true]'); chipRow.scrollLeft = on.offsetLeft - chipRow.offsetLeft - 16; fade();
   };
   if (readHash()) touched = true; else { sel.clear(); for (const id of data.example) sel.set(id, null); }

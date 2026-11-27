@@ -4,8 +4,8 @@ import { readFileSync } from 'node:fs';
 export const SCAN_DIR = 'scan-preview';
 // One logo per service (scripts/make-scan-logos.mjs): Simple Icons, a press-kit file, or a letter badge.
 const { logos: LOGOS } = JSON.parse(readFileSync(new URL('./src/scan-logos.json', import.meta.url), 'utf8'));
-// Popular chip: published subscriber counts (data/popularity.json), kept apart from the price sources.
-const POP = JSON.parse(readFileSync(new URL('./data/popularity.json', import.meta.url), 'utf8'));
+// Start here chip: published subscriber counts (data/published-counts.json), kept apart from the price sources.
+const POP = JSON.parse(readFileSync(new URL('./data/published-counts.json', import.meta.url), 'utf8'));
 // Small chip pictograms, drawn here (not logos).
 const ICON = {
   tv: '<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/>',
@@ -14,7 +14,7 @@ const ICON = {
   games: '<rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10.5v4M5 12.5h4"/><circle cx="15.5" cy="11.5" r=".8" fill="currentColor"/><circle cx="17.5" cy="14" r=".8" fill="currentColor"/>',
   more: '<path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8a3 3 0 0 1 6 0"/>',
   picked: '<path d="M4 12.5l5 5L20 6.5"/>',
-  popular: '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>',
+  start: '<path d="M5 12h13M13 6l6 6-6 6"/>',
 };
 const icon = (k) => ICON[k] ? `<svg class="ci" viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg>` : '';
 // A few big filters, made from the groups already in prices.json.
@@ -32,22 +32,26 @@ export function scanPage({ data, SITE, AGE, END, EXAMPLE, monthC, yearC, asOf, e
   // Ranked by the published count, biggest first; services with no service-specific count go last.
   const byIdAll = new Map(data.items.map((it) => [it.id, it]));
   for (const p of POP.items) {
-    const it = byIdAll.get(p.id); if (!it) throw new Error(`popularity: unknown id ${p.id}`);
-    for (const k of ['countText', 'measure', 'scope', 'period', 'source', 'publisher', 'published']) if (!p[k]) throw new Error(`popularity ${p.id}: missing ${k}`);
-    if (!/^https:\/\//.test(p.source) || !/^\d{4}-\d{2}-\d{2}$/.test(p.published)) throw new Error(`popularity ${p.id}: bad source or date`);
-    if (p.count !== null && !(Number.isInteger(p.count) && p.count > 0)) throw new Error(`popularity ${p.id}: count must be a published integer or null`);
+    const it = byIdAll.get(p.id); if (!it) throw new Error(`counts: unknown id ${p.id}`);
+    if (p.count === null) { // no published count: no number, no source, nothing that reads as a rank
+      if (!p.measure || p.source || p.publisher || p.scope) throw new Error(`counts ${p.id}: an uncounted service says only that no count is published`);
+      continue;
+    }
+    for (const k of ['countText', 'measure', 'scope', 'period', 'source', 'publisher', 'published']) if (!p[k]) throw new Error(`counts ${p.id}: missing ${k}`);
+    if (!/^https:\/\//.test(p.source) || !/^\d{4}-\d{2}-\d{2}$/.test(p.published)) throw new Error(`counts ${p.id}: bad source or date`);
+    if (!(Number.isInteger(p.count) && p.count > 0)) throw new Error(`counts ${p.id}: count must be a published integer or null`);
   }
-  if (new Set(POP.items.map((p) => byIdAll.get(p.id).service)).size !== POP.items.length) throw new Error('popularity: one tile per service');
+  if (new Set(POP.items.map((p) => byIdAll.get(p.id).service)).size !== POP.items.length) throw new Error('counts: one tile per service');
   // Ranked: biggest published count first. Unranked services (no count of their own) sit at a fixed slot from
-  // popularity.json "slots" and say "not ranked"; they never get a number. The order never changes on the page.
+  // published-counts.json "slots" and say "not ranked"; they never get a number. The order never changes on the page.
   const ranked = POP.items.filter((p) => p.count !== null).sort((a, b) => b.count - a.count);
   const unranked = POP.items.filter((p) => p.count === null);
-  for (const p of unranked) if (!(POP.slots && Number.isInteger(POP.slots[p.id]))) throw new Error(`popularity ${p.id}: no count, so it needs a fixed slot`);
+  for (const p of unranked) if (!(POP.slots && Number.isInteger(POP.slots[p.id]))) throw new Error(`counts ${p.id}: no count, so it needs a fixed slot`);
   const popOf = new Map(ranked.map((p, i) => [p.id, { ...p, rank: i + 1 }]));
   for (const p of unranked) popOf.set(p.id, { ...p, rank: 0 });
   const popIds = ranked.map((p) => p.id);
   for (const p of [...unranked].sort((a, b) => POP.slots[a.id] - POP.slots[b.id])) popIds.splice(POP.slots[p.id] - 1, 0, p.id);
-  for (const id of EXAMPLE) if (!popIds.includes(id) || popIds.indexOf(id) >= 6) throw new Error(`example ${id} must be one of Popular's first 6 tiles`);
+  for (const id of EXAMPLE) if (!popIds.includes(id) || popIds.indexOf(id) >= 6) throw new Error(`example ${id} must be one of Start here's first 6 tiles`);
   const firstOrder = [...popIds, ...data.items.map((it) => it.id).filter((id) => !popOf.has(id))];
   const catOf = (it) => { const c = CATS.find(([, , gs]) => gs.includes(it.group)); if (!c) throw new Error(`${it.id}: group ${it.group} has no scan filter`); return c[0]; };
   const logo = (it) => {
@@ -63,14 +67,16 @@ export function scanPage({ data, SITE, AGE, END, EXAMPLE, monthC, yearC, asOf, e
   };
   const sprite = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>${[...new Map(Object.values(LOGOS).filter((l) => l.kind === 'si').map((l) => [l.slug, l])).values()].map((l) => `<symbol id="si-${l.slug}" viewBox="0 0 24 24"><path fill="currentColor" d="${l.path}"/></symbol>`).join('')}</defs></svg>`;
   const popP = (it) => { const p = popOf.get(it.id); if (!p) return '';
-    return `<div class="pop-n" data-pop="${p.rank || 'none'}"><p class="pop-k">${p.rank ? `Popular #${p.rank}: ${esc(it.service)} as a whole` : 'Popular, not ranked'}</p><p><b>${esc(p.countText)}</b> ${esc(p.measure)} (${esc(p.period)})</p><p class="pop-scope">${esc(p.scope)}</p><p>Count source: <a href="${esc(p.source)}" rel="noopener">${esc(p.publisher)}</a></p><p>Published ${fmtDate(p.published)}</p>${p.note ? `<p>${esc(p.note)}</p>` : ''}</div>`; };
-  const tile = (it) => `<div class="tw" data-id="${it.id}" data-cat="${catOf(it)}"${popOf.has(it.id) ? ` data-pop="${popOf.get(it.id).rank || 'none'}"` : ' hidden'}>
+    if (!p.rank) return `<div class="pop-n" data-rank="none"><p class="pop-k">Not ranked</p><p>${esc(p.measure)}</p><p>Checked ${fmtDate(POP.checked)}</p></div>`;
+    // The heading names what the source counts (whole service, or a wider measure), never the plan on the tile.
+    return `<div class="pop-n" data-rank="${p.rank}"><p class="pop-k">Published count #${p.rank}: ${esc(p.heading || `${it.service} as a whole`)}</p><p><b>${esc(p.countText)}</b> ${esc(p.measure)} (${esc(p.period)})</p><p class="pop-scope">${esc(p.scope)}</p><p>Count source: <a href="${esc(p.source)}" rel="noopener">${esc(p.publisher)}</a></p><p>Published ${fmtDate(p.published)}</p>${p.note ? `<p>${esc(p.note)}</p>` : ''}</div>`; };
+  const tile = (it) => `<div class="tw" data-id="${it.id}" data-cat="${catOf(it)}"${popOf.has(it.id) ? ` data-rank="${popOf.get(it.id).rank || 'none'}"` : ' hidden'}>
 <button type="button" class="tile" data-id="${it.id}" aria-pressed="${EXAMPLE.includes(it.id)}">${logo(it)}<span class="t-name">${esc(it.service)}</span><span class="t-plan">${esc(it.plan)}</span><span class="t-price">${usd(it.price)}${perLabel(it.per)}</span></button>
 <button type="button" class="info" popovertarget="src-${it.id}" aria-label="Source for ${esc(it.service)} ${esc(it.plan)}">i</button>
 <div class="pop" id="src-${it.id}" popover><p class="pop-h">${esc(it.service)} ${esc(it.plan)}</p><p>List price ${usd(it.price)}${perLabel(it.per)}</p><p>Source: <a href="${esc(it.source)}" rel="noopener">${esc(host(it.source))}</a></p><p>Checked ${fmtDate(it.checked)}</p>${it.then ? `<p>In ${it.then.year}: <a href="${esc(it.then.url)}" rel="noopener">${usd(it.then.price)}${perLabel(it.then.per)}</a></p>` : ''}${popP(it)}<button type="button" class="pop-x" popovertarget="src-${it.id}" popovertargetaction="hide">Close</button></div>
 </div>`;
-  const chips = [['popular', 'Popular'], ...CATS.map(([k, label]) => [k, label]), ['all', 'All'], ['picked', 'Picked']]
-    .map(([k, label]) => `<button type="button" class="chip" data-cat="${k}" aria-pressed="${k === 'popular'}">${icon(k)}${esc(label)}<span class="n" aria-hidden="true"></span></button>`).join('');
+  const chips = [['start', 'Start here'], ...CATS.map(([k, label]) => [k, label]), ['all', 'All'], ['picked', 'Picked']]
+    .map(([k, label]) => `<button type="button" class="chip" data-cat="${k}" aria-pressed="${k === 'start'}">${icon(k)}${esc(label)}<span class="n" aria-hidden="true"></span></button>`).join('');
   const page = `${SITE}${SCAN_DIR}/`;
   return `<!doctype html>
 <html lang="en">
@@ -136,7 +142,7 @@ ${firstOrder.map((id) => tile(byIdAll.get(id))).join('\n')}
   <p>Today's list prices, held flat. Real prices tend to rise. Taxes not included.</p>
   <p>US list prices for new subscribers, checked ${asOf}. Intro and student prices left out.</p>
   <p>This page has no accounts, cookies or ads. Your picks stay in your browser.</p>
-  <p>Popular = largest published subscriber counts; companies count differently. Each count is for the whole service, not the plan on the tile. iCloud+ has no published count, so it sits third, not ranked. Sources are under each i.</p>
+  <p>Start here lists large published subscriber counts, with iCloud+ parked third because it has no count. Each count is for the whole service, not the plan on the tile. Sources are under each i.</p>
   <p>Logos belong to their owners.</p>
  </details>
  <details id="all-prices">
@@ -167,7 +173,7 @@ ${firstOrder.map((id) => tile(byIdAll.get(id))).join('\n')}
  </div>
  <span id="share-msg" role="status"></span>
 </dialog>
-<script type="application/json" id="data">${JSON.stringify({ asOf, end: END, example: EXAMPLE, popular: popIds, items: data.items.map(({ id, service, plan, price, per, source, checked, then }) => ({ id, service, plan, price, per, source, checked, then })) }).replace(/</g, '\\u003c')}</script>
+<script type="application/json" id="data">${JSON.stringify({ asOf, end: END, example: EXAMPLE, start: popIds, items: data.items.map(({ id, service, plan, price, per, source, checked, then }) => ({ id, service, plan, price, per, source, checked, then })) }).replace(/</g, '\\u003c')}</script>
 <script src="scan.js" defer></script>
 </body>
 </html>`;
